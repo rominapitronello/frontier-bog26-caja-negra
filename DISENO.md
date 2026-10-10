@@ -11,6 +11,7 @@
 **según romina, resumen del brief (10 oct, 11:4x chile); el texto del brief manda cuando esté en el repo:**
 - ~100 casos: **5 ejemplos** visibles y **~100 tests ocultos** detrás. alta incertidumbre.
 - la caja es un **servicio sin documentación**, y **la forma de acceder a su api no es la común**.
+- lo que construimos **cumple un contrato al final, para que otros agentes accedan al servicio a través de él**. el texto del contrato: null hasta tener el brief.
 - **el incidente cambia el acceso.** no se trata de memorizar cómo acceder: el sistema tiene que **aprender del entorno**.
 
 consecuencia para el diseño: hay **dos cajas negras**, no una. la primera es **cómo se le habla** al servicio; la segunda, **qué decide**. las dos se aprenden, y las dos pueden cambiar.
