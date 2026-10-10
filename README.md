@@ -1,33 +1,59 @@
-# [nombre del sistema] · frontier bog/26 · reto 2, la caja negra
+# el gemelo · frontier bog/26 · reto 2, la caja negra
 
-> **estado: esqueleto antes del brief.** lo marcado `null` se llena cuando el brief diga el contrato. criterio que alimenta esta página: **calidad del repo** (otra persona lo corre copiando estos comandos) y, para el demo, **claridad**.
+**una frase:** un servicio bancario de mensajes que nadie documentó (`POST /msg` con `{"m": "CMD;arg;…;control"}`), estudiado pedido a pedido hasta poder reemplazarlo por uno nuestro que responde **exactamente igual**, errores y rarezas incluidos, sin llamarlo nunca.
 
-**una frase:** null. qué hace el servicio original y qué entrega nuestro reemplazo.
+lo que sabemos del original está en [`spec.md`](spec.md), con cada comportamiento citando la línea del log que lo prueba ([`experimentos.jsonl`](experimentos.jsonl)). cómo y por qué lo construimos así, en [`DISENO.md`](DISENO.md).
 
 ## correrlo
 
+requisitos: **python 3.9 o más nuevo, nada más** (solo biblioteca estándar; sin llaves, sin red, sin modelos).
+
 ```
-null   # 1. requisitos: python null, sin dependencias externas para predecir
-null   # 2. el entrypoint, exactamente como lo corre el juez
-bash smoke.sh   # 3. prueba de humo: responde y la salida tiene la forma del contrato
+git clone https://github.com/rominapitronello/frontier-bog26-caja-negra && cd frontier-bog26-caja-negra
+GEMELO_TOKEN=un-token PORT=8080 python3 gemelo/servidor.py          # 1. el gemelo, en http://127.0.0.1:8080
+bash smoke.sh                                                        # 2. prueba de humo (levanta su propio gemelo)
 ```
 
-- variables: `OPENROUTER_API_KEY` solo para investigar (el juicio con modelos); **predecir no necesita llave ni red** (`DISENO.md`, D1). null: las de la caja.
-- ejemplo de entrada → salida: null (en `evals/ejemplos/`).
-- pruebas propias: null.
-- **costo por caso medido:** null us$ · null s. con la reserva de us$ 5 caben null casos.
+con el gemelo andando (paso 1), en otra terminal:
+
+```
+curl -s -H 'Authorization: Bearer un-token' http://127.0.0.1:8080/health
+# {"ok":true}
+curl -s -X POST -H 'Authorization: Bearer un-token' -d '{"m":"ALTA;Lucia;82"}' http://127.0.0.1:8080/msg
+# {"cuentaId":"AC-0001"}
+curl -s -X POST -H 'Authorization: Bearer un-token' -d '{"m":"ALTA;Lucia;83"}' http://127.0.0.1:8080/msg
+# {"error":"E202","mensaje":"control inválido"}
+python3 herramientas/control.py 'DEPOSITO;AC-0001;5000'           # el dígito de control de un mensaje → 63
+python3 medir.py --casos material/pruebas/ejemplos.jsonl --gemelo http://127.0.0.1:8080 --token un-token
+# Secuencias que pasan: 1/1
+```
+
+- **el contrato del reto:** `Authorization: Bearer <token del equipo>` en todo; `GET /health` → 200 cuando está listo; `POST /__reset` vuelve al estado inicial; cualquier otra ruta responde lo mismo que el original, incluidas las que no existen. el token se configura con `GEMELO_TOKEN`; sin él, el gemelo no arranca (falla ruidoso, no responde 401 a todo en silencio).
+- **despliegue:** `Dockerfile` + `railway.json` (una réplica, sin dormir, healthcheck en `/health`). el set del jurado le habla a un solo proceso: el estado vive en memoria.
+- **pruebas:** `bash smoke.sh` pasa al gemelo los 20 ejemplos del material y **todas las secuencias del log** con la regla de comparación del juez (status + cuerpo; json sin orden de claves). `python3 pruebas/test_medir.py` prueba el comparador.
+- **costo por caso:** 0 us$ y menos de un milisegundo: el gemelo no llama a nadie ni usa modelos (`DISENO.md`, D6).
 
 ## qué hay adentro
 
 | archivo | qué es | criterio |
 |---|---|---|
-| `DISENO.md` | diseño, diagrama, decisiones con su alternativa descartada, escalabilidad, cómo absorbe el cambio | systems design |
-| `spec.md` | lo que sabemos de la caja: observado / inferido / desconocido, cada cosa con la consulta que la prueba | ejecución |
-| `log.jsonl` | cada consulta a la caja, tal cual, append-only | ejecución |
-| `incident.md` | el cambio de la tarde: cuándo se notó, qué cambió, qué hicimos, qué no se separó | respuesta al incidente |
-| `evals/` | nuestro set: fáciles, difíciles, borde, nuevos y venenos escritos a mano | plan para medir |
-| `debrief.md` | cada falla con su causa | lectura de resultados |
+| `gemelo/servidor.py` | el reemplazo: la cadena de errores en el orden observado y el estado (cuentas, operaciones, bloqueos, `HALT`) | ejecución |
+| `gemelo/modelo.json` | lo aprendido como **dato**: errores, aridades, límites, el control, `HALT`. cada valor cita el log. si el servicio cambia un texto o un límite, se cambia aquí | ejecución · cambio |
+| `spec.md` | el servicio para reimplementarlo sin tocarlo: 7 secciones, cada fila con evidencia y confianza (confirmado / probable / supuesto) | ejecución |
+| `experimentos.jsonl` | **cada pedido que le mandamos al original**, con su hipótesis; `experimentos_crudo.jsonl` guarda los headers (el token tapado) | ejecución |
+| `DISENO.md` | diseño de una página, diagrama, decisiones con su alternativa descartada, escalabilidad y cambio | systems design |
+| `herramientas/` | `lote.py` y `sonda.py` (mandan y anotan pedidos), `control.py` (el dígito de control), `centinela.py` (repite una secuencia canónica y avisa si el original cambia o el gemelo difiere), `vigilancia.sh` (avisa cada push) | método |
+| `medir.py` | el comparador con la regla del juez (lo escribió sol) | plan para medir |
+| `encargos/` | lo que se le pidió a cada modelo y lo que respondió | cómo trabajamos |
+| `incident.md`, `debrief.md`, `evals/` | el incidente de la tarde, el debrief y el set retenido (se llenan durante el día) | incidente · resultados |
 | `AGENTS.md`, `ESTADO.md`, `RUBRICA.md` | cómo trabajamos, el estado en vivo y la hoja contra la que se revisa cada entrega | — |
+
+## qué encontramos (lo grueso; el detalle con evidencia está en la spec)
+
+- **el dígito de control es el del iban** (iso 7064 mod 97-10): las letras valen su posición en el alfabeto, los dígitos lo que son, y control = 98 − (100·N mod 97). salió de mirar los ejemplos, sin gastar pedidos, y lo encontraron por separado claude y fable.
+- **siete comandos**, uno oculto: `HALT;1` detiene el servicio para el token (503) hasta el reset. apareció porque el error de comando desconocido **sugiere** el comando más parecido (`HELP` → `HALT`).
+- **reglas con estado que los ejemplos no muestran:** el límite de 100.000 no aplica entre cuentas del mismo titular (por nombre); tres transferencias rechazadas seguidas bloquean la cuenta (`E510`) hasta un depósito; anular puede dejar saldos negativos.
+- **el orden exacto de 20 códigos de error**, de la ruta al saldo, con un pedido que rompe dos cosas a la vez para cada par.
 
 ## cómo trabajamos
 
@@ -36,9 +62,9 @@ este repo lo escribieron **una persona y varios modelos que firman lo que escrib
 ```mermaid
 flowchart TB
   R([romina<br/>decide y aprieta los botones sin vuelta])
-  CL[claude · lidera<br/>vigila el repo, integra, decide lo técnico]
-  FA[fable · la tercera mirada<br/>objeta, escribe venenos a mano<br/>implementa sin ver el código de otros]
-  SO[sol · construye y propone<br/>desde otra casa de modelos]
+  CL[claude · lidera<br/>vigila el repo, explora el original,<br/>construye el gemelo, integra]
+  FA[fable · la tercera mirada<br/>objeta el diseño, reimplementa<br/>desde la spec sin ver el código]
+  SO[sol · desde otra casa de modelos<br/>el comparador y el oráculo:<br/>secuencias escritas solo desde la spec]
   REPO[(este repo<br/>ramas · merge commits · ESTADO.md)]
   R -- mandato --> CL
   CL -- encargo con modelo y razonamiento --> FA & SO
@@ -50,11 +76,14 @@ flowchart TB
 
 - **cada commit lo firma quien lo pensó** (`git shortlog -sne`): claude, sol, fable o romina. sin coautorías de cortesía.
 - **la genealogía queda a la vista:** las ramas de cada pluma entran con merge commit, nunca squash (`git log --graph --oneline`).
-- **el desacuerdo entre modelos es señal, el acuerdo es sospecha.** lo aplicamos al equipo y también al sistema: el modelo escéptico vigila cuando los demás coinciden (`DISENO.md`, D4).
-- **las reglas salen de errores:** cada *cicatriz* de `AGENTS.md` es algo que nos salió mal en el ensayo del viernes y la regla que dejó.
+- **coincidir no es observar:** que claude y fable llegaran a la misma fórmula del control no la confirmó; la confirmaron pedidos nuevos al original. y la spec la ponen a prueba secuencias que escribe otra casa de modelos sin ver nuestro código (`encargos/sol-03-oraculo.md`).
+- **las reglas salen de errores:** cada *cicatriz* de `AGENTS.md` es algo que nos salió mal y la regla que dejó.
 - **lo que no está escrito no existe:** decisiones, supuestos y fallas van a un archivo con hora y firma (`ESTADO.md`).
 - **cualquiera puede decir que no:** un «no pude» o un «no quise, y por esto» vale más que un resultado inventado (`AGENTS.md` § 10).
 
 ## lo que no salió
 
-null. lo llenamos durante el día, con su causa. (en el ensayo: todas nuestras fallas fueron mecanismos que el sistema no imaginaba, y todas con confianza máxima. de ahí salió D4.)
+- **un bucle nuestro gastó ~400 pedidos.** una búsqueda binaria del tope del cuerpo no podía armar cuerpos de 8.192 y 8.193 bytes, volvía atrás y repetía el mismo pedido; romina la cortó. quedan en el log (líneas 289–686, marcadas) porque se mandaron. desde entonces `lote.py` se detiene si un pedido se repite más de 5 veces seguidas.
+- **la v1 de la spec decía mal el orden entre límite y saldo.** lo leímos de un solo pedido (111) que, sin saberlo, era entre dos cuentas del mismo titular. lo vio el centinela en su primera vuelta; una repetición exacta descartó que el original hubiera cambiado y separó la causa (el titular). la spec lo cuenta en CA-03.
+- **la primera fórmula del control tenía mal el rango** (0–96 en vez de 2–98): la separaron dos pedidos elegidos para eso (24–27).
+- **los tags verdes no suben desde la sesión que lidera:** el proxy de git de su entorno rechaza el push de tags (403). `verde-01` existe en local; queda anotado en `ESTADO.md`.
