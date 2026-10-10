@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img">
+<title>Frontier Bogotá 26 — PasaElFiltro</title>
+<desc>Lámina estática 1920x1080. Fuente indicada en el pie.</desc>
+<rect width="1920" height="1080" fill="#F6F3ED"/>
+<defs><style>text{font-family:'Space Grotesk','Inter',Arial,sans-serif} .mono{font-family:'Space Mono',monospace} .title{font-size:60px;fill:#3A3A4A;font-weight:500} .foot{font-size:23px;fill:#3A3A4A;opacity:.88}</style><pattern id="tiles" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="white"/></pattern><mask id="tileMask" x="90" y="243" width="1600" height="500" maskUnits="userSpaceOnUse"><rect x="90" y="243" width="1600" height="500" fill="url(#tiles)"/></mask></defs>
+<text x="94" y="142" font-size="56" fill="#3A3A4A" font-weight="400" >la tira del presupuesto</text>
+<g mask="url(#tileMask)"><rect x="90" y="243" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="253" width="1280" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="1370" y="253" width="320" height="10" fill="#F0C850" opacity="1"/>
+<rect x="90" y="263" width="1600" height="10" fill="#F0C850" opacity="1"/>
+<rect x="90" y="273" width="1600" height="10" fill="#F0C850" opacity="1"/>
+<rect x="90" y="283" width="460" height="10" fill="#F0C850" opacity="1"/>
+<rect x="550" y="283" width="1140" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="293" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="303" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="313" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="323" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="333" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="343" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="353" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="363" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="373" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="383" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="393" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="403" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="413" width="1600" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="90" y="423" width="200" height="10" fill="#2BB5A0" opacity="1"/>
+<rect x="290" y="423" width="1400" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="433" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="443" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="453" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="463" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="473" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="483" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="493" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="503" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="513" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="523" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="533" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="543" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="553" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="563" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="573" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="583" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="593" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="603" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="613" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="623" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="633" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="643" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="653" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="663" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="673" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="683" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="693" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="703" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="713" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="723" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/>
+<rect x="90" y="733" width="1600" height="10" fill="#3A3A4A" opacity="0.17"/></g>
+<text x="95" y="849" font-size="98" fill="#D94062" font-weight="700" >8.000</text>
+<text x="95" y="900" font-size="31" fill="#3A3A4A" font-weight="400" >unidades totales</text>
+<text x="700" y="849" font-size="98" fill="#D94062" font-weight="700" >≈ 2.900</text>
+<text x="700" y="900" font-size="31" fill="#3A3A4A" font-weight="400" >pedidos usados al corte</text>
+<text x="1270" y="849" font-size="98" fill="#D94062" font-weight="700" >≈ 5.100</text>
+<text x="1270" y="900" font-size="31" fill="#3A3A4A" font-weight="400" >por usar al corte</text>
+<rect x="96" y="932" width="24" height="24" fill="#F0C850"/>
+<text x="135" y="953" font-size="27" fill="#3A3A4A" font-weight="400" >ids 289–686 · 398 pedidos en bucle; nuestro error, registrado y corregido</text>
+<text x="94" y="1015" class="mono foot">fuente · ESTADO.md: log 289–686, presupuesto 8.000, corte ~13:5x bog; cifras redondeadas</text>
+</svg>
