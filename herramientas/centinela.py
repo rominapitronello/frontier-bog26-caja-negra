@@ -6,6 +6,12 @@ compara cada vuelta con dos cosas:
   1. la vuelta anterior del centinela en el log: **una repetición exacta que cambia acredita un cambio** del original.
   2. el gemelo (levantado aquí mismo, en un puerto local): si difiere del original, el gemelo tiene un error
      o el original cambió en algo que el gemelo no sabe.
+las cuatro piezas del preregistro del incidente (PREDICCION_INCIDENTE.md) tienen pasos aquí:
+  · normalización:     CONS (prefijo), ac-0001 (minúsculas), "AC-0001 " (espacio), HELP/TOTAL/HALTS (sugerencia)
+  · orden de errores:  los pares de doble falla (SALDOS;…;XX, DEPOSITO;…;abc;x, …;AC-0009;abc, TRANSFER;AC-0009;AC-0009,
+                       ALTA;…;Gomez;12, CONSULTA;;99) y la transferencia sobre el límite sin saldo (límite antes que saldo)
+  · dígito de control: XX, 15, 014 y todos los controles válidos de la secuencia
+  · transiciones:      el bloqueo E510 (tres rechazos y el cuarto), ANULA dos veces, HALT;SI y HALT;1, y NOTAS
 imprime una línea por vuelta: «centinela HH:MM sin cambios» o qué cambió, con los ids del log. sale con 3 si
 el original cambió y con 4 si solo el gemelo difiere. toma el turno del token (lote.turno): no pisa la exploración.
 """

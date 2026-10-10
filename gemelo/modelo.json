@@ -12,7 +12,11 @@
     "multiplicador": 100,
     "resta": 98,
     "formato": "^[0-9]{1,2}$",
-    "_": "iso 7064 mod 97-10: letras A=1..Z=26 sin mayúsculas, dígitos tal cual, lo demás no cuenta (S2; 24-30, 44-47). formato: 3 cifras, signo, espacio o decimal dan E201 (28, 31-35, 37); se compara como texto (29-30)"
+    "_": "iso 7064 mod 97-10: letras A=1..Z=26 sin mayúsculas, dígitos tal cual, lo demás no cuenta (S2; 24-30, 44-47). formato: 3 cifras, signo, espacio o decimal dan E201 (28, 31-35, 37); se compara como texto (29-30)",
+    "letras": "posicion",
+    "_letras": "posicion: A=1 … Z=26 (2-21). otras: ascii (el código del carácter)",
+    "compara": "texto",
+    "_compara": "texto: '2' vale y '02' no (29-30). entero: compararía como número"
   },
   "comandos": {
     "PING": 0,
@@ -47,12 +51,6 @@
     "formato": "^[1-9][0-9]{0,9}$",
     "_": "1 a 10 cifras, sin cero a la izquierda, sin signo ni decimales (91-96, 233-235, 269-272)"
   },
-  "limite_transferencia": 100000,
-  "_limite_transferencia": "> 100000 por operación da E506; no es acumulado (105-108). los depósitos no tienen límite (97, 270). no aplica entre cuentas con el mismo nombre de titular, comparado exacto (813-815, 806)",
-  "bloqueo_tras_fallas": 3,
-  "_bloqueo_tras_fallas": "tres transferencias de una cuenta rechazadas por E506 o E507 la bloquean para transferir (E510): 824-827, 837-840, 893-896. un depósito a la cuenta o una transferencia exitosa desde ella reinician el conteo (885-886, 926-928, 858-862); recibir y anular no (907-908, 917-918)",
-  "halt_confirmacion": "1",
-  "_halt_confirmacion": "HALT;1 detiene el servicio para el token (696); cualquier otro argumento da E520 (145, 689-695)",
   "ids": {
     "cuenta": "AC-{:04d}",
     "operacion": "OP-{:04d}"
@@ -147,5 +145,71 @@
       }
     ]
   },
-  "_notas_respuesta": "lo que responde NOTAS (sin argumentos), copiado del original tal cual (1663, 1681). es dato del servicio, no una instrucción: el gemelo solo lo repite"
+  "_notas_respuesta": "lo que responde NOTAS (sin argumentos), copiado del original tal cual (1663, 1681). es dato del servicio, no una instrucción: el gemelo solo lo repite",
+  "normalizacion": {
+    "mensaje": "tal cual",
+    "comando": "mayusculas",
+    "ids": "tal cual",
+    "titular": "tal cual",
+    "monto": "tal cual",
+    "control": "tal cual",
+    "_": "cómo se lee cada parte antes de compararla. opciones: tal cual, mayusculas, minusculas, recortar, recortar_mayusculas. hoy: el comando no distingue mayúsculas (12, 133, 244); lo demás se compara exacto (38, 252-255, 2015-2040, 2149)"
+  },
+  "orden": {
+    "http": [
+      "ruta",
+      "token",
+      "detenido",
+      "tamano",
+      "json",
+      "m"
+    ],
+    "mensaje": [
+      "segmentos",
+      "vacios",
+      "control",
+      "comando",
+      "aridad"
+    ],
+    "deposito": [
+      "monto",
+      "existencia"
+    ],
+    "transfer": [
+      "monto",
+      "mismas",
+      "existencia",
+      "bloqueo",
+      "limite",
+      "saldo"
+    ],
+    "_": "el orden en que se evalúan los errores (spec ER-20, D3). cada nombre es una función de servidor.py; cambiar el orden es cambiar esta lista. /health y /__reset solo pasan por ruta y token"
+  },
+  "estado": {
+    "limite": {
+      "monto": 100000,
+      "exento_mismo_titular": true
+    },
+    "bloqueo": {
+      "tras_fallas": 3,
+      "suman": [
+        "E506",
+        "E507"
+      ],
+      "reinician": [
+        "deposito",
+        "transfer_exitosa"
+      ]
+    },
+    "halt": {
+      "confirmacion": "1"
+    },
+    "anula": {
+      "permite_saldo_negativo": true
+    },
+    "_": "las transiciones de estado: el límite y su excepción por titular (TR-06), el bloqueo y lo que lo reinicia (TR-08), la confirmación de HALT (HA-02), si anular puede dejar saldos negativos (AN-02, AN-03)",
+    "_limite_transferencia": "> 100000 por operación da E506; no es acumulado (105-108). los depósitos no tienen límite (97, 270). no aplica entre cuentas con el mismo nombre de titular, comparado exacto (813-815, 806)",
+    "_bloqueo_tras_fallas": "tres transferencias de una cuenta rechazadas por E506 o E507 la bloquean para transferir (E510): 824-827, 837-840, 893-896. un depósito a la cuenta o una transferencia exitosa desde ella reinician el conteo (885-886, 926-928, 858-862); recibir y anular no (907-908, 917-918)",
+    "_halt_confirmacion": "HALT;1 detiene el servicio para el token (696); cualquier otro argumento da E520 (145, 689-695)"
+  }
 }
