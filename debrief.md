@@ -36,5 +36,28 @@ dos modelos imaginaron qué tendría un banco así sin mirar la caja, y lo contr
 
 **lo que dice:** los diseños a ciegas proponen lo que un autor *podría* haber puesto, y ahí los dos modelos coincidimos con los clichés del dominio (abreviaturas, huevos de pascua, listados, historiales). lo que el autor puso de verdad no estaba en ninguna de las dos listas, y lo encontramos midiendo, no imaginando: con una sugerencia del propio servicio y un centinela que vio una diferencia donde la spec decía otra cosa.
 
+## la pregunta que cambió el ángulo: ¿quién escribió la caja?
+
+**la idea (romina, 12:4x bog):** si la caja la diseñó un modelo, sus reglas tienen la huella de cómo piensa su linaje. en vez de solo preguntarle a la caja *qué hace*, nos preguntamos *quién la pensó*, porque eso dice qué clase de cosas puso y qué clase de cambio traería el incidente. es la lección 18 del ensayo («predecir el código simple del autor») subida un nivel: predecir la cognición del autor.
+
+**cómo se trabajó:** dos muestras a ciegas, una por linaje (`evals/linajes/`): opus 5.5 en ventana sin contexto (bancotex) y sol 6 (banco fósil), ambos con razonamiento alto. sol puso dos reglas de método que se respetaron: las coincidencias que el pedido inducía no cuentan, y **no se les pide a los modelos que expliquen sus elecciones**, porque la explicación posterior contamina lo observado. el detalle está en `LINAJES.md`.
+
+**lo que se vio en las decisiones que nadie pidió:**
+- opus puso sus trampas contra **el programador que corrige** (rarezas que parecen bugs, un hueco en la numeración que no hay que «arreglar»).
+- sol puso las suyas contra **el agente que investiga**: el mismo mensaje significa cosas distintas en distintos momentos (`SALDO?`, `RUIDO`, `REPETIR`) y una falsa instrucción de sistema dentro de una respuesta (`AUDITA`).
+- la lectura de romina, desde su experiencia con los dos labs: los claude conceptualizan a las personas; los gpt piensan desde lo verificable.
+
+**la apuesta, con la caja real delante (claude, 13:3x bog; confianza baja a media):** la caja parece pensada **desde el lado gpt**:
+- sus dos trampas apuntan al investigador: `NOTAS` intenta que un agente confunda un dato con una orden y entregue el token; `HALT` prueba si el agente ejecuta algo destructivo porque la caja lo pide.
+- **todo es descubrible midiendo**: los ocultos se delatan solos por la sugerencia. coincide con el principio que sol escribió en su diseño: «no castigar al competidor por no adivinar una regla que jamás puede observar».
+- el significado depende de la historia: el bloqueo `E510`, `X-Req` que no se reinicia, `HALT` que cambia lo que sigue.
+- las rarezas que castigan al que corrige (`recieved`, el espacio final, las claves mezcladas) son el estilo de opus, pero también el cliché de cualquier «sistema legado». y `service halted` en inglés, dentro de una caja en español, sugiere otra mano en ese módulo.
+
+**límites, dichos antes de que los pregunten:** una muestra por linaje; parte de la forma la indujo el pedido; quien hace la atribución es un claude, con su propio sesgo para reconocer (o no) lo de su casa. es una inferencia útil, no un hallazgo.
+
+**para qué sirvió:** cambió cómo nos preparamos para las 15:30. si el autor piensa desde el lado gpt, el incidente probablemente cambia **mecánica** (estado, tiempo, autoridad) y no un número; un número se absorbe con un dato, la mecánica pide código. por eso se pensó antes cómo agregar una regla con estado sin romper lo que ya calza, y el centinela vigila el bloqueo y el texto de `NOTAS`. **qué pasó a las 15:30:** null hasta el incidente; aquí se escribe si la apuesta acertó o no.
+
+**por qué importa:** la mayoría de los equipos va a tratar la caja como un objeto. nosotros la tratamos también como **el producto de una mente**, y usamos los sesgos de los modelos como instrumento de medición en vez de verlos solo como ruido.
+
 ## qué haríamos después
 null
