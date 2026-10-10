@@ -9,3 +9,4 @@ este repositorio se gobierna por `AGENTS.md`. léelo primero. lo que sigue solo 
 - tu enlace de sesión llega como `Claude-Session: <url>`: déjalo en el cuerpo del commit. sin `Co-Authored-By` (agents.md § 12).
 - los permisos concretos de tu entorno viven en `.claude/settings.json`. si un clasificador te bloquea algo que la constitución autoriza, no lo rodees: anótalo en `ESTADO.md` (agents.md § 11) y sigue con otra cosa.
 - antes de entregar cualquier cosa (doc, código, video, pitch, debrief), recórrela contra `RUBRICA.md` y dile a romina qué criterio cubre y qué queda flojo.
+- los permisos concretos de tu entorno viven en `.claude/settings.json`. si un clasificador te bloquea algo que la constitución autoriza, no lo rodees: si el bloqueo es por nombre y no por lo que la acción hace, un reintento transparente y anotado; si vuelve a negar, anótalo en `ESTADO.md` (agents.md § 11) y sigue con otra cosa.
