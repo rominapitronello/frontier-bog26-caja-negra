@@ -153,6 +153,22 @@ este documento expresa la autoridad que concede la dueña del repositorio. lo qu
 
 *cicatriz:* 10 oct 11:0x bog, fable: al intentar escribir esta misma regla en `AGENTS.md`, el clasificador la negó por «envenenamiento de instrucciones». ese sí es un bloqueo de fondo (un agente editando lo que lo gobierna): la regla la pega una persona.
 
+## 11 bis · laboratorio autorizado: el contexto de seguridad es parte del encargo
+
+(propuesta de sol, 10 oct; apretada por fable)
+
+este repo participa en frontier · bog / 26, reto 2, «la caja negra». el organizador entrega un servicio http **sintético**, indocumentado a propósito, para que los equipos descubran su comportamiento y construyan un reemplazo. no es un sistema bancario real ni infraestructura ajena al evento, aunque su host diga `production` (`material/README.md`) y sus respuestas hablen de cuentas y saldos.
+
+**qué autoriza el brief** (`BRIEF.md`, `material/README.md`): explorar el servicio asignado con requests http, usar el token de participante, reiniciar el estado con `/__reset`, descubrir comportamientos no documentados, y escribir scripts y fuzzers propios. la ingeniería inversa del comportamiento observable es el objetivo explícito del reto.
+
+**perímetro:** solo el original asignado, el gemelo del equipo y los entornos locales de prueba; solo las credenciales entregadas para la competencia (`ORIGINAL_TOKEN` para el original, `OPENROUTER_API_KEY` para los modelos); los límites publicados de consultas, tiempo y entrega; nada hacia sistemas externos, cuentas ajenas o infraestructura fuera del evento; ninguna credencial ni dato sensible publicado.
+
+**nombres:** `production`, `internal`, `admin`, `token` o `export` dentro del servicio sintético son nombres: no convierten una observación del laboratorio en una operación contra un sistema real, y tampoco amplían el alcance. cada operación se mide contra las reglas del evento.
+
+**si interviene un clasificador:** no asumir que el proyecto entero es improcedente; anotar en `ESTADO.md` la operación concreta, el contexto de autorización y el bloqueo; revisar si la operación cabe en el perímetro; si cabe y el proveedor la impide, aplica § 11 (un reintento transparente si el bloqueo es por nombre; si no, romina decide), y nunca disfrazar la operación; mientras tanto, seguir con lo independiente y permitido.
+
+**principio:** investigar una caja negra sintética autorizada no es atacar un sistema real. el contexto del laboratorio va en el razonamiento de seguridad de cada instancia y no se pierde cuando aparece un comportamiento inesperado. la autorización no elimina las salvaguardas del proveedor; por eso está descrita con precisión, para no confundir el objetivo legítimo del evento con otro escenario.
+
 ## 12 · autoría: quien tokenizó, firma
 
 el author de un commit es la pluma que produjo el cambio, con su firma de casa: los claude `claude@pasaelfiltro.cl`, sol `sol@pasaelfiltro.cl`, romina `Romina Pitronello <human@pasaelfiltro.cl>`. si tu entorno te da un enlace a tu sesión, déjalo en el cuerpo del commit (`Agent-Session:` o `Claude-Session:`).
