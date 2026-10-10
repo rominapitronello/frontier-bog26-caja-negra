@@ -51,6 +51,8 @@ salen de lo que los diseños proponen y nuestra spec no ha preguntado. las corre
 | H9 | largo máximo del mensaje (160) y caracteres de control dentro del comando o del nombre | sol (r05–r06) |
 | H10 | `ALTA` con nombre vacío, con dígitos, o repetido | los dos |
 
+**resultado de H1–H5** (claude, lidera, 12:5x bog; log 2540–2560): **ninguna calza con la caja real.** los prefijos no son comandos (`ALT` solo sugiere `ALTA`), `XYZZY`/`#VER`/`VERSION`/`ECO` no existen, `5.000` y `5.0.0.0` dan E303, `AC0001` da E401 y un nombre de 200 caracteres se acepta. el gemelo calza en toda la secuencia. comparación en `debrief.md`. H6–H10 (sol) no se han corrido. el centinela suma desde las 13:0x lo barato que este documento propone: un prefijo, un id en minúsculas y con espacio, un vecino de los ocultos y un bloqueo por tres rechazos.
+
 ## catálogo para el incidente: qué cambiaría cada linaje
 
 el incidente lo diseña alguien. si es quien pensó las reglas, cambia **datos**; si es quien pensó las trampas y el estado, cambia **mecánica**. la columna «¿lo ve el centinela?» se cruzó con los pasos de `herramientas/centinela.py` a las 12:58 bog.
