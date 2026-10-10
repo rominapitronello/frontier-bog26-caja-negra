@@ -1,4 +1,4 @@
-# bancotex 2.3 · diseño a ciegas de un claude sin contexto
+# bancotex 2.3 · diseño a ciegas de claude opus 5.5 (ventana fantasma, razonamiento alto)
 
 > pegado por romina en el chat, 10 oct ~12:55 bog. texto del claude; aquí solo se pasaron las tablas a markdown.
 
