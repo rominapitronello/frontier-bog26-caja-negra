@@ -2,7 +2,7 @@
 
 > escrito **antes** del incidente para que nadie mueva los postes después, tampoco nosotras. la hora y el commit de este archivo son la prueba. después de las 15:30 este archivo **no se edita**: el resultado va en una sección nueva al final, con su hora.
 
-**autoras de la predicción:** romina (la idea) y sol 6 (la formulación), 10 oct 2026, ~13:45 bog. registrado por claude (`01MD7…`).
+**autoras de la predicción:** romina (la idea) y sol 6 (la formulación), 10 oct 2026, 13:2x bog (commit 192e1dd, 13:27:03 bog). registrado por claude (`01MD7…`).
 
 ## de dónde sale
 
