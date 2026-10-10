@@ -14,7 +14,7 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v11"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v12"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -354,7 +354,8 @@ class Manejador(BaseHTTPRequestHandler):
             raise error("E404")
 
     def _paso_token(self, x):
-        if self.headers.get("Authorization") != f"Bearer {TOKEN}":
+        # los espacios de borde del valor no cuentan (http los recorta: 3532); adentro sí, y Bearer exacto (3530, 3531)
+        if (self.headers.get("Authorization") or "").strip(" \t") != f"Bearer {TOKEN}":
             raise error("E001")
 
     def _paso_detenido(self, x):
@@ -367,9 +368,9 @@ class Manejador(BaseHTTPRequestHandler):
 
     def _paso_json(self, x):
         try:   # json estricto: NaN e Infinity no son json (1245-1247); python los aceptaría
-            texto = x["crudo"].decode("utf-8")
+            texto = x["crudo"].decode("utf-8", errors="replace")   # bytes que no son utf-8 no rompen el json (3535, 3536)
             x["cuerpo"] = json.loads(texto, parse_constant=_no_json)
-        except (ValueError, UnicodeDecodeError, RecursionError):
+        except (ValueError, RecursionError):
             raise error("E100")
         if profundidad(texto) > M.get("json_profundidad_max", 10 ** 9):   # 20 pasa, 21 no (3462-3463, 3468-3469)
             raise error("E100")

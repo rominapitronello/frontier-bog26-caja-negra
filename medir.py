@@ -183,7 +183,9 @@ def _auth_caso(caso, token):
 
 def _respuesta_caso(configuracion, caso, token):
     metodo = caso.get("metodo", "POST").upper()
-    if isinstance(caso.get("cuerpo"), str):   # cuerpo crudo del log: 'hola', '', '"PING;64"'
+    if isinstance(caso.get("cuerpo_hex"), str):   # bytes que no son utf-8, en hex (herramientas/lote.py)
+        carga = bytes.fromhex(caso["cuerpo_hex"])
+    elif isinstance(caso.get("cuerpo"), str):   # cuerpo crudo del log: 'hola', '', '"PING;64"'
         carga = caso["cuerpo"].encode("utf-8")
     else:
         # GET y HEAD no llevan cuerpo aunque el JSONL documente request:{}.

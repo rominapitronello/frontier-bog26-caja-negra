@@ -2,6 +2,7 @@
 
 cada línea de entrada (jsonl, por archivo o stdin) es un pedido:
     {"m": "PING;64", "hipotesis": "..."}                       # POST /msg con ese cuerpo
+    {"cuerpo_hex": "7b226d22...", "headers": [...], ...}       # bytes crudos (no utf-8), en hex
     {"reset": true, "hipotesis": "..."}                         # POST /__reset
     {"metodo": "GET", "ruta": "/x", "cuerpo": "...", "auth": "sin token" | "otro token" | "token propio",
      "headers": [["Content-Type", "text/plain"]], "hipotesis": "..."}
@@ -85,6 +86,8 @@ def _correr(pasos, seq, base, token, log, crudo, ritmo, eco):
             hs = [tuple(h) for h in p.get("headers", [["Content-Type", "application/json"]])]
         else:
             metodo, ruta, cuerpo = p.get("metodo", "POST"), p.get("ruta", "/msg"), p.get("cuerpo")
+            if "cuerpo_hex" in p:   # bytes que no son utf-8 (latin-1, sueltos): van tal cual y quedan en hex en el log
+                cuerpo = bytes.fromhex(p["cuerpo_hex"])
             auth = p.get("auth", "token propio")
             hs = [tuple(h) for h in p.get("headers", [])]
         if auth == "token propio":
@@ -112,9 +115,11 @@ def _correr(pasos, seq, base, token, log, crudo, ritmo, eco):
         else:
             sys.exit("lote: seis intentos sin respuesta del servicio; me detengo")
         reg = {"id": nid, "seq": seq, "x_req": hdr.get("x-req"), "hipotesis": p.get("hipotesis", ""),
-               "request": como_json(cuerpo) if cuerpo is not None else None,
+               "request": como_json(cuerpo) if isinstance(cuerpo, str) else None,
                "status": r["status"], "response": como_json(r["cuerpo"]), "conclusion": p.get("conclusion", "")}
-        if cuerpo is not None and ("cuerpo" in p or not isinstance(reg["request"], dict)):
+        if isinstance(cuerpo, bytes):
+            reg["cuerpo_hex"] = cuerpo.hex()
+        elif cuerpo is not None and ("cuerpo" in p or not isinstance(reg["request"], dict)):
             reg["cuerpo"] = cuerpo  # el texto exacto que se mandó: "request" no distingue 'hola' de '"hola"'
         if (metodo, ruta) != ("POST", "/msg") or auth != "token propio" or "headers" in p:
             reg["metodo"], reg["ruta"], reg["auth"] = metodo, ruta, auth.replace(token, "<token>") if token else auth
