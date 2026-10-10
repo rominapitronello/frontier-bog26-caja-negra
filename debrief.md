@@ -12,6 +12,10 @@ null
 | categoría | resultado | qué falla y por qué (mecanismo) |
 |---|---|---|
 
+## dónde estamos frente a los demás
+
+dato de la organización (10 oct, 14:4x bog): 40 equipos en caja negra; los 15 con resultados promedian **fácil 91 %, regular 73 %, difícil 39 %** (inferencia: fácil = tests de 1 pedido, regular = 2–5, difícil = 6–12). nuestra corrida 1 dio **83/100**, sobre el promedio ponderado (~75). lo difícil para todos son las secuencias largas con estado; por eso las medimos aparte: 18 secuencias de 8–12 pedidos que combinan las reglas raras entre sí, y el gemelo calza en las 18 (spec CA-07).
+
 ## costo
 
 **0 us$ del presupuesto del evento.** el gemelo no usa modelos: responde con código y datos (`gemelo/modelo.json`), en microsegundos por pedido, sin red. la exploración tampoco gastó en modelos: el dígito de control salió de una búsqueda propia fuera de línea, y los comandos ocultos, de la sugerencia del propio servicio. lo único que se gastó fueron pedidos al original (~2.900 de 8.000 al cierre de la tarde) y validaciones del portal (1 de 3 hasta ahora).
