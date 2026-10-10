@@ -81,7 +81,7 @@ el diseño se entregó a las 12:00 (`DISENO.md`, commit `3357774`) y no se toca.
 - **la versión de la mañana se congela como archivo, no como tag:** el entorno no deja subir tags.
 - **sumamos un fuzzer diferencial**, que el diseño había descartado: con 83/100 en el set y 141/141 en nuestras propias secuencias, lo que fallaba estaba fuera de lo que sabíamos preguntar. no encontró diferencias en lo conocido (1281–1613), y eso también es un resultado.
 - **la spec se prueba con predicciones ciegas y no con un segundo gemelo:** otro modelo lee solo la spec y predice qué responde el original. sol acertó 141 de 141 y fable 238 de 238.
-- **railway no lee `railway.json`.** el diseño cerraba ahí una réplica, sin dormir y el reinicio; el panel mostró a las 15:3x que el archivo no se aplica (config as code está deprecado) y que no había healthcheck: un despliegue roto habría reemplazado al que funcionaba. la configuración pasó al panel, y el gemelo responde 200 en `/health` solo al healthcheck de railway, que el juez nunca usa.
+- **railway no lee `railway.json`.** el diseño cerraba ahí una réplica, sin dormir y el reinicio; el panel mostró a las 15:3x que el archivo no se aplica (config as code está deprecado) y que no había healthcheck: un despliegue roto habría reemplazado al que funcionaba. la configuración pasó al panel, y el gemelo responde 200 en `/health` solo al healthcheck de railway, que el juez nunca usa; con eso, el healthcheck quedó puesto y pasa (15:34 bog).
 
 ## cómo trabajamos
 
