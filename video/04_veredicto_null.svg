@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img"><title>Frontier Bogotá 26 — PasaElFiltro</title><desc>Lámina estática 1920x1080 con fuente visible.</desc><rect width="1920" height="1080" fill="#1C1C2E"/><style>text{font-family:'Space Grotesk','Inter',Arial,sans-serif}.mono{font-family:'Space Mono',monospace}</style><text x="95" y="142" font-size="57" fill="#F6F3ED" font-weight="400" >la tabla del veredicto</text>
+<text x="132" y="226" font-size="37" fill="#F6F3ED" font-weight="650" >resultado del incidente</text>
+<text x="1430" y="226" font-size="37" fill="#F6F3ED" font-weight="650" >veredicto</text>
+<line x1="112" y1="249" x2="1808" y2="249" stroke="#F6F3ED" stroke-opacity=".48"/>
+<line x1="112" y1="388" x2="1808" y2="388" stroke="#F6F3ED" stroke-opacity=".32"/>
+<text x="132" y="305" font-size="29" fill="#F6F3ED" font-weight="400" >cambia la normalización, el orden de validación, el dígito de control</text>
+<text x="132" y="337" font-size="29" fill="#F6F3ED" font-weight="400" >o una transición de estado, de modo que un clon fiel a la mañana</text>
+<text x="132" y="369" font-size="29" fill="#F6F3ED" font-weight="400" >responde mal</text>
+<text x="1425" y="340" font-size="39" fill="#F6F3ED" font-weight="500" >acierto</text>
+<line x1="112" y1="516" x2="1808" y2="516" stroke="#F6F3ED" stroke-opacity=".32"/>
+<text x="132" y="433" font-size="29" fill="#F6F3ED" font-weight="400" >cambia otra regla existente de forma que castiga una</text>
+<text x="132" y="465" font-size="29" fill="#F6F3ED" font-weight="400" >implementación literal (texto, código o límite codificado</text>
+<text x="132" y="497" font-size="29" fill="#F6F3ED" font-weight="400" >como constante)</text>
+<text x="1425" y="468" font-size="39" fill="#F6F3ED" font-weight="500" >acierto parcial</text>
+<line x1="112" y1="644" x2="1808" y2="644" stroke="#F6F3ED" stroke-opacity=".32"/>
+<text x="132" y="561" font-size="29" fill="#F6F3ED" font-weight="400" >solo se agrega algo nuevo (un comando, una ruta, un error)</text>
+<text x="132" y="593" font-size="29" fill="#F6F3ED" font-weight="400" >y lo de la mañana sigue valiendo</text>
+<text x="1425" y="596" font-size="39" fill="#F6F3ED" font-weight="500" >fallo</text>
+<line x1="112" y1="772" x2="1808" y2="772" stroke="#F6F3ED" stroke-opacity=".32"/>
+<text x="132" y="689" font-size="29" fill="#F6F3ED" font-weight="400" >cambia el acceso (token, ruta, forma del cuerpo)</text>
+<text x="132" y="721" font-size="29" fill="#F6F3ED" font-weight="400" >sin tocar la lógica</text>
+<text x="1425" y="724" font-size="39" fill="#F6F3ED" font-weight="500" >fallo</text>
+<line x1="112" y1="900" x2="1808" y2="900" stroke="#F6F3ED" stroke-opacity=".32"/>
+<text x="132" y="817" font-size="29" fill="#F6F3ED" font-weight="400" >el incidente no se puede clasificar con esta tabla</text>
+<text x="1425" y="852" font-size="39" fill="#F6F3ED" font-weight="500" >la tabla no alcanzó</text>
+<line x1="1380" y1="204" x2="1380" y2="902" stroke="#F6F3ED" stroke-opacity=".37"/>
+<text x="115" y="962" font-size="40" fill="#D94062" font-weight="650" >resultado · null</text>
+<text x="94" y="1014" font-size="22" fill="#F6F3ED" font-weight="400" class="mono">fuente · PREDICCION_INCIDENTE.md · commit 192e1dd · 13:27:03 bog</text></svg>
