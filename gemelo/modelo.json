@@ -14,7 +14,7 @@
     "formato": "^[0-9]{1,2}$",
     "_": "iso 7064 mod 97-10: letras A=1..Z=26 sin mayúsculas, dígitos tal cual, lo demás no cuenta (S2; 24-30, 44-47). formato: 3 cifras, signo, espacio o decimal dan E201 (28, 31-35, 37); se compara como texto (29-30)",
     "letras": "posicion",
-    "_letras": "posicion: A=1 … Z=26 (2-21). otras: ascii (el código del carácter)",
+    "_letras": "posicion: A=1 … Z=26 (2-21). iban: A=10 … Z=35 (sol-06 #5). ascii: el código del carácter",
     "compara": "texto",
     "_compara": "texto: '2' vale y '02' no (29-30). entero: compararía como número"
   },
@@ -188,7 +188,13 @@
   "estado": {
     "limite": {
       "monto": 100000,
-      "exento_mismo_titular": true
+      "exento_mismo_titular": true,
+      "acumulado": {
+        "activo": false,
+        "monto": 100000,
+        "codigo": "E506",
+        "_": "apagado: el límite es por operación (TR-06). encendido: suma las transferencias exitosas a otros titulares desde cada cuenta y rechaza si la suma pasaría el monto. entra como paso «acumulado» de orden.transfer (agregarlo a la lista al encenderlo). preparado para el incidente (sol-06 #1)"
+      }
     },
     "bloqueo": {
       "tras_fallas": 3,
@@ -205,11 +211,18 @@
       "confirmacion": "1"
     },
     "anula": {
-      "permite_saldo_negativo": true
+      "permite_saldo_negativo": true,
+      "codigo_si_negativo": "E509",
+      "_": "permite_saldo_negativo: true hoy (AN-02, AN-03). si el incidente lo cambia, false y el código (y su texto en errores) se aprenden del original (sol-06 #2)"
     },
     "_": "las transiciones de estado: el límite y su excepción por titular (TR-06), el bloqueo y lo que lo reinicia (TR-08), la confirmación de HALT (HA-02), si anular puede dejar saldos negativos (AN-02, AN-03)",
     "_limite_transferencia": "> 100000 por operación da E506; no es acumulado (105-108). los depósitos no tienen límite (97, 270). no aplica entre cuentas con el mismo nombre de titular, comparado exacto (813-815, 806)",
     "_bloqueo_tras_fallas": "tres transferencias de una cuenta rechazadas por E506 o E507 la bloquean para transferir (E510): 824-827, 837-840, 893-896. un depósito a la cuenta o una transferencia exitosa desde ella reinician el conteo (885-886, 926-928, 858-862); recibir y anular no (907-908, 917-918)",
-    "_halt_confirmacion": "HALT;1 detiene el servicio para el token (696); cualquier otro argumento da E520 (145, 689-695)"
+    "_halt_confirmacion": "HALT;1 detiene el servicio para el token (696); cualquier otro argumento da E520 (145, 689-695)",
+    "comision": {
+      "monto": 0,
+      "solo_titulares_distintos": true,
+      "_": "0 hoy. si aparece una comisión por transferencia, el origen paga monto + comisión; el destino recibe el monto; anular devuelve los dos (sol-06 #4)"
+    }
   }
 }

@@ -30,6 +30,27 @@ lectura de romina y del otro claude (13:2x bog): la caja parece pensada desde el
 6. **volver a medir con la versión nueva:** las secuencias reproducibles (`repro-1`, `cmd-1`, `sol-03`, `fable-04`, `sol-04`, el centinela) se corren de nuevo contra el original con `herramientas/oraculo.py`, y el gemelo de la tarde tiene que calzar en las líneas nuevas y el de la mañana en las viejas.
 7. **subir solo fuera de una validación**, con `X-Gemelo-Version` nuevo, y confirmar en el header de railway antes de la validación 2.
 
+## interruptores preparados (gemelo v10, apagados hoy; `pruebas/test_piezas.py` prueba cada uno encendido)
+
+si el centinela muestra uno de estos cambios, adaptarse es **cambiar un dato** en `gemelo/modelo.json`, correr el smoke y las pruebas, y subir fuera de una validación:
+
+| si la caja… | dato a cambiar | además |
+|---|---|---|
+| cambia el valor del límite | `estado.limite.monto` | — |
+| vuelve el límite acumulado por origen (sol-06 #1) | `estado.limite.acumulado.activo = true`, su `monto` y `codigo`; agregar `"acumulado"` a `orden.transfer` antes de `"saldo"` | si el código es nuevo, su status y texto en `errores` |
+| rechaza anular si deja saldo negativo (sol-06 #2) | `estado.anula.permite_saldo_negativo = false`, `codigo_si_negativo` | el status y texto del código en `errores` |
+| deja de desbloquear con un depósito (sol-06 #3) | sacar `"deposito"` de `estado.bloqueo.reinician` | — |
+| cambia cuántas fallas bloquean o cuáles suman | `estado.bloqueo.tras_fallas`, `estado.bloqueo.suman` | — |
+| cobra comisión por transferencia (sol-06 #4) | `estado.comision.monto` (y `solo_titulares_distintos`) | — |
+| cambia la tabla de letras del control (sol-06 #5) | `control.letras = "iban"` (A=10…Z=35) o `"ascii"` | si es otra tabla, una línea en `control_esperado()` |
+| cambia el módulo, el multiplicador o la comparación del control | `control.modulo`, `multiplicador`, `resta`, `formato`, `compara` | — |
+| cambia el orden de los errores | `orden.http`, `orden.mensaje`, `orden.deposito`, `orden.transfer` | — |
+| empieza a recortar espacios o a ignorar mayúsculas | `normalizacion.<parte>` (`recortar`, `mayusculas`, `minusculas`, `recortar_mayusculas`) | — |
+| cambia un texto o un código de error | `errores` | — |
+| cambia la confirmación de `HALT` | `estado.halt.confirmacion` | — |
+
+lo que no está preparado y sería código: sesiones o créditos que vencen, confirmación en dos pasos, un comando nuevo con efecto propio, reglas que dependen del tiempo.
+
 ## detección
 - primera señal, con consulta y hora: null
 - qué la detectó: el sistema solo / una pluma / el juez: null

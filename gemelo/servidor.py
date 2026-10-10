@@ -14,7 +14,7 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v9"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v10"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -30,7 +30,8 @@ class Respuesta(Exception):
 
 
 def error(codigo, **extra):
-    status, mensaje = M["errores"][codigo]
+    # un código nuevo encendido antes de copiar su texto no tumba el proceso: 422 y el código como texto (provisorio)
+    status, mensaje = M["errores"].get(codigo, [422, codigo])
     return Respuesta(status, {"error": codigo, "mensaje": mensaje, **extra})
 
 
@@ -55,7 +56,8 @@ def control_esperado(cuerpo_sin_control):
         if ch.isascii() and ch.isdigit():
             ds = ch
         elif ch.isascii() and ch.isalpha():
-            ds = str(ord(ch.upper()) - 64) if c.get("letras", "posicion") == "posicion" else str(ord(ch))
+            letras = c.get("letras", "posicion")
+            ds = str(ord(ch.upper()) - (64 if letras == "posicion" else 55)) if letras in ("posicion", "iban") else str(ord(ch))
         else:
             continue  # ';', '-', espacios, letras no ascii: no cuentan (44-47, 264-265)
         for d in ds:
@@ -98,7 +100,8 @@ class Banco:
         self.cuentas = {}       # id → saldo
         self.titular = {}       # id → nombre del alta (el límite no aplica entre cuentas del mismo nombre)
         self.fallas = {}        # id → transferencias seguidas rechazadas (las que suman al bloqueo)
-        self.ops = {}           # id → {"tipo", "monto", "cuentas", "anulada"}
+        self.ops = {}           # id → {"tipo", "monto", "cuentas", "anulada", "comision"}
+        self.salidas = {}       # id → transferencias exitosas a otros titulares (solo si el límite acumulado se enciende)
         self.detenido = False
 
     # ---- pieza 4: transiciones de estado (modelo.json "estado") ----
@@ -123,9 +126,9 @@ class Banco:
             raise error("E401")
         return i
 
-    def nueva_op(self, tipo, monto, cuentas):
+    def nueva_op(self, tipo, monto, cuentas, comision=0):
         oid = M["ids"]["operacion"].format(len(self.ops) + 1)
-        self.ops[oid] = {"tipo": tipo, "monto": monto, "cuentas": cuentas, "anulada": False}
+        self.ops[oid] = {"tipo": tipo, "monto": monto, "cuentas": cuentas, "anulada": False, "comision": comision}
         return {"status": "recieved", "operacionId": oid}  # sic: "recieved" (ejemplo 6)
 
     def monto(self, texto):
@@ -223,19 +226,34 @@ class Banco:
                 self._bloqueo_suma(o, "E506")
                 raise error("E506")
 
+        def paso_acumulado():                  # apagado hoy: solo corre si está en orden.transfer (sol-06 #1)
+            acu = M["estado"]["limite"].get("acumulado", {})
+            if acu.get("activo") and self._con_limite(o, d) and self.salidas.get(o, 0) + x["n"] > acu["monto"]:
+                self._bloqueo_suma(o, acu["codigo"])
+                raise error(acu["codigo"])
+
         def paso_saldo():
-            if self.cuentas[o] < x["n"]:
+            if self.cuentas[o] < x["n"] + comision():
                 self._bloqueo_suma(o, "E507")
                 raise error("E507")
 
+        def comision():                         # 0 hoy (sol-06 #4)
+            com = M["estado"].get("comision", {})
+            if not com.get("monto") or (com.get("solo_titulares_distintos", True) and not self._con_limite(o, d)):
+                return 0
+            return com["monto"]
+
         pasos = {"monto": paso_monto, "mismas": paso_mismas, "existencia": paso_existencia,
-                 "bloqueo": paso_bloqueo, "limite": paso_limite, "saldo": paso_saldo}
+                 "bloqueo": paso_bloqueo, "limite": paso_limite, "acumulado": paso_acumulado, "saldo": paso_saldo}
         for paso in M["orden"]["transfer"]:    # hoy (TR-07): monto → mismas → existencia → bloqueo → límite → saldo
             pasos[paso]()
         self._bloqueo_reinicia(o, "transfer_exitosa")
-        self.cuentas[o] -= x["n"]
+        com = comision()
+        self.cuentas[o] -= x["n"] + com
         self.cuentas[d] += x["n"]
-        return Respuesta(200, self.nueva_op("transfer", x["n"], [o, d]))
+        if self._con_limite(o, d):
+            self.salidas[o] = self.salidas.get(o, 0) + x["n"]
+        return Respuesta(200, self.nueva_op("transfer", x["n"], [o, d], com))
 
     def cmd_anula(self, oid):
         op = self.ops.get(normalizar("ids", oid))
@@ -243,12 +261,16 @@ class Banco:
             raise error("E402")
         if op["anulada"]:
             return Respuesta(200, {"ok": False, "motivo": "ya anulada"})
-        if op["tipo"] == "deposito":            # puede dejar el saldo negativo (116-117)
-            self.cuentas[op["cuentas"][0]] -= op["monto"]
-        else:                                    # el destino puede quedar negativo (228-230)
+        an = M["estado"]["anula"]
+        if op["tipo"] == "deposito":
+            efecto = {op["cuentas"][0]: -op["monto"]}
+        else:
             o, d = op["cuentas"]
-            self.cuentas[o] += op["monto"]
-            self.cuentas[d] -= op["monto"]
+            efecto = {o: op["monto"] + op.get("comision", 0), d: -op["monto"]}
+        if not an.get("permite_saldo_negativo", True) and any(self.cuentas[k] + v < 0 for k, v in efecto.items()):
+            raise error(an["codigo_si_negativo"])   # apagado hoy: anular puede dejar negativos (116-117, 228-230)
+        for k, v in efecto.items():
+            self.cuentas[k] += v
         op["anulada"] = True
         return Respuesta(200, {"ok": True, "anulada": normalizar("ids", oid)})
 

@@ -88,5 +88,49 @@ class Piezas(unittest.TestCase):
         self.assertEqual(r[4][1]["error"], "E510")            # bloquea con dos fallas
 
 
+class Preparados(Piezas):
+    """los cinco cambios de sol-06, preparados antes del incidente: encendidos solo con datos."""
+
+    def test_limite_acumulado(self):
+        def cambio(mo):
+            mo["estado"]["limite"]["acumulado"]["activo"] = True
+            o = mo["orden"]["transfer"]; o.insert(o.index("saldo"), "acumulado")
+        r = self.secuencia(cambio, [c("ALTA;Lucia"), c("ALTA;Mateo"), c("DEPOSITO;AC-0001;200000"),
+                                    c("TRANSFER;AC-0001;AC-0002;60000"), c("TRANSFER;AC-0001;AC-0002;60000"),
+                                    c("CONSULTA;AC-0001")])
+        self.assertEqual(r[3][0], 200)
+        self.assertEqual(r[4][1]["error"], "E506")            # la segunda pasaría los 100.000 acumulados
+        self.assertEqual(r[5][1]["saldo"], 140000)
+
+    def test_anula_sin_negativos(self):
+        def cambio(mo):
+            mo["estado"]["anula"]["permite_saldo_negativo"] = False
+            mo["errores"]["E509"] = [422, "saldo negativo"]
+        r = self.secuencia(cambio, [c("ALTA;Lucia"), c("ALTA;Mateo"), c("DEPOSITO;AC-0001;100"),
+                                    c("TRANSFER;AC-0001;AC-0002;100"), c("ANULA;OP-0001"), c("CONSULTA;AC-0001")])
+        self.assertEqual(r[4][1]["error"], "E509")
+        self.assertEqual(r[5][1]["saldo"], 0)                 # no se anuló ni se movió nada
+
+    def test_deposito_no_desbloquea(self):
+        def cambio(mo): mo["estado"]["bloqueo"]["reinician"] = ["transfer_exitosa"]
+        r = self.secuencia(cambio, [c("ALTA;Lucia"), c("ALTA;Mateo")] + [c("TRANSFER;AC-0001;AC-0002;1")] * 3 +
+                           [c("DEPOSITO;AC-0001;1"), c("TRANSFER;AC-0001;AC-0002;1")])
+        self.assertEqual(r[6][1]["error"], "E510")
+
+    def test_comision(self):
+        def cambio(mo): mo["estado"]["comision"]["monto"] = 1
+        r = self.secuencia(cambio, [c("ALTA;Lucia"), c("ALTA;Mateo"), c("DEPOSITO;AC-0001;101"),
+                                    c("TRANSFER;AC-0001;AC-0002;100"), c("CONSULTA;AC-0001"), c("CONSULTA;AC-0002"),
+                                    c("ANULA;OP-0002"), c("CONSULTA;AC-0001")])
+        self.assertEqual((r[4][1]["saldo"], r[5][1]["saldo"]), (0, 100))
+        self.assertEqual(r[7][1]["saldo"], 101)               # anular devuelve monto y comisión
+
+    def test_letras_iban(self):
+        def cambio(mo): mo["control"]["letras"] = "iban"
+        r = self.secuencia(cambio, ["ALTA;Lucia;82", "ALTA;Lucia;42"])
+        self.assertEqual(r[0][1]["error"], "E202")            # el control de la mañana ya no vale
+        self.assertEqual(r[1][0], 201)                        # el de la tabla nueva sí (sol-06 calculó 42)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
