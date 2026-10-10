@@ -126,7 +126,7 @@
       "saldo insuficiente"
     ],
     "E510": [
-      409,
+      423,
       "cuenta bloqueada"
     ],
     "E520": [
@@ -188,7 +188,7 @@
   },
   "estado": {
     "limite": {
-      "monto": 100000,
+      "monto": 50000,
       "exento_mismo_titular": true,
       "acumulado": {
         "activo": false,
@@ -206,7 +206,8 @@
       "reinician": [
         "deposito",
         "transfer_exitosa"
-      ]
+      ],
+      "informa_intentos": true
     },
     "halt": {
       "confirmacion": "1"
@@ -225,5 +226,7 @@
       "solo_titulares_distintos": true,
       "_": "0 hoy. si aparece una comisión por transferencia, el origen paga monto + comisión; el destino recibe el monto; anular devuelve los dos (sol-06 #4)"
     }
-  }
+  },
+  "saldo_formato": "decimal2",
+  "_version": "v2 (incidente FR-0153, 15:5x bog): límite 50.000 (5184), E510 con 423 e intentos (5161-5176), saldo en texto con dos decimales (4743, 5153). la mañana está en modelo-manana.json"
 }

@@ -14,7 +14,7 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v14"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v15"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -59,6 +59,15 @@ def error(codigo, **extra):
     # un código nuevo encendido antes de copiar su texto no tumba el proceso: 422 y el código como texto (provisorio)
     status, mensaje = M["errores"].get(codigo, [422, codigo])
     return Respuesta(status, {"error": codigo, "mensaje": mensaje, **extra})
+
+
+def formato_saldo(centavos):
+    """v1: el entero tal cual. v2: texto con dos decimales, en unidades (250000 → "2500.00", -80 → "-0.80";
+    4743, 4975, 5153). aritmética entera: sin redondeos de coma flotante en montos de 10 cifras."""
+    if M.get("saldo_formato", "entero") == "entero":
+        return centavos
+    signo = "-" if centavos < 0 else ""
+    return f"{signo}{abs(centavos) // 100}.{abs(centavos) % 100:02d}"
 
 
 # ---- pieza 1: normalización ----
@@ -128,6 +137,7 @@ class Banco:
         self.fallas = {}        # id → transferencias seguidas rechazadas (las que suman al bloqueo)
         self.ops = {}           # id → {"tipo", "monto", "cuentas", "anulada", "comision"}
         self.salidas = {}       # id → transferencias exitosas a otros titulares (solo si el límite acumulado se enciende)
+        self.intentos = {}      # id → intentos contra la cuenta bloqueada (v2: el E510 los informa; 5161-5176)
         self.detenido = False
 
     # ---- pieza 4: transiciones de estado (modelo.json "estado") ----
@@ -138,6 +148,7 @@ class Banco:
     def _bloqueo_reinicia(self, cid, motivo):
         if motivo in M["estado"]["bloqueo"]["reinician"]:
             self.fallas[cid] = 0
+            self.intentos[cid] = 0              # desbloqueada, los intentos vuelven a empezar (5171-5176)
 
     def _bloqueada(self, cid):
         return self.fallas[cid] >= M["estado"]["bloqueo"]["tras_fallas"]
@@ -218,7 +229,7 @@ class Banco:
 
     def cmd_consulta(self, cid):
         cid = normalizar("ids", cid)
-        return Respuesta(200, {"cuenta_id": self.cuenta(cid), "saldo": self.cuentas[cid]})
+        return Respuesta(200, {"cuenta_id": self.cuenta(cid), "saldo": formato_saldo(self.cuentas[cid])})
 
     def cmd_deposito(self, cid, monto):
         x = {"cid": normalizar("ids", cid), "texto": monto}
@@ -245,6 +256,9 @@ class Banco:
 
         def paso_bloqueo():
             if self._bloqueada(o):
+                if M["estado"]["bloqueo"].get("informa_intentos"):   # v2: 423 y cuántas veces se intentó (5161-5165)
+                    self.intentos[o] = self.intentos.get(o, 0) + 1
+                    raise error("E510", intentos=self.intentos[o])
                 raise error("E510")
 
         def paso_limite():

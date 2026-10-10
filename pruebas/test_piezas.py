@@ -20,8 +20,9 @@ def c(cuerpo):
 
 
 class Gemelo:
-    def __init__(self, cambio=None):
-        modelo = json.load(open(os.path.join(RAIZ, "gemelo", "modelo.json"), encoding="utf-8"))
+    def __init__(self, cambio=None, base="modelo-manana.json"):
+        # las piezas se prueban sobre el modelo de la mañana (v1), congelado en el incidente; la tarde (v2) tiene su clase
+        modelo = json.load(open(os.path.join(RAIZ, "gemelo", base), encoding="utf-8"))
         if cambio:
             cambio(modelo)
         self.archivo = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8")
@@ -50,8 +51,10 @@ class Gemelo:
 
 
 class Piezas(unittest.TestCase):
+    BASE = "modelo-manana.json"
+
     def secuencia(self, cambio, pasos):
-        g = Gemelo(cambio)
+        g = Gemelo(cambio, self.BASE)
         try:
             g.pedir("POST", "/__reset")
             return [g.m(p) for p in pasos]
@@ -130,6 +133,51 @@ class Preparados(Piezas):
         r = self.secuencia(cambio, ["ALTA;Lucia;82", "ALTA;Lucia;42"])
         self.assertEqual(r[0][1]["error"], "E202")            # el control de la mañana ya no vale
         self.assertEqual(r[1][0], 201)                        # el de la tabla nueva sí (sol-06 calculó 42)
+
+
+class Tarde(Piezas):
+    """la versión 2 (incidente FR-0153, 15:5x bog), con el modelo vigente: los tres cambios medidos."""
+    BASE = "modelo.json"
+
+    def test_hoy_sin_cambios(self):
+        pass
+
+    def test_normalizacion(self):
+        def cambio(mo): mo["normalizacion"]["ids"] = "mayusculas"
+        r = self.secuencia(cambio, [c("ALTA;Lucia"), c("CONSULTA;ac-0001")])
+        self.assertEqual(r[1], (200, {"cuenta_id": "AC-0001", "saldo": "0.00"}))
+
+    def test_limite_50000(self):                              # 50.000 pasa, 50.001 no (5147, 5184)
+        r = self.secuencia(None, [c("ALTA;Ana"), c("ALTA;Beto"), c("ALTA;Ana"), c("DEPOSITO;AC-0001;2000000"),
+                                  c("TRANSFER;AC-0001;AC-0002;50000"), c("TRANSFER;AC-0001;AC-0002;50001"),
+                                  c("TRANSFER;AC-0001;AC-0003;150000")])
+        self.assertEqual(r[4][0], 200)
+        self.assertEqual(r[5][1]["error"], "E506")
+        self.assertEqual(r[6][0], 200)                        # el mismo titular sigue exento (5148, 5149)
+
+    def test_e510_intentos(self):                             # 423 e intentos por cuenta (5158-5176)
+        r = self.secuencia(None, [c("ALTA;Ana"), c("ALTA;Beto"), c("ALTA;Caro")] + [c("TRANSFER;AC-0001;AC-0002;5")] * 5 +
+                           [c("TRANSFER;AC-0001;AC-0009;5"), c("TRANSFER;AC-0001;AC-0002;5")] +
+                           [c("TRANSFER;AC-0003;AC-0002;5")] * 4 +
+                           [c("DEPOSITO;AC-0001;10"), c("TRANSFER;AC-0001;AC-0002;5")] + [c("TRANSFER;AC-0001;AC-0002;100")] * 3 +
+                           [c("TRANSFER;AC-0001;AC-0002;1")])
+        self.assertEqual(r[6], (423, {"error": "E510", "mensaje": "cuenta bloqueada", "intentos": 1}))
+        self.assertEqual(r[7][1]["intentos"], 2)
+        self.assertEqual(r[8][1]["error"], "E401")            # un E401 no suma
+        self.assertEqual(r[9][1]["intentos"], 3)
+        self.assertEqual(r[13][1]["intentos"], 1)             # otra cuenta empieza en 1
+        self.assertEqual(r[15][0], 200)                       # el depósito desbloquea
+        self.assertEqual(r[19][1]["intentos"], 1)             # bloqueada de nuevo: vuelve a 1
+
+    def test_saldo_texto(self):                               # 4743, 4975, 5153
+        r = self.secuencia(None, [c("ALTA;Ana"), c("ALTA;Beto"), c("CONSULTA;AC-0001"), c("DEPOSITO;AC-0001;5"),
+                                  c("CONSULTA;AC-0001"), c("DEPOSITO;AC-0002;9999999999"), c("CONSULTA;AC-0002"),
+                                  c("DEPOSITO;AC-0001;100"), c("TRANSFER;AC-0001;AC-0002;100"), c("ANULA;OP-0004"),
+                                  c("CONSULTA;AC-0002")])
+        self.assertEqual(r[2][1]["saldo"], "0.00")
+        self.assertEqual(r[4][1]["saldo"], "0.05")
+        self.assertEqual(r[6][1]["saldo"], "99999999.99")
+        self.assertEqual(r[10][1]["saldo"], "99999999.99")
 
 
 if __name__ == "__main__":
