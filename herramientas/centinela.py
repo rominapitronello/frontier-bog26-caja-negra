@@ -54,6 +54,8 @@ PASOS = [
     {"metodo": "POST", "ruta": "/msg", "cuerpo": relleno(c("PING"), 8193), "headers": J, "hipotesis": "centinela EN-12"},
     {"m": c("ANULA;OP-0001"), "hipotesis": "centinela AN-02"},
     {"m": c("CONSULTA;AC-0001"), "hipotesis": "centinela AN-02 (saldo tras anular)"},
+    {"m": c("TOTAL"), "hipotesis": "centinela DC-02 (sugerencia NOTAS)"},
+    {"m": c("NOTAS"), "hipotesis": "centinela NO-01"},
     {"m": c("HALT;SI"), "hipotesis": "centinela HA-01"},
     {"m": c("HALT;1"), "hipotesis": "centinela HA-02"},
     {"m": c("PING"), "hipotesis": "centinela HA-03"},
