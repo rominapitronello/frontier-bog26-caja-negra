@@ -48,6 +48,10 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 
 **con romina:** reporte en el orden de `AGENTS.md` § 4; cada entrega contra `RUBRICA.md`.
 
+## entrega de Sol · sol-04
+
+- **Sol, 10 oct:** `evals/sol-04.jsonl` y `evals/sol-04.md`, rama `sol/retenidas-04`: **30 secuencias (20 largas, 10 cortas), 189 pedidos; 219 con los 30 resets iniciales**, un solo HALT confirmado. Ambigüedades primarias y consecuencias separadas. Antes de publicar se revisó la spec de `efdb61e` y se reemplazaron preguntas ya resueltas por EN-15/TR-11. Verificados fuera de línea controles con otra fórmula y 12 referencias del material, saldos, ids, presupuesto y ausencia de copias de sol-03. **0 llamadas al original/gemelo y 0 validaciones del portal.** La misma ventana hizo sol-05 antes: el límite de cegamiento está declarado en el informe. Último tag según este estado: verde-01, solo local. **Siguiente:** quien lidera integra con merge commit y contrasta la tanda con su oráculo; preservar `cuerpo`, headers y método HEAD, y añadir al informe los resultados sin sustituir las predicciones. Los 17 fallos siguen sin atribuir: 83/100 no identifica su causa.
+
 ## decisiones (con hora y quién)
 
 - 10 oct 11:3x bog · romina (agents.md § 11): **la búsqueda de comandos ocultos sigue**, con una lista de nombres que arma sol (sin token, sin tocar el original) y que quien lidera corre con `lote.py`. si el clasificador corta de nuevo, se anota y se le avisa. **sobre `NOTAS`: el token no se manda a ningún lado**; la nota va en spec § 7 como riesgo (RI-12) y el gemelo la repite tal cual. `DISENO.md` ya está entregado: no se toca.
