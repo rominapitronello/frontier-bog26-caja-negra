@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img">
+<title>Frontier Bogotá 26 — PasaElFiltro</title>
+<desc>Lámina estática 1920x1080. Fuente indicada en el pie.</desc>
+<rect width="1920" height="1080" fill="#F6F3ED"/>
+<defs><style>text{font-family:'Space Grotesk','Inter',Arial,sans-serif} .mono{font-family:'Space Mono',monospace} .title{font-size:60px;fill:#3A3A4A;font-weight:500} .foot{font-size:23px;fill:#3A3A4A;opacity:.88}</style></defs>
+<text x="108" y="365" font-size="145" fill="#D94062" font-weight="700" >frontier · bog / 26</text>
+<text x="108" y="524" font-size="135" fill="#3A3A4A" font-weight="700" >reto 2 · la caja negra</text>
+<circle cx="1745" cy="499" r="15" fill="#E85D2E"/>
+<text x="110" y="635" font-size="49" fill="#3A3A4A" font-weight="400" >clonar un servicio indocumentado, pedido a pedido</text>
+<text x="110" y="742" font-size="28" fill="#3A3A4A" font-weight="400" class="mono">2.748 pedidos · 83/100 línea base · preregistro antes del incidente</text>
+<text x="94" y="1015" class="mono foot">fuentes · ESTADO.md: log 2712–2748, validación 11:06 · PREDICCION_INCIDENTE.md: 192e1dd</text>
+</svg>
