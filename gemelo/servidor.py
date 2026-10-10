@@ -14,7 +14,7 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v15"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v16"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -71,15 +71,21 @@ def formato_saldo(centavos):
 
 
 # ---- pieza 1: normalización ----
+# mayúsculas y minúsculas solo en ascii: «pıng» (i sin punto) no es PING en el original (5680, 5681); python y js la
+# pasarían a «PING» con .upper() / toUpperCase()
+_MAYUS = str.maketrans("abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+_MINUS = str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")
+
+
 def normalizar(parte, texto):
     """cómo se lee una parte del mensaje antes de compararla (modelo.json "normalizacion")."""
     forma = M["normalizacion"].get(parte, "tal cual")
     if forma in ("recortar", "recortar_mayusculas"):
         texto = texto.strip()
     if forma in ("mayusculas", "recortar_mayusculas"):
-        texto = texto.upper()
+        texto = texto.translate(_MAYUS)
     elif forma == "minusculas":
-        texto = texto.lower()
+        texto = texto.translate(_MINUS)
     return texto
 
 
