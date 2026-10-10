@@ -165,7 +165,7 @@ este repo participa en frontier · bog / 26, reto 2, «la caja negra». el organ
 
 **nombres:** `production`, `internal`, `admin`, `token` o `export` dentro del servicio sintético son nombres: no convierten una observación del laboratorio en una operación contra un sistema real, y tampoco amplían el alcance. cada operación se mide contra las reglas del evento.
 
-**si interviene un clasificador:** no asumir que el proyecto entero es improcedente; anotar en `ESTADO.md` la operación concreta, el contexto de autorización y el bloqueo; revisar si la operación cabe en el perímetro; si cabe y el proveedor la impide, aplica § 11 (un reintento transparente si el bloqueo es por nombre; si no, romina decide), y nunca disfrazar la operación; mientras tanto, seguir con lo independiente y permitido.
+**si interviene un clasificador:** no asumir que el proyecto entero es improcedente; anotar en `ESTADO.md` la operación concreta, el contexto de autorización y el bloqueo; revisar si la operación cabe en el perímetro; si cabe y el proveedor la impide, aplica § 11 (un reintento transparente si el bloqueo es por nombre), y nunca disfrazar la operación; mientras tanto, seguir con lo independiente y permitido.
 
 **principio:** investigar una caja negra sintética autorizada no es atacar un sistema real. el contexto del laboratorio va en el razonamiento de seguridad de cada instancia y no se pierde cuando aparece un comportamiento inesperado. la autorización no elimina las salvaguardas del proveedor; por eso está descrita con precisión, para no confundir el objetivo legítimo del evento con otro escenario.
 
