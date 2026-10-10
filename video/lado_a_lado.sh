@@ -9,10 +9,16 @@ hm=$(TZ=America/Bogota date +%H%M)
 if [ $((10#$hm)) -ge 1950 ] || [ $((10#$hm)) -lt 600 ]; then
   echo "lado_a_lado: después de las 19:50 bog no se corre (resetea el gemelo desplegado y el set final puede estar corriendo)"; exit 1
 fi
-ORIG="https://caja-negra-production-c64f.up.railway.app"
-GEM="https://frontier-bog26-caja-negra-production.up.railway.app"
-read -rsp "token personal de la caja (el de MOSTRAR): " TO; echo
-read -rsp "token del equipo (el de COPIAR): " TG; echo
+# los tokens salen del entorno (ORIGINAL_TOKEN, GEMELO_TOKEN) y si faltan se piden sin mostrarlos.
+# GEMELO_URL apunta a otra copia del gemelo: con una copia local del mismo commit no se toca el desplegado.
+#   GEMELO_URL=http://127.0.0.1:8090 GEMELO_TOKEN=local bash video/lado_a_lado.sh
+ORIG="${ORIGINAL_URL:-https://caja-negra-production-c64f.up.railway.app}"
+GEM="${GEMELO_URL:-https://frontier-bog26-caja-negra-production.up.railway.app}"
+TO="${ORIGINAL_TOKEN:-}"; TG="${GEMELO_TOKEN:-}"
+[ -n "$TO" ] || { read -rsp "token personal de la caja (el de MOSTRAR): " TO; echo; }
+[ -n "$TG" ] || { read -rsp "token del equipo (el de COPIAR): " TG; echo; }
+VER=$(curl -s -m 5 -D - -o /dev/null "$GEM/health" -H "Authorization: Bearer $TG" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-gemelo-version"{print $2}')
+printf '\033[1moriginal:\033[0m %s\n\033[1mgemelo:\033[0m   %s · %s · commit %s\n' "$ORIG" "$GEM" "${VER:-?}" "$(git rev-parse --short HEAD 2>/dev/null || echo '?')"
 norm() { if command -v python3 >/dev/null; then python3 -c 'import sys,json
 t=sys.stdin.read()
 try: print(json.dumps(json.loads(t),ensure_ascii=False,sort_keys=True))
@@ -20,8 +26,8 @@ except Exception: print(t)'; else cat; fi; }
 paso() {
   local m="$1"
   local a b sa sb
-  a=$(curl -s -w '\n%{http_code}' -X POST "$ORIG/msg" -H "Authorization: Bearer $TO" -H 'Content-Type: application/json' -d "{\"m\": \"$m\"}")
-  b=$(curl -s -w '\n%{http_code}' -X POST "$GEM/msg"  -H "Authorization: Bearer $TG" -H 'Content-Type: application/json' -d "{\"m\": \"$m\"}")
+  a=$(curl -s -m 5 -w '\n%{http_code}' -X POST "$ORIG/msg" -H "Authorization: Bearer $TO" -H 'Content-Type: application/json' -d "{\"m\": \"$m\"}")
+  b=$(curl -s -m 5 -w '\n%{http_code}' -X POST "$GEM/msg"  -H "Authorization: Bearer $TG" -H 'Content-Type: application/json' -d "{\"m\": \"$m\"}")
   sa=${a##*$'\n'}; sb=${b##*$'\n'}
   a=$(printf '%s' "${a%$'\n'*}" | norm); b=$(printf '%s' "${b%$'\n'*}" | norm)
   printf '\n\033[1m> %s\033[0m\n' "$m"
@@ -30,8 +36,8 @@ paso() {
   if [ "$sa" = "$sb" ] && [ "$a" = "$b" ]; then printf '  \033[32m✓ iguales\033[0m\n'; else printf '  \033[31m✗ distintos\033[0m\n'; fi
   sleep 1.2
 }
-curl -s -o /dev/null -X POST "$ORIG/__reset" -H "Authorization: Bearer $TO"
-curl -s -o /dev/null -X POST "$GEM/__reset"  -H "Authorization: Bearer $TG"
+curl -s -m 5 -o /dev/null -X POST "$ORIG/__reset" -H "Authorization: Bearer $TO"
+curl -s -m 5 -o /dev/null -X POST "$GEM/__reset"  -H "Authorization: Bearer $TG"
 printf '\033[2m(reset en los dos)\033[0m\n'
 paso "PING;64"
 paso "ALTA;Lucia;83"
