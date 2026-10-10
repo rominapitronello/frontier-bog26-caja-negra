@@ -13,6 +13,8 @@
 | presupuesto usd | evento: 45 gastables + 5 de reserva. **además, ~200 propios de romina** para tokens fuera del presupuesto del evento (permitido). el gemelo no gasta tokens en el set oculto |
 | entregables provisionales | `DISENO.md` (listo para las 12:00). **gemelo v3** (`gemelo/servidor.py` + `gemelo/modelo.json`): las 29 secuencias del log en local (`bash smoke.sh`). **spec v2** (`spec.md`). README para el jurado. sin desplegar todavía (railway: botón de romina) |
 | último tag verde | `verde-01` en `1e41a1b`, **solo local**: el proxy de la sesión rechaza el push de tags (403). romina decide si lo crea a mano en github |
+| validaciones del set | 3 en el día (romina). usadas: 0. plan: base ahora · tras el incidente ~17:00 · final ~19:15 |
+| gemelo desplegado | `https://frontier-bog26-caja-negra-production.up.railway.app` · railway redespliega solo si cambian `gemelo/`, `Dockerfile` o `railway.json` (`watchPatterns`). **token por confirmar**: con `ORIGINAL_TOKEN` de esta sesión responde 401 |
 
 ## relevo · para la sesión que lidera la ejecución (leer primero)
 
@@ -47,6 +49,8 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 **con romina:** reporte en el orden de `AGENTS.md` § 4; cada entrega contra `RUBRICA.md`.
 
 ## decisiones (con hora y quién)
+
+- 10 oct 11:0x bog · romina: **solo hay 3 validaciones del set en el día.** plan: **1 ahora** (línea base), **2 tras el incidente** (~17:00 bog), **3 la final** (~19:15 bog). reglas de quien lidera para cada una: antes de apretar, `bash smoke.sh` en verde en `main`, el header `X-Gemelo-Version` de railway igual a la versión de `main`, y `/health` con el token del equipo en 200; durante la corrida, **nadie empuja a `gemelo/`, `Dockerfile` ni `railway.json`** (railway redespliega con esos cambios y un reinicio rompe la corrida); después, comparar `X-Gemelo-Arranque` con el de antes (si cambió, hubo reinicio) y anotar aquí el número que da el portal.
 
 - 10 oct 10:4x bog · romina: **el tráfico del set oculto no se usa ni se anota, ni siquiera aparte.** el oráculo interno es **sol-03**: secuencias escritas por sol solo desde `spec.md`, sin ver el código ni el log, que quien lidera corre contra el original y el gemelo (`encargos/sol-03-oraculo.md`).
 - 10 oct 10:4x bog · romina: **el gemelo se despliega en railway** (una réplica, sin dormir). `Dockerfile` y `railway.json` en el repo; romina crea el servicio y carga `GEMELO_TOKEN` como variable secreta.
@@ -98,4 +102,5 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 - 10 oct 10:5x bog · claude (lidera): **spec v1 → v2** y gemelo v3. el **centinela** (`herramientas/centinela.py`, monitor cada 15 min, toma el turno del token) vio en su primera vuelta que el gemelo decía E507 donde el original dijo E506 (737). la repetición exacta de `cmd-1` (776–806) dio 0 diferencias: no cambió el original, cambiaba el contexto. salió: **el límite no aplica entre cuentas del mismo titular** (por nombre, exacto) y va antes que el saldo; **tres transferencias rechazadas seguidas bloquean la cuenta** (`E510`), y un depósito la desbloquea. la v1 de la spec tenía ese orden al revés: corregido en la v2 (CA-03 lo cuenta). encargo `sol-03` (el oráculo) escrito; romina tiene el texto para pegárselo a sol. presupuesto: ~960 de 8.000.
 - siguiente: buscar más reglas con estado que los ejemplos no muestran (los huecos de numeración E501–E505, E508, E509 y E403 sugieren que puede haber más; inferencia); integrar sol-03 cuando llegue; desplegar en railway cuando romina pase la url; centinela más seguido entre 15:00 y 16:30.
 - 10 oct 11:0x bog · claude (lidera): **gemelo desplegado en railway** (romina): `https://frontier-bog26-caja-negra-production.up.railway.app`. responde nuestros errores (404 en `/`, 401 sin token), pero **con el token del equipo de esta sesión (`ORIGINAL_TOKEN`) responde 401**: el valor de `GEMELO_TOKEN` no coincide. preguntado a romina si es el mismo token y si railway redespliega con cada push. el gemelo ahora recorta espacios del token y manda `X-Gemelo-Version` (v4) para confirmar qué versión corre. caza de reglas ocultas (961–1002): nada nuevo.
+- 10 oct 11:0x bog · claude (lidera): **sol-03 integrado y corrido** (PR #4, log 1003–1183): las 141 predicciones de sol, escritas solo desde la spec, calzan con el original en 40/40 secuencias; el gemelo calza en 40/40. railway corría la v4 sola: redespliega con cada push a `main`, así que ahora solo con cambios en `gemelo/` (gemelo v5, con `X-Gemelo-Arranque`).
 
