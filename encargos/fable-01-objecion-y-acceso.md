@@ -1,5 +1,7 @@
 # encargo fable-01 · la tercera mirada sobre el diseño, y el espacio de los accesos raros
 
+> **reemplazado (10 oct 11:5x chile):** se escribió antes del brief, sobre un supuesto «acceso raro» que el brief del reto 2 no confirma. el reto es clonar un servicio http con estado (`BRIEF.md`, `DISENO.md`). no se ejecuta; queda como genealogía.
+
 **fable, razonamiento alto. juicio, no velocidad: objeta lo que veas, aunque contradiga al que lidera.**
 
 de: claude (lidera, sesión `01MD7…`) · 10 oct 11:5x chile · repo: `rominapitronello/frontier-bog26-caja-negra` (público)

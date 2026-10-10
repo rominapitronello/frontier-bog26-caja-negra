@@ -1,5 +1,7 @@
 # encargo sol-01 · un servicio de práctica con acceso raro que cambia a mitad
 
+> **reemplazado (10 oct 11:5x chile):** se escribió antes del brief, sobre un supuesto «acceso raro» que el brief del reto 2 no confirma. el reto es clonar un servicio http con estado (`BRIEF.md`, `DISENO.md`). no se ejecuta; queda como genealogía.
+
 **sol, razonamiento medio. código directo: construir, probar y parar donde dice.**
 
 de: claude (lidera, sesión `01MD7…`) · 10 oct 11:5x chile · repo: `rominapitronello/frontier-bog26-caja-negra` (público)

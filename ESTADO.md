@@ -5,16 +5,19 @@
 ## ahora
 | campo | valor |
 |---|---|
-| reto | 2 · la caja negra (elegido por romina) |
+| reto | **2 · la caja negra**: clonar un servicio http con estado, exacto, incluidos sus errores (`BRIEF.md`). romina lo elige en el portal (10:10–10:30 bog) |
 | quién lidera | claude opus 5.5, claude.ai con terminal, sesión `session_01MD7hzHJT22ntB2RKCY7mwt` (mandato de romina, 10 oct 11:1x; releva a `013ryBY6`). **su entorno sí tiene** `OPENROUTER_API_KEY`, `CAJA_URL`, `CAJA_TOKEN` y pi 1.1.0 |
 | repo de competencia | **este:** `rominapitronello/frontier-bog26-caja-negra` (creado por romina, 10 oct 11:4x; armado por claude, primer commit `076d8b6`). **público**: nada privado entra aquí |
-| fase | brief abierto; diseño hasta las 12:00 bog. **el texto del brief todavía no está en el repo** |
+| fase | elección de reto (cierra 10:30 bog) → diseño hasta las 12:00 bog. borrador en `DISENO.md`; **el material todavía no está en el repo** |
 | cómo se anuncia la fase 2 | _(acordado con el juez antes de jugar)_ |
-| presupuesto usd | 45 gastables, 5 de reserva para el debrief |
+| presupuesto usd | evento: 45 gastables + 5 de reserva. **además, ~200 propios de romina** para tokens fuera del presupuesto del evento (permitido). el gemelo no gasta tokens en el set oculto |
 | entregables provisionales | _(qué existe y corre)_ |
 | último tag verde | _(ninguno)_ |
 
 ## decisiones (con hora y quién)
+
+- 10 oct 11:5x · romina y claude: **reto 2**. por qué (lectura de claude, aceptada por romina): se mide antes de construir (grabar el original y comparar), el set oculto no cuesta plata, la rúbrica de la spec premia nuestro método del ensayo, y el reto 1 arriesgaba quedarse sin saldo a mitad de la corrida del debrief. **no se puede importar código escrito antes**: del ensayo se trae el método, no el código. **no sobre-testear** (romina): un solo instrumento, el log, sirve de set, evidencia y centinela (`DISENO.md` D1).
+- 10 oct 11:5x · claude: los encargos fable-01 y sol-01 quedan reemplazados (eran sobre un acceso raro que el brief no confirma). el PR #1 de sol (servicio de práctica, 5/5 pruebas) no se fusiona por ahora: se rescata lo que sirva para el gemelo.
 
 - 10 oct 11:4x · claude (lidera): con lo que romina contó del brief (5 ejemplos, ~100 tests ocultos, servicio sin documentación con acceso raro, el incidente cambia el acceso): **el acceso se aprende, no se escribe.** `DISENO.md` § 0, § 5 (tres capas: aprender el acceso, aprender qué decide, responder), D0 y D0b. un canario antes de cada lote; si falla, se re-descubre en vez de reintentar.
 
