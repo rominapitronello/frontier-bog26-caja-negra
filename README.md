@@ -47,7 +47,7 @@ python3 medir.py --casos material/pruebas/ejemplos.jsonl --gemelo http://127.0.0
 
 | cuándo | set oculto del jurado (100 tests) | nota |
 |---|---|---|
-| 10 oct 11:06 bog · validación 1 de 3 | **83/100** | línea base, sin desglose. un redespliegue nuestro pudo caer a mitad de la corrida (`ESTADO.md`) |
+| 10 oct 11:06 bog · validación 1 de 3 (contra v1) | **83/100** | línea base. desglose que la plataforma mostró después: **fáciles 40/40, regulares 33/40, difíciles 10/20** (el set es 40/40/20, no 40/45/15 como dice el material); 10 por status y 7 por cuerpo; 3 en el primer pedido y 14 más adelante. la entrada estaba bien: los 17 son deriva de estado en secuencias. un redespliegue nuestro cayó a mitad de la corrida (`ESTADO.md`) |
 
 nuestras propias mediciones, sin gastar validaciones: el gemelo reproduce los 20 ejemplos y todas las secuencias del log (`bash smoke.sh`), y las 40 secuencias que sol escribió solo desde la spec (`evals/sol-03.jsonl`: 141 de 141).
 
