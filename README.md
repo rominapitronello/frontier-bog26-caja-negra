@@ -4,6 +4,16 @@
 
 lo que sabemos del original está en [`spec.md`](spec.md), con cada comportamiento citando la línea del log que lo prueba ([`experimentos.jsonl`](experimentos.jsonl)). cómo y por qué lo construimos así, en [`DISENO.md`](DISENO.md).
 
+## cómo pensamos
+
+tratamos la caja como una pregunta científica y no como una adivinanza. cinco cosas que se pueden revisar en el repo:
+
+1. **medir antes de afirmar.** cada comportamiento de [`spec.md`](spec.md) cita la línea de [`experimentos.jsonl`](experimentos.jsonl) que lo prueba y dice si es *confirmado*, *probable* o *supuesto*. lo que no tiene línea no se afirma.
+2. **probar la spec con alguien que no la escribió.** otros modelos leyeron solo la spec y predijeron lo que respondería el original sin verlo: sol acertó 141 de 141 y fable 238 de 238 (`evals/`).
+3. **los sesgos de los modelos como instrumento.** pusimos a dos linajes (claude y gpt) a diseñar a ciegas una caja parecida y miramos qué eligió atacar cada uno: uno al programador que corrige, el otro al agente que investiga. con eso apostamos quién pensó la caja real y qué cambiaría en la tarde, y dejamos escritos los límites de la apuesta ([`LINAJES.md`](LINAJES.md)). cuando sol encontró un error en el método del experimento, se escribió y la conclusión se achicó.
+4. **preregistrar.** la predicción sobre el incidente de las 15:30, con su criterio de acierto y de fallo, quedó en un commit fechado dos horas antes ([`PREDICCION_INCIDENTE.md`](PREDICCION_INCIDENTE.md)). el resultado se agrega debajo; lo de arriba no se toca.
+5. **cambiar el plan con evidencia, a la vista.** el diseño entregado no se edita; cada desvío dice qué planeábamos, qué vimos (con su línea del log) y qué cambiamos ([abajo](#en-qué-nos-desviamos-del-diseño-y-por-qué)).
+
 ## correrlo
 
 requisitos: **python 3.9 o más nuevo, nada más** (solo biblioteca estándar; sin llaves, sin red, sin modelos).
