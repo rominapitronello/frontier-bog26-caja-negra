@@ -1,10 +1,14 @@
 """sonda: manda un pedido http exacto al servicio y lo deja en el log, tal cual vino.
 
-una línea del log = un experimento. el número de línea es la cita que usa la spec.
+una línea del log = un experimento. su id es la cita que usa la spec.
 se usa http.client y no una librería de alto nivel para no tocar lo que se observa:
 los headers quedan en el orden y con las mayúsculas en que llegaron.
 
-    python3 herramientas/sonda.py --base URL GET /ruta [--cuerpo '...'] [-H 'Nombre: valor'] [--sin-token]
+    python3 herramientas/sonda.py --seq s1 --hipotesis '...' --m 'PING;64'          # POST /msg
+    python3 herramientas/sonda.py --seq s1 --hipotesis '...' GET /otra [--sin-token] [--cuerpo '...']
+
+escribe experimentos.jsonl con el formato del material (id, seq, x_req, hipotesis, request, status,
+response, conclusion) y, aparte, experimentos_crudo.jsonl con los headers completos.
 
 la url base y el token salen de variables de entorno (ORIGINAL_URL, ORIGINAL_TOKEN) si no se pasan;
 el token nunca se escribe en el log: queda como <token> o <otro-token>.
@@ -44,46 +48,68 @@ def tapar(headers, token):
     return out
 
 def anotar(log, registro):
-    """agrega una línea al log y devuelve su número (1-indexado): la cita."""
+    """agrega una línea al log con el siguiente id y lo devuelve: el id es la cita de la spec."""
     n = 0
     if os.path.exists(log):
-        with open(log, "rb") as f:
-            n = sum(1 for _ in f)
+        with open(log, encoding="utf-8") as f:
+            for l in f:
+                if l.strip():
+                    n = max(n, json.loads(l)["id"])
+    registro = {"id": n + 1, **registro}
     with open(log, "a", encoding="utf-8") as f:
         f.write(json.dumps(registro, ensure_ascii=False) + "\n")
     return n + 1
 
+def como_json(texto):
+    try:
+        return json.loads(texto)
+    except (ValueError, TypeError):
+        return texto
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("metodo"); p.add_argument("ruta")
+    p.add_argument("metodo", nargs="?", default="POST"); p.add_argument("ruta", nargs="?", default="/msg")
+    p.add_argument("--m", help="atajo: manda {\"m\": M} por POST /msg")
     p.add_argument("--base", default=os.environ.get("ORIGINAL_URL"))
     p.add_argument("--cuerpo"); p.add_argument("-H", dest="headers", action="append", default=[])
     p.add_argument("--sin-token", action="store_true", help="no manda Authorization")
-    p.add_argument("--otro-token", help="manda este token en vez del del equipo (queda como <otro-token>)")
-    p.add_argument("--log", default="log.jsonl")
-    p.add_argument("--nota", default="", help="por qué se hace este experimento (hipótesis que separa)")
+    p.add_argument("--otro-token", help="manda este token en vez del tuyo (queda como <otro-token>)")
+    p.add_argument("--log", default="experimentos.jsonl")
+    p.add_argument("--crudo", default="experimentos_crudo.jsonl", help="headers completos, aparte del log del formato")
+    p.add_argument("--seq", required=True, help="la secuencia: todas sus líneas van tras un mismo reset")
+    p.add_argument("--hipotesis", required=True, help="qué separa este pedido")
     a = p.parse_args()
     if not a.base:
         sys.exit("sonda: falta --base u ORIGINAL_URL")
+    headers_propios = bool(a.headers)
+    if a.m is not None:
+        a.cuerpo = json.dumps({"m": a.m}, ensure_ascii=False)
+        if not any(h.lower().startswith("content-type") for h in a.headers):
+            a.headers.append("Content-Type: application/json")
     token = os.environ.get("ORIGINAL_TOKEN", "")
-    hs = [tuple(h.split(":", 1)) for h in a.headers]
-    hs = [(k.strip(), v.strip()) for k, v in hs]
+    hs = [tuple(x.strip() for x in h.split(":", 1)) for h in a.headers]
     if a.otro_token:
         hs.insert(0, ("Authorization", f"Bearer {a.otro_token}"))
     elif not a.sin_token and token:
         hs.insert(0, ("Authorization", f"Bearer {token}"))
     r = pedir(a.base, a.metodo, a.ruta, hs, a.cuerpo)
-    reg = {"t": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "nota": a.nota,
-           "pedido": {"metodo": a.metodo, "ruta": a.ruta,
-                      "headers": [[k, ("Bearer <otro-token>" if a.otro_token and k == "Authorization" else v)]
-                                  for k, v in tapar(hs, token)],
-                      "cuerpo": a.cuerpo},
-           "respuesta": {**r, "headers": tapar(r["headers"], token)}}
-    linea = anotar(a.log, reg)
-    print(f"log:{linea}  {r['status']} {r['reason']}  {r['ms']} ms")
-    for k, v in r["headers"]:
-        print(f"  {k}: {v}")
-    print(r["cuerpo"][:2000])
+    hdr = {k.lower(): v for k, v in r["headers"]}
+    if hdr.get("x-frontier-infra"):
+        print(f"infra ({hdr['x-frontier-infra']}): no es el servicio, no va al log. espera y repite.")
+        sys.exit(4)
+    reg = {"seq": a.seq, "x_req": hdr.get("x-req"), "hipotesis": a.hipotesis,
+           "request": como_json(a.cuerpo), "status": r["status"], "response": como_json(r["cuerpo"]),
+           "conclusion": ""}
+    if (a.metodo, a.ruta) != ("POST", "/msg") or a.sin_token or a.otro_token or headers_propios:
+        reg["metodo"], reg["ruta"] = a.metodo, a.ruta
+        reg["auth"] = "sin token" if a.sin_token else ("otro token" if a.otro_token else "token propio")
+    n = anotar(a.log, reg)
+    with open(a.crudo, "a", encoding="utf-8") as f:
+        f.write(json.dumps({"id": n, "t": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                            "pedido_headers": tapar(hs, token), "status": r["status"], "reason": r["reason"],
+                            "headers": tapar(r["headers"], token), "cuerpo": r["cuerpo"], "ms": r["ms"]},
+                           ensure_ascii=False) + "\n")
+    print(f"id {n}  {r['status']}  x_req={reg['x_req']}  {r['cuerpo'][:500]}")
 
 if __name__ == "__main__":
     main()
