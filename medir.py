@@ -123,7 +123,7 @@ def preparar_url(gemelo):
     return url.scheme, url.hostname, puerto, url.path.rstrip("/")
 
 
-def pedir(configuracion, metodo, ruta, carga=None, token=None):
+def pedir(configuracion, metodo, ruta, carga=None, token=None, extra=None):
     """Un paso HTTP tiene límite total de 5 s, incluidos envío y lectura.
 
     El worker es daemon, por lo que un servidor que gotea bytes indefinidamente
@@ -140,6 +140,8 @@ def pedir(configuracion, metodo, ruta, carga=None, token=None):
             headers["Authorization"] = token[len(AUTH_LITERAL):] if token.startswith(AUTH_LITERAL) else "Bearer " + token
         if carga is not None:
             headers["Content-Type"] = "application/json"
+        for k, v in (extra or []):   # headers propios del caso (por ejemplo Content-Encoding), tal cual
+            headers[k] = v
         try:
             conn.request(metodo, prefijo + ruta, body=carga, headers=headers)
             respuesta = conn.getresponse()
@@ -189,7 +191,7 @@ def _respuesta_caso(configuracion, caso, token):
         carga = None if metodo in ("GET", "HEAD") or caso["request"] is None else json.dumps(
             caso["request"], ensure_ascii=False, allow_nan=False
         ).encode("utf-8")
-    return pedir(configuracion, metodo, caso.get("ruta", "/msg"), carga, _auth_caso(caso, token))
+    return pedir(configuracion, metodo, caso.get("ruta", "/msg"), carga, _auth_caso(caso, token), caso.get("headers"))
 
 
 def _error_primero(caso, campo, recibido, detalle=None):

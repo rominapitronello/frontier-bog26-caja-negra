@@ -26,7 +26,7 @@ def paso(caso):
         cuerpo = None
     else:
         cuerpo = json.dumps(caso["request"], ensure_ascii=False)
-    p = {"metodo": metodo, "ruta": ruta, "cuerpo": cuerpo, "headers": J,
+    p = {"metodo": metodo, "ruta": ruta, "cuerpo": cuerpo, "headers": caso.get("headers", J),
          "hipotesis": f"{caso['seq']} caso {caso['id']} ({', '.join(caso.get('spec', []))}): {caso.get('hipotesis', '')}"}
     if caso.get("auth"):
         p["auth"] = caso["auth"]
