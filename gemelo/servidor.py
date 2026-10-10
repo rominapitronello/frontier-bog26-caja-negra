@@ -11,7 +11,7 @@ solo biblioteca estándar, python 3.9+.
 import json, os, re, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v7"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v8"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = __import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -199,9 +199,27 @@ class Manejador(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(datos)
 
+    def _leer_chunked(self):
+        datos = b""
+        while True:
+            linea = self.rfile.readline(65537)
+            if not linea:
+                break
+            tam = int(linea.split(b";")[0].strip() or b"0", 16)
+            if tam == 0:
+                while self.rfile.readline(65537) not in (b"\r\n", b"\n", b""):
+                    pass
+                break
+            datos += self.rfile.read(tam)
+            self.rfile.readline(65537)
+        return datos
+
     def atender(self):
-        largo = int(self.headers.get("Content-Length") or 0)
-        crudo = self.rfile.read(largo) if largo > 0 else b""
+        if "chunked" in (self.headers.get("Transfer-Encoding") or "").lower():   # el original los lee (2471)
+            crudo = self._leer_chunked()
+        else:
+            largo = int(self.headers.get("Content-Length") or 0)
+            crudo = self.rfile.read(largo) if largo > 0 else b""
         partes = self.requestline.split()           # la ruta cruda: http.server colapsa '//msg' en '/msg' en self.path
         cruda = partes[1] if len(partes) >= 2 else self.path
         ruta = cruda.split("?", 1)[0]              # la query string se ignora (62); '//msg' es otra ruta (1233, 1252)

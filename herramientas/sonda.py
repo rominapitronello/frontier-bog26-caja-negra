@@ -24,7 +24,7 @@ def pedir(base, metodo, ruta, headers=(), cuerpo=None, timeout=15):
     for k, v in headers:
         c.putheader(k, v)
     datos = cuerpo.encode() if isinstance(cuerpo, str) else cuerpo
-    if datos is not None and not any(k.lower() == "content-length" for k, _ in headers):
+    if datos is not None and not any(k.lower() in ("content-length", "transfer-encoding") for k, _ in headers):
         c.putheader("Content-Length", str(len(datos)))
     c.endheaders(datos)
     t0 = time.monotonic()
