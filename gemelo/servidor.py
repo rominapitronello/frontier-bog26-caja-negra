@@ -64,6 +64,8 @@ class Banco:
 
     def __init__(self):
         self.cuentas = {}       # id → saldo
+        self.titular = {}       # id → nombre del alta (el límite no aplica entre cuentas del mismo nombre)
+        self.fallas = {}        # id → transferencias seguidas rechazadas por límite o saldo (3 bloquean)
         self.ops = {}           # id → {"tipo", "monto", "cuentas", "anulada"}
         self.detenido = False
 
@@ -109,6 +111,8 @@ class Banco:
     def cmd_alta(self, nombre):
         cid = M["ids"]["cuenta"].format(len(self.cuentas) + 1)
         self.cuentas[cid] = 0
+        self.titular[cid] = nombre
+        self.fallas[cid] = 0
         return Respuesta(201, {"cuentaId": cid})
 
     def cmd_consulta(self, cid):
@@ -118,6 +122,7 @@ class Banco:
         n = self.monto(monto)   # E303 antes que E401 (218)
         self.cuenta(cid)
         self.cuentas[cid] += n
+        self.fallas[cid] = 0    # un depósito desbloquea (885-886) y reinicia el conteo (926-928)
         return Respuesta(200, self.nueva_op("deposito", n, [cid]))
 
     def cmd_transfer(self, origen, destino, monto):
@@ -125,10 +130,15 @@ class Banco:
         if origen == destino:   # E304 antes que E401 (219)
             raise error("E304")
         self.cuenta(origen); self.cuenta(destino)
-        if self.cuentas[origen] < n:            # E507 antes que E506 (111)
-            raise error("E507")
-        if n > M["limite_transferencia"]:
+        if self.fallas[origen] >= M["bloqueo_tras_fallas"]:   # después de E303/E304/E401 (881-883)
+            raise error("E510")
+        if self.titular[origen] != self.titular[destino] and n > M["limite_transferencia"]:
+            self.fallas[origen] += 1            # el límite va antes que el saldo (766, 816)
             raise error("E506")
+        if self.cuentas[origen] < n:
+            self.fallas[origen] += 1
+            raise error("E507")
+        self.fallas[origen] = 0
         self.cuentas[origen] -= n
         self.cuentas[destino] += n
         return Respuesta(200, self.nueva_op("transfer", n, [origen, destino]))

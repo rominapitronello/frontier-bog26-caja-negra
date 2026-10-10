@@ -12,9 +12,33 @@ cada línea de entrada (jsonl, por archivo o stdin) es un pedido:
 el ritmo queda bajo el límite del material (10/s por token). una respuesta de la infraestructura
 (X-Frontier-Infra) no va al log: se espera y se repite.
 """
-import argparse, json, os, sys, time
+import argparse, contextlib, fcntl, json, os, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sonda import pedir, tapar, como_json
+
+# un token = un estado = un explorador a la vez (objeción de fable, fable-02 § 1): toda secuencia contra el
+# original toma este turno, y el centinela y la exploración se esperan en vez de pisarse el estado.
+_CANDADO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".turno-original.lock")
+_turno_tomado = 0
+
+@contextlib.contextmanager
+def turno():
+    global _turno_tomado
+    if _turno_tomado:
+        _turno_tomado += 1
+        try:
+            yield
+        finally:
+            _turno_tomado -= 1
+        return
+    with open(_CANDADO, "w") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        _turno_tomado = 1
+        try:
+            yield
+        finally:
+            _turno_tomado = 0
+            fcntl.flock(f, fcntl.LOCK_UN)
 
 OTRO_TOKEN = "tok-que-no-existe-0000"
 
@@ -43,6 +67,10 @@ def siguiente_id(log):
 
 def correr(pasos, seq, base, token, log="experimentos.jsonl", crudo="experimentos_crudo.jsonl",
            ritmo=8.0, eco=True):
+    with turno():
+        return _correr(pasos, seq, base, token, log, crudo, ritmo, eco)
+
+def _correr(pasos, seq, base, token, log, crudo, ritmo, eco):
     nid = siguiente_id(log)
     out = []
     t_ult = 0.0

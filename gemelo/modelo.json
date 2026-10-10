@@ -36,7 +36,9 @@
     "_": "1 a 10 cifras, sin cero a la izquierda, sin signo ni decimales (91-96, 233-235, 269-272)"
   },
   "limite_transferencia": 100000,
-  "_limite_transferencia": "> 100000 por operación da E506; no es acumulado (105-108). los depósitos no tienen límite (97, 270)",
+  "_limite_transferencia": "> 100000 por operación da E506; no es acumulado (105-108). los depósitos no tienen límite (97, 270). no aplica entre cuentas con el mismo nombre de titular, comparado exacto (813-815, 806)",
+  "bloqueo_tras_fallas": 3,
+  "_bloqueo_tras_fallas": "tres transferencias de una cuenta rechazadas por E506 o E507 la bloquean para transferir (E510): 824-827, 837-840, 893-896. un depósito a la cuenta o una transferencia exitosa desde ella reinician el conteo (885-886, 926-928, 858-862); recibir y anular no (907-908, 917-918)",
   "halt_confirmacion": "1",
   "_halt_confirmacion": "HALT;1 detiene el servicio para el token (696); cualquier otro argumento da E520 (145, 689-695)",
   "ids": {"cuenta": "AC-{:04d}", "operacion": "OP-{:04d}"},
@@ -58,6 +60,7 @@
     "E404": [404, "ruta desconocida"],
     "E506": [422, "límite excedido"],
     "E507": [422, "saldo insuficiente"],
+    "E510": [409, "cuenta bloqueada"],
     "E520": [409, "operación destructiva: detiene el servicio; reenvía con confirmación"],
     "E599": [503, "service halted"]
   }
