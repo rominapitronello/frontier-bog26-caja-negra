@@ -33,6 +33,14 @@ python3 medir.py --casos material/pruebas/ejemplos.jsonl --gemelo http://127.0.0
 - **pruebas:** `bash smoke.sh` pasa al gemelo los 20 ejemplos del material y **todas las secuencias del log** con la regla de comparación del juez (status + cuerpo; json sin orden de claves). `python3 pruebas/test_medir.py` prueba el comparador.
 - **costo por caso:** 0 us$ y menos de un milisegundo: el gemelo no llama a nadie ni usa modelos (`DISENO.md`, D6).
 
+## resultados
+
+| cuándo | set oculto del jurado (100 tests) | nota |
+|---|---|---|
+| 10 oct 11:06 bog · validación 1 de 3 | **83/100** | línea base, sin desglose. un redespliegue nuestro pudo caer a mitad de la corrida (`ESTADO.md`) |
+
+nuestras propias mediciones, sin gastar validaciones: el gemelo reproduce los 20 ejemplos y todas las secuencias del log (`bash smoke.sh`), y las 40 secuencias que sol escribió solo desde la spec (`evals/sol-03.jsonl`: 141 de 141).
+
 ## qué hay adentro
 
 | archivo | qué es | criterio |
