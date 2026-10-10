@@ -2,7 +2,7 @@
 
 > estructura del material (`material/README.md`). cada fila: `ID | Comportamiento | Evidencia | Confianza`. la evidencia son `id` de `experimentos.jsonl`; el ejemplo *k* del material es la línea *k*+1 del log (los 20 se reprodujeron idénticos, 2–21). **confirmado**: probado y se repite · **probable**: visto una vez o inferido · **supuesto**: no probado, es lo que hace el gemelo por defecto. una afirmación falsa resta: ante la duda, se baja la confianza.
 >
-> versión: 10 oct 2026, 11:0x bog, sobre 928 líneas del log (las 289–686 son una repetición por un error nuestro, sin valor de evidencia). **v2 corrige el orden entre límite y saldo de la v1**, que estaba mal: lo detectó el centinela (737) y lo explican TR-06 a TR-08. el gemelo (`gemelo/servidor.py`, con lo tabular en `gemelo/modelo.json`) implementa esta spec y reproduce todas las secuencias del log (`bash smoke.sh`).
+> versión: 10 oct 2026, 10:5x bog, sobre 928 líneas del log (las 289–686 son una repetición por un error nuestro, sin valor de evidencia). **v2 corrige el orden entre límite y saldo de la v1**, que estaba mal: lo detectó el centinela (737) y lo explican TR-06 a TR-08. el gemelo (`gemelo/servidor.py`, con lo tabular en `gemelo/modelo.json`) implementa esta spec y reproduce todas las secuencias del log (`bash smoke.sh`).
 
 **el camino de un pedido, en orden** (cada paso puede cortar con un error; § 5 tiene la tabla):
 
@@ -202,7 +202,7 @@ qué cambió, desde cuándo y cómo lo detectamos.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CA-01 | **sin cambios hasta las 11:0x bog**: los 20 ejemplos (grabados con la versión de la mañana) se reprodujeron idénticos a las 10:1x, y la secuencia `cmd-1` de las 10:1x repetida exacta a las 11:0x dio las mismas 31 respuestas | 2–21; 81–111 contra 776–806 | confirmado |
+| CA-01 | **sin cambios hasta las 10:5x bog**: los 20 ejemplos (grabados con la versión de la mañana) se reprodujeron idénticos a las 10:1x, y la secuencia `cmd-1` de las 10:1x repetida exacta a las 10:4x dio las mismas 31 respuestas | 2–21; 81–111 contra 776–806 | confirmado |
 | CA-03 | una falsa alarma que no fue cambio: la v1 de esta spec decía «saldo antes que límite» por la línea 111, y el centinela vio lo contrario en 737. la repetición exacta (806) mostró que el original no había cambiado: la diferencia era el titular (TR-06) | 111, 737, 806 | confirmado |
 | CA-02 | cómo se detecta un cambio: un **centinela** repite secuencias canónicas del log (los 20 ejemplos y una por familia de error) y compara con la regla del juez; solo una **repetición exacta que cambia** acredita un cambio. el detalle irá en `incident.md` | — | (método) |
 
