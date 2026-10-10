@@ -6,7 +6,7 @@
 
 los modelos tienen sesgos de diseño. si la caja la escribió (o ayudó a escribirla) un modelo, sus reglas tienen la huella de cómo piensa ese linaje. entonces:
 
-1. pedimos a dos linajes que diseñen **a ciegas** una caja parecida (`evals/linajes/`): sol (familia gpt) y un claude sin contexto.
+1. pedimos a dos linajes que diseñen **a ciegas** una caja parecida (`evals/linajes/`): sol (familia gpt) y un claude sin contexto (opus 5.5, ventana fantasma, razonamiento alto).
 2. comparamos sus diseños con la caja real (`spec.md`).
 3. lo que **proponen y no probamos** son hipótesis fuera de nuestra spec, el punto ciego que comparten sol, fable y el fuzzer porque todos salen de ella.
 4. lo que **cada linaje cambiaría** es un catálogo de candidatos para el incidente de las 15:30.
