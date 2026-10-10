@@ -18,5 +18,8 @@ for _ in range(50):
 sys.exit("smoke: el gemelo no respondió /health en 5 s")
 PY
 echo "smoke: ejemplos del material"; python3 medir.py --casos material/pruebas/ejemplos.jsonl --gemelo "http://127.0.0.1:$PUERTO" --token "$TOKEN"
-echo "smoke: secuencias del log";    python3 medir.py --casos experimentos.jsonl --gemelo "http://127.0.0.1:$PUERTO" --token "$TOKEN"
+# las líneas que respondió el borde de railway y no el servicio (borde_railway) no se pueden reproducir en local
+LOG_LOCAL="$(mktemp)"; trap 'kill $PID 2>/dev/null || true; rm -f "$LOG_LOCAL"' EXIT
+grep -v '"borde_railway": true' experimentos.jsonl > "$LOG_LOCAL"
+echo "smoke: secuencias del log";    python3 medir.py --casos "$LOG_LOCAL" --gemelo "http://127.0.0.1:$PUERTO" --token "$TOKEN"
 echo "smoke: OK"

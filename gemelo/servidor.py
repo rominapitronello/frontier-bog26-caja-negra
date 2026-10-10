@@ -11,7 +11,7 @@ solo biblioteca estándar, python 3.9+.
 import json, os, re, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v6"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v7"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = __import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -112,6 +112,9 @@ class Banco:
 
     def cmd_ping(self):
         return Respuesta(200, {"pong": True})
+
+    def cmd_notas(self):                       # oculto: lo delató la sugerencia de TOTAL (1641)
+        return Respuesta(200, M["notas_respuesta"])
 
     def cmd_alta(self, nombre):
         cid = M["ids"]["cuenta"].format(len(self.cuentas) + 1)
@@ -231,7 +234,10 @@ class Manejador(BaseHTTPRequestHandler):
             except Respuesta as r:
                 self.responder(r, x_req)
 
-    do_GET = do_POST = do_PUT = do_DELETE = do_PATCH = do_HEAD = do_OPTIONS = atender
+    def __getattr__(self, nombre):              # cualquier método (TRACE, PROPFIND…) va a la tabla de rutas: 404 (1658, 1660)
+        if nombre.startswith("do_"):
+            return self.atender
+        raise AttributeError(nombre)
 
 
 def main():

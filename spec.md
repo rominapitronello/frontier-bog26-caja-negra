@@ -19,7 +19,7 @@
 10. cmd = segs[0] en mayúsculas. si cmd != PING: control = segs[-1]
       no es 1 o 2 dígitos ascii                                                  → 400 E201
       distinto de control(";".join(segs[:-1])) como texto                       → 400 E202
-11. cmd no es PING, ALTA, CONSULTA, DEPOSITO, TRANSFER, ANULA ni HALT            → 400 E301 (+ sugerencia)
+11. cmd no es PING, ALTA, CONSULTA, DEPOSITO, TRANSFER, ANULA, HALT ni NOTAS     → 400 E301 (+ sugerencia)
 12. número de argumentos (segs[1:-1]) distinto de la aridad del comando          → 400 E302
 13. el comando: sus propias reglas y su respuesta (§ 3)
 ```
@@ -30,6 +30,7 @@ rutas, métodos, autenticación, forma del cuerpo y límites.
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | EN-01 | existen tres rutas: `POST /msg`, `GET /health` y `POST /__reset`. cualquier otra ruta o método responde **404** `{"error":"E404","mensaje":"ruta desconocida"}`: `POST /health`, `GET /msg`, `PUT /msg`, `DELETE /msg`, `OPTIONS /msg`, `GET /`, `GET /no-existe`, `POST /no-existe` | 52–58, 708, 725 | confirmado |
+| EN-01b | métodos poco comunes que llegan al servicio (`TRACE`, `PROPFIND`) también dan 404 `E404`. un método que no existe (`FOO`) lo rechaza el borde de railway con 400 y el texto `Bad Request` antes de llegar al servicio: igual para el original y para el gemelo desplegado | 1658, 1660; 1659 | confirmado |
 | EN-02 | la ruta se evalúa **antes** que el token: una ruta inexistente sin token da 404, no 401 | 59, 725 | confirmado |
 | EN-03 | la ruta se compara exacta: `/msg/` (barra final) y `/MSG` (mayúsculas) dan 404 | 60, 61 | probable |
 | EN-04 | la query string se ignora: `POST /msg?x=1` responde como `POST /msg` | 62 | probable |
@@ -83,7 +84,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | CM-01 | el nombre del comando no distingue mayúsculas | 12, 133, 244 | confirmado |
-| CM-02 | aridades: `PING` 0, `ALTA` 1, `CONSULTA` 1, `DEPOSITO` 2, `TRANSFER` 3, `ANULA` 1, `HALT` 1. cualquier otra cantidad → E302 | 21, 88, 89, 90, 99, 118, 137, 215, 217, 222, 714, 718 | confirmado |
+| CM-02 | aridades: `PING` 0, `ALTA` 1, `CONSULTA` 1, `DEPOSITO` 2, `TRANSFER` 3, `ANULA` 1, `HALT` 1, `NOTAS` 0. cualquier otra cantidad → E302 | 21, 88, 89, 90, 99, 118, 137, 215, 217, 222, 714, 718, 1664, 1667–1678 | confirmado |
 
 ### PING
 | ID | Comportamiento | Evidencia | Confianza |
@@ -146,13 +147,23 @@ no aparece en los ejemplos: lo reveló la sugerencia del error de comando descon
 | HA-04 | `HALT` sin argumentos o con dos → E302 | 137, 141, 718 | confirmado |
 | HA-05 | solo `1` confirma, comparado como texto: `0`, `2` y `01` dan E520. el comando en minúsculas (`halt;1`) también detiene | 991, 994, 997, 1110; 1000 | confirmado |
 
+### NOTAS (oculto)
+no aparece en los ejemplos: lo reveló la sugerencia del error de comando desconocido (`TOTAL` → `NOTAS`).
+
+| ID | Comportamiento | Evidencia | Confianza |
+|---|---|---|---|
+| NO-01 | `NOTAS;<control>` → **200** `{"notas":[{"id":"N-01","texto":"…"}]}`: una lista con una nota fija. el texto exacto está en la línea 1663 del log y en `gemelo/modelo.json` (`notas_respuesta`); el gemelo lo repite tal cual | 1663, 1681 | confirmado |
+| NO-02 | valida el control como cualquier comando (E202, E201) y no distingue mayúsculas | 1680, 1682; 1681 | confirmado |
+| NO-03 | con argumentos → E302 (aridad 0), exista o no la cuenta que se pase | 1664, 1667–1671, 1674–1678 | confirmado |
+| NO-04 | la nota es la misma con el estado recién reseteado; con cuentas y operaciones no se probó: el gemelo la devuelve siempre igual | 1663, 1681 | supuesto |
+
 ### comando desconocido
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | DC-01 | → **400** `{"error":"E301","mensaje":"comando desconocido "}`, con **un espacio al final** del mensaje | 13, 120–126, 129–132, 154, 161–206 | confirmado |
-| DC-02 | si hay un comando (de los siete, incluido `HALT`) a **distancia de edición (levenshtein) ≤ 2** del comando en mayúsculas, la respuesta agrega `"sugerencia":"<COMANDO>"`; a distancia 3, no | 127, 128, 147–153, 155–160, 209, 242, 252; 154 | confirmado |
+| DC-02 | si hay un comando (de los ocho, incluidos `HALT` y `NOTAS`) a **distancia de edición (levenshtein) ≤ 2** del comando en mayúsculas, la respuesta agrega `"sugerencia":"<COMANDO>"`; a distancia 3, no | 127, 128, 147–153, 155–160, 209, 242, 252, 1641; 154 | confirmado |
 | DC-03 | gana la **menor distancia** (`HALA` → `HALT` a 1, no `ALTA` a 2); en un empate, el primero en orden alfabético (`PITA` → `ALTA` sobre `PING`; `HANG` → `HALT` sobre `PING`; `ALT` → `ALTA` sobre `HALT`; `ALNG` → `ALTA` sobre `PING`, predicho por sol desde esta spec) | 715; 208, 256, 151, 1102 | confirmado |
-| DC-04 | 57 nombres probados (RETIRO, SALDO, LISTA, BAJA, STOP, DEBUG, ADMIN…) no son comandos ni sugieren nada: los comandos son siete | 120–126, 129–132, 161–206 | probable |
+| DC-04 | cerca de 100 nombres probados (RETIRO, SALDO, LISTA, BAJA, STOP, DEBUG, ADMIN, DESBLOQUEO, REANUDA…) no son comandos. **la v2 de esta spec decía «los comandos son siete» y era falso**: `TOTAL` sugirió `NOTAS`, un octavo comando oculto. la lista no es exhaustiva: un comando lejano de todo lo probado no se delata | 120–126, 129–132, 161–206, 1616–1657; 1641 | probable |
 
 ## 4 · memoria entre requests
 qué recuerda el servicio y qué cambia una respuesta según los requests anteriores.
@@ -217,6 +228,7 @@ comportamientos que un cliente nuevo no debería heredar, y cómo los cerraríam
 | RI-03 | **anular deja saldos negativos**: se puede gastar un depósito y después anularlo, o anular una transferencia que el destino ya gastó. cerrarlo: rechazar la anulación si deja una cuenta bajo cero, o anular solo dentro de una ventana y con fondos | 116, 117, 228–231 | confirmado |
 | RI-04 | **el límite es por operación**: fraccionar evita el tope (tres de 100.000 pasan). cerrarlo: límite diario por cuenta | 106–108 | confirmado |
 | RI-05 | **los depósitos no tienen límite** (9.999.999.999 en un pedido) | 270 | confirmado |
+| RI-12 | **una nota interna para clientes**: `NOTAS` (oculto) devuelve un texto que invita a mandar el token a una ruta interna. un cliente nuevo no debería heredarlo, y nosotros no lo seguimos ni exploramos esa ruta (lo decide romina, `ESTADO.md`). cerrarlo: sacar las notas internas del canal de clientes; una respuesta nunca debería pedir credenciales | 1663 | confirmado |
 | RI-10 | **el límite se evita con un nombre**: entre cuentas del mismo titular no hay límite, y el titular es solo el texto del alta, sin verificar. cualquiera abre `ALTA;<el mismo nombre>` y mueve montos sin tope. cerrarlo: titular verificado (un id de cliente), no un nombre libre | 813, 817 | confirmado |
 | RI-11 | **el bloqueo se levanta con un depósito de 1**: tres intentos fallidos bloquean, pero cualquier depósito, de cualquier monto, desbloquea. cerrarlo: desbloqueo por un canal aparte, o tras un tiempo | 885, 886, 926–928 | confirmado |
 | RI-06 | **el dígito de control no es seguridad**: es una suma de verificación pública (la del iban), y `PING` ni la mira. no autentica ni impide fraude: solo detecta errores de tipeo | 2–21, 39, 40 | confirmado |

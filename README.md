@@ -59,7 +59,7 @@ nuestras propias mediciones, sin gastar validaciones: el gemelo reproduce los 20
 ## qué encontramos (lo grueso; el detalle con evidencia está en la spec)
 
 - **el dígito de control es el del iban** (iso 7064 mod 97-10): las letras valen su posición en el alfabeto, los dígitos lo que son, y control = 98 − (100·N mod 97). salió de mirar los ejemplos, sin gastar pedidos, y lo encontraron por separado claude y fable.
-- **siete comandos**, uno oculto: `HALT;1` detiene el servicio para el token (503) hasta el reset. apareció porque el error de comando desconocido **sugiere** el comando más parecido (`HELP` → `HALT`).
+- **ocho comandos**, dos ocultos: `HALT;1` detiene el servicio para el token (503) hasta el reset, y `NOTAS` devuelve una nota interna. aparecieron porque el error de comando desconocido **sugiere** el comando más parecido (`HELP` → `HALT`, `TOTAL` → `NOTAS`).
 - **reglas con estado que los ejemplos no muestran:** el límite de 100.000 no aplica entre cuentas del mismo titular (por nombre); tres transferencias rechazadas seguidas bloquean la cuenta (`E510`) hasta un depósito; anular puede dejar saldos negativos.
 - **el orden exacto de 20 códigos de error**, de la ruta al saldo, con un pedido que rompe dos cosas a la vez para cada par.
 
