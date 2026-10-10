@@ -5,7 +5,7 @@
 **hora del cambio (según el juez):** null · **cómo se anunció:** null
 
 ## cómo lo vamos a detectar (preparado antes)
-- **el centinela** (`herramientas/centinela.py`) repite una secuencia canónica de 34 pedidos (los comandos de la mañana, `NOTAS`, cada familia de error, el límite, el bloqueo y `HALT`) cada 15 minutos todo el día, y **cada 5 minutos entre las 14:50 y las 16:40 bog**. cada vuelta queda en `experimentos.jsonl` como `centinela-HHMM` (hora utc).
+- **el centinela** (`herramientas/centinela.py`) repite una secuencia canónica de 58 pedidos (eran 34 a las 11:3x; crecieron antes del incidente con el bloqueo E510, `NOTAS`, las cuatro piezas del preregistro y los cinco cambios de sol-06: los comandos de la mañana, cada familia de error, el límite, el bloqueo y `HALT`) cada 15 minutos todo el día, y **cada 5 minutos entre las 14:50 y las 16:40 bog**. cada vuelta queda en `experimentos.jsonl` como `centinela-HHMM` (hora utc).
 - compara cada vuelta con la anterior: **solo una repetición exacta que cambia acredita un cambio** (`DISENO.md` § 7). también la compara con el gemelo: si el original y la vuelta anterior coinciden pero el gemelo no, el error es del gemelo, no un cambio.
 - la falsa alarma de la mañana (spec CA-03: el centinela creyó ver un cambio que era el titular de la cuenta) dejó la regla: **antes de llamar «cambio» a una diferencia, se repite exacta la secuencia vieja** (como 776–806 repitió 81–111).
 
