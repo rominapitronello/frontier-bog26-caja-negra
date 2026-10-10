@@ -27,7 +27,7 @@ el set: 100 tests, **40 fáciles (1 pedido), 40 regulares (2–5), 20 difíciles
 | 2 · 16:21 · **contra v2** · **99/100** | fáciles | 40/40 | — |
 | | regulares | 40/40 | — |
 | | difíciles | 19/20 | **una falla en el primer pedido, por status**: un mensaje suelto. buscada por fuera del set (sol-07, el diferencial de dos gemelos en el primer pedido y uno mutacional: ~6.000 casos), **el único candidato es `pıng`** (i sin punto): python pasa `ı` a `I` con `.upper()` y el gemelo lo tomaba por PING (200, pong); el original solo pasa a mayúsculas en ascii y no lo reconoce (400; log 5680, 5681). arreglado en la v16. si la corrida 3 da 99, la causa queda sin encontrar y se dice así |
-| 3 · ~19:00 · contra v2 | | null | |
+| 3 · no se corrió | | — | **decisión de romina (17:1x bog): no hay corrida 3 y el gemelo no se toca más.** la nota final es la del jurado después de las 20:00, con el gemelo **v17**: la v15 que dio 99 más el arreglo de `pıng` (v16) y sin la telemetría (v17). esos dos cambios están probados con el smoke y las pruebas, no con el set |
 
 **hipótesis de fable para el test que falta (17:0x bog), probadas contra el original sin tocar el gemelo:**
 1. *`HALT` cambió como el bloqueo y responde 423*: **descartada** por el log: `HALT;SI` sigue dando 409 E520 en v2 (4619, 6234, 6516).
