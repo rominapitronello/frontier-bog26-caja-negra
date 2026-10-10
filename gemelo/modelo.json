@@ -6,6 +6,7 @@
     "POST /__reset": "reset"
   },
   "cuerpo_max_bytes": 8192,
+  "json_profundidad_max": 20,
   "_cuerpo_max_bytes": "8192 bytes pasan, 8193 dan E101 (710-711). se mira después del token (712) y antes del json (713)",
   "control": {
     "modulo": 97,

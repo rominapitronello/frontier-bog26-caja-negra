@@ -49,6 +49,8 @@ rutas, métodos, autenticación, forma del cuerpo y límites.
 | EN-17 | `/__reset` ignora su cuerpo, aunque no sea json; un `Content-Encoding: gzip` sobre un cuerpo que no está comprimido se ignora; un BOM delante del json da E100 | 2342, 2418, 1240; 2402; 1248, 2406 | confirmado |
 | EN-19 | un cuerpo con `Transfer-Encoding: chunked` (sin `Content-Length`) se lee igual que uno con largo fijo | 2471 | probable |
 | EN-18 | sin probar contra el original (quedaron fuera tras un corte del clasificador, `ESTADO.md`): un cuerpo que es un número suelto (`123`) → el gemelo responde E102 como los otros json que no son objeto (71, 79, 1250); `HEAD /__reset` → 404 como `GET` y `OPTIONS` sobre esa ruta (2387, 2432); bytes que no son utf-8 → E100 | — | supuesto |
+| EN-20 | el json admite **a lo sumo 20 niveles de anidamiento** en todo el documento, contando el objeto de afuera; arreglos y objetos cuentan igual y lo que está dentro de un string no cuenta. con 21 o más → 400 `E100` (aunque `m` esté bien): un campo extra con 19 arreglos anidados pasa y con 20 no; un cuerpo que es un arreglo de profundidad 20 se lee (E102) y de 21 no (E100); 25 arreglos hermanos pasan. un límite así no viene de un parser común: es una decisión del autor | 3449, 3452–3463; 3465–3470 | confirmado |
+| EN-21 | los números de los campos que no son `m` se leen sin límite de cifras: un entero de 4301 dígitos en un campo extra pasa (un parser de python lo rechazaría) | 3445 | probable |
 
 ## 2 · integridad
 cómo valida el servicio que un mensaje está bien formado (el dígito de control).
@@ -119,7 +121,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | DE-01 | suma el monto al saldo → **200** `{"status":"recieved","operacionId":"OP-0001"}` (sic: `recieved`) | 7, 19, 97, 100, 225, 260, 261, 269, 270, 273 | confirmado |
-| DE-02 | monto válido: entero de **1 a 10 cifras sin cero a la izquierda** (`^[1-9][0-9]{0,9}$`). si no → **400** `{"error":"E303","mensaje":"monto inválido"}`: `0`, `-5`, `10.5`, `abc`, `0100`, `1e3`, `+100`, ` 100`, 11 cifras o más | 91–96, 233, 234, 235, 237, 257, 259, 271, 272 | confirmado |
+| DE-02 | monto válido: entero de **1 a 10 cifras sin cero a la izquierda** (`^[1-9][0-9]{0,9}$`). si no → **400** `{"error":"E303","mensaje":"monto inválido"}`: `0`, `-5`, `10.5`, `abc`, `0100`, `1e3`, `0x10`, `1_000`, `+100`, ` 100`, 11 cifras o más | 91–96, 233, 234, 235, 237, 257, 259, 271, 272, 3446–3448 | confirmado |
 | DE-03 | los depósitos **no tienen límite** (solo el de cifras): 999.999.999 y 9.999.999.999 pasan | 97, 270 | confirmado |
 | DE-04 | cuenta inexistente → 404 `E401` (después de validar el monto, DE-02) | 98, 218 | confirmado |
 

@@ -14,14 +14,40 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v10"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v11"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
 
 
+if hasattr(sys, "set_int_max_str_digits"):
+    sys.set_int_max_str_digits(0)   # el original lee un entero de 4301 dígitos (3445); python ≥ 3.11 lo rechazaría
+
+
 def _no_json(constante):
     raise ValueError(constante)
+
+
+def profundidad(texto):
+    """el anidamiento máximo de un json, contando el de afuera y sin mirar dentro de los strings (3464-3470)."""
+    d = maximo = 0
+    en_string = escape = False
+    for ch in texto:
+        if en_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                en_string = False
+        elif ch == '"':
+            en_string = True
+        elif ch in "[{":
+            d += 1
+            maximo = max(maximo, d)
+        elif ch in "]}":
+            d -= 1
+    return maximo
 
 
 class Respuesta(Exception):
@@ -341,8 +367,11 @@ class Manejador(BaseHTTPRequestHandler):
 
     def _paso_json(self, x):
         try:   # json estricto: NaN e Infinity no son json (1245-1247); python los aceptaría
-            x["cuerpo"] = json.loads(x["crudo"].decode("utf-8"), parse_constant=_no_json)
-        except (ValueError, UnicodeDecodeError):
+            texto = x["crudo"].decode("utf-8")
+            x["cuerpo"] = json.loads(texto, parse_constant=_no_json)
+        except (ValueError, UnicodeDecodeError, RecursionError):
+            raise error("E100")
+        if profundidad(texto) > M.get("json_profundidad_max", 10 ** 9):   # 20 pasa, 21 no (3462-3463, 3468-3469)
             raise error("E100")
 
     def _paso_m(self, x):

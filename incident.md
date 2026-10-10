@@ -17,6 +17,7 @@
 5. **volver a medir con la versión nueva:** las líneas del log anteriores al cambio que el cambio contradice se marcan `"fase": "manana"` (`python3 herramientas/fase.py --hasta <último id antes del cambio> --marcar`: marca la secuencia entera, porque el estado de un paso depende de los anteriores, y comprueba que esas secuencias calzan con `modelo-manana.json`) y el smoke las corre contra el modelo de la mañana; las secuencias canónicas (`repro-1`, `cmd-1`, `sol-03`, el centinela) se vuelven a correr contra el original para tener la versión de la tarde como referencia.
 6. **la spec:** § 6 dice qué cambió, desde cuándo y con qué ids; las filas que ya no valen se marcan «hasta las HH:MM», no se borran.
 7. **validación 2 (~17:00 bog):** solo con el gemelo adaptado, smoke en verde y romina avisada (`ESTADO.md`, reglas de las validaciones).
+8. **congelar a las 19:55 bog** (romina, 15:0x): después de las 20:00 el set corre una vez más a una hora que no sabemos y railway redespliega con cada push a `gemelo/`. desde las 19:55 hasta el resultado final no se sube nada a `gemelo/`, `Dockerfile` ni `railway.json`: una adaptación que llegue tarde se queda en una rama y se anota aquí, no se despliega.
 
 ## si el incidente cambia mecánica: cómo entra una regla nueva con estado (pensado antes, sin implementar)
 
@@ -28,7 +29,7 @@ lectura de romina y del otro claude (13:2x bog): la caja parece pensada desde el
 4. **estado nuevo con valor neutro y que el reset borra**, como lo demás del `Banco`: contadores en 0, sin vencimientos, sin sesiones abiertas. una regla de tiempo se modela con reloj **solo si el log lo exige** (la misma secuencia con pausas distintas da respuestas distintas); si no, se cuenta en pedidos, que es determinista y reproducible. un test del set dura a lo sumo 12 pedidos y 5 s por paso: una regla de minutos casi nunca se ve dentro de un test, pero una de «n pedidos desde el reset» sí.
 5. **autoridad como dato.** si aparece un rol, otro token con permisos o una confirmación nueva (como la de `HALT`), sus valores van en `modelo.json`; el gemelo solo conoce el token del equipo, y «con otro token responde como el original».
 6. **volver a medir con la versión nueva:** las secuencias reproducibles (`repro-1`, `cmd-1`, `sol-03`, `fable-04`, `sol-04`, el centinela) se corren de nuevo contra el original con `herramientas/oraculo.py`, y el gemelo de la tarde tiene que calzar en las líneas nuevas y el de la mañana en las viejas.
-7. **subir solo fuera de una validación**, con `X-Gemelo-Version` nuevo, y confirmar en el header de railway antes de la validación 2.
+7. **subir solo fuera de una validación y antes de las 19:55 bog** (congelado hasta el resultado final), con `X-Gemelo-Version` nuevo, y confirmar en el header de railway antes de la validación 2.
 
 ## interruptores preparados (gemelo v10, apagados hoy; `pruebas/test_piezas.py` prueba cada uno encendido)
 
