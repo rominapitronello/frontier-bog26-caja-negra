@@ -12,7 +12,8 @@ import json, os, re, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
-VERSION = "v4"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v5"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+ARRANQUE = __import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
 
@@ -185,6 +186,7 @@ class Manejador(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(datos)))
         self.send_header("X-Gemelo-Version", VERSION)
+        self.send_header("X-Gemelo-Arranque", ARRANQUE)
         if x_req is not None:
             self.send_header("X-Req", str(x_req))
         self.end_headers()
