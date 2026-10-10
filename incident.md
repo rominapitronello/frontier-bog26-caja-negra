@@ -14,7 +14,7 @@
 2. **congelar la mañana:** copiar `gemelo/modelo.json` a `gemelo/modelo-manana.json` y anotar aquí la última línea del log anterior al cambio. lo aprendido antes no se borra: queda como la versión de la mañana.
 3. **explorar la diferencia por hipótesis**, con pedidos que separen lecturas (`lote.py`), igual que en la mañana. presupuesto reservado: ~2.000 pedidos.
 4. **adaptar el gemelo como dato** primero (`modelo.json`: textos, códigos, límites, el control) y en código solo si la regla nueva es lógica con estado.
-5. **volver a medir con la versión nueva:** las líneas del log anteriores al cambio que el cambio contradice se marcan `"fase": "manana"` y el smoke las salta; las secuencias canónicas (`repro-1`, `cmd-1`, `sol-03`, el centinela) se vuelven a correr contra el original para tener la versión de la tarde como referencia.
+5. **volver a medir con la versión nueva:** las líneas del log anteriores al cambio que el cambio contradice se marcan `"fase": "manana"` (`python3 herramientas/fase.py --hasta <último id antes del cambio> --marcar`: marca la secuencia entera, porque el estado de un paso depende de los anteriores, y comprueba que esas secuencias calzan con `modelo-manana.json`) y el smoke las corre contra el modelo de la mañana; las secuencias canónicas (`repro-1`, `cmd-1`, `sol-03`, el centinela) se vuelven a correr contra el original para tener la versión de la tarde como referencia.
 6. **la spec:** § 6 dice qué cambió, desde cuándo y con qué ids; las filas que ya no valen se marcan «hasta las HH:MM», no se borran.
 7. **validación 2 (~17:00 bog):** solo con el gemelo adaptado, smoke en verde y romina avisada (`ESTADO.md`, reglas de las validaciones).
 
