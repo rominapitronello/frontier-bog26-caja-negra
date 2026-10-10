@@ -12,6 +12,7 @@ for f in $(grep -oE '\]\(([^)#]+)' llms.txt | sed -E 's/^\]\(//'); do
   [ -e "$f" ] || { echo "llms.txt: enlace roto → $f"; falla=1; }
 done
 for f in $(ls -A | grep -vE '^(\.git|\.gitignore|__pycache__|llms\.txt|experimentos_crudo\.jsonl|Dockerfile|railway\.json|CLAUDE\.md|RUBRICA\.md|LECCIONES_DEL_ENSAYO\.md)$'); do
+  git check-ignore -q "$f" && continue   # lo que git ignora (el candado del turno, cachés) no viaja: no se describe
   grep -qF "$f" llms.txt || { echo "llms.txt: no describe → $f"; falla=1; }
 done
 exit $falla

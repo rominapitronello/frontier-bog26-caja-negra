@@ -1,0 +1,776 @@
+{
+ "prediccion": [
+  {
+   "seq": "v2-fila-borde-1",
+   "caso": 258,
+   "log": 5973,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-borde-1",
+   "caso": 261,
+   "log": 5976,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.01"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 6,
+   "log": 5987,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 9,
+   "log": 5990,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 40000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "400.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 11,
+   "log": 5992,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0003"
+    }
+   ],
+   "original": [
+    422,
+    {
+     "error": "E506",
+     "mensaje": "límite excedido"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 12,
+   "log": 5993,
+   "pedido": {
+    "m": "CONSULTa;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 110000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "2100.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 14,
+   "log": 5995,
+   "pedido": {
+    "m": "ANULA;OP-0003;66"
+   },
+   "predicho": [
+    200,
+    {
+     "ok": true,
+     "anulada": "OP-0003"
+    }
+   ],
+   "original": [
+    404,
+    {
+     "error": "E402",
+     "mensaje": "operación inexistente"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 15,
+   "log": 5996,
+   "pedido": {
+    "m": "ANULA;OP-0003;66"
+   },
+   "predicho": [
+    200,
+    {
+     "ok": false,
+     "motivo": "ya anulada"
+    }
+   ],
+   "original": [
+    404,
+    {
+     "error": "E402",
+     "mensaje": "operación inexistente"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 19,
+   "log": 6000,
+   "pedido": {
+    "m": "DEPOSITO;AC-0002;700;35"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0004"
+    }
+   ],
+   "original": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0003"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repro-1",
+   "caso": 20,
+   "log": 6001,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 40700
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "407.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-parser-1",
+   "caso": 3450,
+   "log": 6020,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-halt-1",
+   "caso": 139,
+   "log": 6066,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 500
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "5.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-borde-2",
+   "caso": 273,
+   "log": 6079,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 10999999999
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "109999999.99"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-orden-1",
+   "caso": 229,
+   "log": 6104,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "10.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-orden-1",
+   "caso": 230,
+   "log": 6105,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": -1000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "-10.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-orden-1",
+   "caso": 236,
+   "log": 6111,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "10.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-orden-1",
+   "caso": 238,
+   "log": 6113,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "10.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-orden-1",
+   "caso": 243,
+   "log": 6118,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "10.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-titular-1",
+   "caso": 817,
+   "log": 6131,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 150000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "1500.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-bloqueo-2",
+   "caso": 840,
+   "log": 6138,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;10;13"
+   },
+   "predicho": [
+    409,
+    {
+     "error": "E510",
+     "mensaje": "cuenta bloqueada"
+    }
+   ],
+   "original": [
+    423,
+    {
+     "error": "E510",
+     "mensaje": "cuenta bloqueada",
+     "intentos": 1
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 100,
+   "log": 6158,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 999999999
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "9999999.99"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 106,
+   "log": 6164,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "original": [
+    422,
+    {
+     "error": "E506",
+     "mensaje": "límite excedido"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 107,
+   "log": 6165,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0003"
+    }
+   ],
+   "original": [
+    422,
+    {
+     "error": "E506",
+     "mensaje": "límite excedido"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 108,
+   "log": 6166,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0004"
+    }
+   ],
+   "original": [
+    423,
+    {
+     "error": "E510",
+     "mensaje": "cuenta bloqueada",
+     "intentos": 1
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 112,
+   "log": 6170,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 999699999
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "9999999.99"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 113,
+   "log": 6171,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 300000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-cmd-1",
+   "caso": 117,
+   "log": 6175,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": -300000
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repite-cmd1",
+   "caso": 795,
+   "log": 6303,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 999999999
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "9999999.99"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repite-cmd1",
+   "caso": 801,
+   "log": 6309,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "original": [
+    422,
+    {
+     "error": "E506",
+     "mensaje": "límite excedido"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repite-cmd1",
+   "caso": 802,
+   "log": 6310,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0003"
+    }
+   ],
+   "original": [
+    422,
+    {
+     "error": "E506",
+     "mensaje": "límite excedido"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-repite-cmd1",
+   "caso": 803,
+   "log": 6311,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0004"
+    }
+   ],
+   "original": [
+    423,
+    {
+     "error": "E510",
+     "mensaje": "cuenta bloqueada",
+     "intentos": 1
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  },
+  {
+   "seq": "v2-fila-largas-14",
+   "caso": 3192,
+   "log": 6322,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 10
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.10"
+    }
+   ],
+   "spec": null,
+   "ambiguo": null
+  }
+ ],
+ "gemelo": []
+}

@@ -30,6 +30,8 @@ def paso(caso):
          "hipotesis": f"{caso['seq']} caso {caso['id']} ({', '.join(caso.get('spec', []))}): {caso.get('hipotesis', '')}"}
     if caso.get("auth"):
         p["auth"] = caso["auth"]
+    if caso.get("cuerpo_hex"):            # bytes que no son utf-8 (lote.py los manda tal cual)
+        p["cuerpo_hex"], p["cuerpo"] = caso["cuerpo_hex"], None
     return p
 
 def igual(st1, r1, st2, r2):
