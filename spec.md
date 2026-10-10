@@ -47,6 +47,7 @@ rutas, métodos, autenticación, forma del cuerpo y límites.
 | EN-15 | un json con la clave `m` repetida vale (la última gana) y un json con espacios alrededor también; con basura después del json, E100 | 2155, 2156, 2157 | probable |
 | EN-16 | la ruta no se decodifica: `/%6dsg` y `/%5f_reset` dan 404; `GET`, `HEAD` y `OPTIONS` sobre `/__reset`, y `HEAD /msg`, también dan 404 | 2410, 2422; 2387, 2427, 2432, 2414 | confirmado |
 | EN-17 | `/__reset` ignora su cuerpo, aunque no sea json; un `Content-Encoding: gzip` sobre un cuerpo que no está comprimido se ignora; un BOM delante del json da E100 | 2342, 2418, 1240; 2402; 1248, 2406 | confirmado |
+| EN-18 | sin probar contra el original (quedaron fuera tras un corte del clasificador, `ESTADO.md`): un cuerpo que es un número suelto (`123`) → el gemelo responde E102 como los otros json que no son objeto (71, 79, 1250); `HEAD /__reset` → 404 como `GET` y `OPTIONS` sobre esa ruta (2387, 2432); bytes que no son utf-8 → E100 | — | supuesto |
 
 ## 2 · integridad
 cómo valida el servicio que un mensaje está bien formado (el dígito de control).
