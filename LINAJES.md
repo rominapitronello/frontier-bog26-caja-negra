@@ -29,8 +29,8 @@ es psicometría aplicada a modelos: el sesgo del redactor como instrumento, no c
 | rarezas que parecen bugs y hay que copiar | sí | sí |
 
 **lectura (inferencia):**
-- **la estructura converge**: familias de errores, comandos ocultos, una trampa de inyección, bloqueo por tres fallos. un llm al que le piden «una caja negra para un hackatón» llega a una plantilla parecida. eso apoya que el autor real usó un modelo, o pensó como uno.
-- **en las reglas del banco, claude se parece más** (límite, huecos, comandos parecidos). **en la trampa, gpt se parece más** (engañar al investigador desde una respuesta).
+- **corrección de método (sol, 13:1x bog): la estructura que coincide no es evidencia.** el pedido ya incluía errores numerados, dígito de control, comandos ocultos, un límite y una trampa: que los diseños los tengan lo puso el pedido, no el linaje (lo escribió claude, y fue un error de diseño del experimento). sirven como evidencia solo las **decisiones que nadie pidió**: el contador por teléfono, las sesiones con usos, el truncado a 160, los prefijos de comando, el orden de los errores y la forma concreta de cada trampa. sol junta más muestras por linaje para separar linaje de instancia; esta es la muestra 1 de cada uno.
+- con esa corrección, lo que queda en pie es poco y débil: **huecos en la numeración de errores** (claude no los pidió: «E10 retirado») y **resolver comandos parecidos** (prefijos) se parecen a la caja real; **la trampa dirigida al investigador desde una respuesta** se parece más a gpt. una muestra por linaje: inferencia, no conclusión.
 - **hipótesis de romina:** las trampas las pensó un gpt y el banco (las reglas, el dataset) un claude. es compatible con la tabla; no está probada.
 - **el contexto deja huella:** los dos linajes eligieron el rut chileno porque trabajan con romina, desde chile. el autor real eligió el iban y una api web: no tenía ese contexto. el sesgo de contexto existe y se ve en los detalles, no en la estructura.
 
