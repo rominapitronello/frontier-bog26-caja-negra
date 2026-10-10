@@ -6,13 +6,45 @@
 | campo | valor |
 |---|---|
 | reto | **2 · la caja negra**: clonar un servicio http con estado, exacto, incluidos sus errores (`BRIEF.md`). romina lo elige en el portal (10:10–10:30 bog) |
-| quién lidera | claude opus 5.5, claude.ai con terminal, sesión `session_01MD7hzHJT22ntB2RKCY7mwt` (mandato de romina, 10 oct 11:1x; releva a `013ryBY6`). **su entorno sí tiene** `OPENROUTER_API_KEY`, `CAJA_URL`, `CAJA_TOKEN` y pi 1.1.0 |
+| quién lidera | **relevo en curso (10 oct 12:2x chile):** lidera la **sesión nueva** que romina abre con `ORIGINAL_URL` y `ORIGINAL_TOKEN` en su entorno. la sesión `01MD7…` (claude opus 5.5) lideró hasta aquí y deja el relevo abajo; no integra más |
 | repo de competencia | **este:** `rominapitronello/frontier-bog26-caja-negra` (creado por romina, 10 oct 11:4x; armado por claude, primer commit `076d8b6`). **público**: nada privado entra aquí |
 | fase | **reto 2 elegido** (romina, 09:56 bog). diseño hasta las 12:00 bog: `DISENO.md` reescrito con el material. **original:** `https://caja-negra-production-c64f.up.railway.app` (en `material/README.md`) |
 | cómo se anuncia la fase 2 | _(acordado con el juez antes de jugar)_ |
 | presupuesto usd | evento: 45 gastables + 5 de reserva. **además, ~200 propios de romina** para tokens fuera del presupuesto del evento (permitido). el gemelo no gasta tokens en el set oculto |
 | entregables provisionales | _(qué existe y corre)_ |
 | último tag verde | _(ninguno)_ |
+
+## relevo · para la sesión que lidera la ejecución (leer primero)
+
+lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto sigues sin preguntarle nada a romina.
+
+**tu entorno, en los primeros minutos**
+1. verifica por nombre, nunca por valor: `ORIGINAL_URL` y `ORIGINAL_TOKEN` existen y no están vacías. `CAJA_URL` / `CAJA_TOKEN`, si aparecen, son la caja del ensayo: no se usan.
+2. arma la vigilancia con el monitor de claude code (no con una tarea programada): `VIGILANCIA_IGNORA=<tu id de sesión> bash herramientas/vigilancia.sh` (timeout máximo; se re-arma al expirar). mira ramas, PR y tags de este repo.
+3. lee `BRIEF.md`, `material/README.md`, `DISENO.md`, `RUBRICA.md` y la bitácora de abajo.
+
+**lo que ya está**
+- `DISENO.md`: el diseño de una página con D1–D8. **se entrega a las 12:00 bog** (romina sube el enlace: `https://github.com/rominapitronello/frontier-bog26-caja-negra/blob/main/DISENO.md`; el diagrama es el mermaid de § 4, que github dibuja; si el portal pide imagen, exportarlo). falta: la objeción de fable (fable-02) y corregir lo que corresponda.
+- `spec.md`: las 7 secciones del material, vacías.
+- `herramientas/sonda.py`: un pedido al original → una línea de `experimentos.jsonl` en el formato del material (con `x_req`), headers completos en `experimentos_crudo.jsonl`, el token tapado, las respuestas de `X-Frontier-Infra` fuera del log. **probada contra un servidor local, nunca contra el original.**
+- `herramientas/control_formulas.py`: la búsqueda fuera de línea del dígito de control; ninguna fórmula simple calza.
+
+**en qué orden seguir** (el diseño lo justifica; el presupuesto es 8.000 pedidos y 10/s por token)
+1. **reproducir los 20 ejemplos** contra el original: `POST /__reset` y los 20 en orden, `--seq repro-1`. confirma determinismo (S1) y qué es `x_req`. ~21 pedidos. ojo: `/__reset` también hay que anotarlo, con la sonda (`POST /__reset`).
+2. **entrada** (spec § 1): otras rutas, otros métodos, sin token, otro token, cuerpo no json, cuerpo sin `m`, `/__reset` sin token y con otro token, `/health`. pocos pedidos, muchas filas de spec.
+3. **integridad** (spec § 2): el dígito de control. idea barata: para un mismo cuerpo, barrer el control de 00 a 99 y ver cuál acepta (≤ 100 pedidos por cuerpo; usar `PING`, que no cambia estado). con 10–20 cuerpos elegidos para separar hipótesis (largo, una letra distinta, mayúsculas) sale la función. también: ¿`3` y `03` valen igual? (ejemplo 4).
+4. **comandos y memoria** (spec § 3–4): `ALTA`, `CONSULTA`, `DEPOSITO`, `TRANSFER`, `ANULA`, `PING`; buscar comandos que no están en los ejemplos; el corte del límite (100.000 pasa, 120.000 no), si el límite es por operación o acumulado, anular un depósito, montos 0 / negativos / decimales, cuentas a sí mismas.
+5. **orden de los errores** (spec § 5): pedidos que rompen dos cosas a la vez.
+6. **el gemelo** (`DISENO.md` D3–D5): un proceso, estado en memoria, `/health`, `/__reset`, `/msg`, y lo de fuera de `/msg` igual al original. primer hito: 20/20 ejemplos con `medir.py`.
+7. **despliegue**: romina todavía no dice dónde (el original está en railway). pregúntale con el texto exacto si no llegó.
+8. **centinela desde las 15:00 bog**: repetir 3–4 secuencias canónicas cada pocos minutos; una repetición exacta que cambia es el incidente → `incident.md` y spec § 6.
+
+**plumas**
+- **fable**: abre ventana nueva (el entorno cambió). encargo vigente `encargos/fable-02-objecion-al-diseno.md`; después, D8 (un segundo gemelo solo con la spec).
+- **sol**: encargo vigente `encargos/sol-02-comparador.md` (`medir.py`). **PR #1** (servicio de práctica, antes del brief) no se fusiona; queda en su rama.
+- encargos `*-01-*`: reemplazados, genealogía.
+
+**con romina:** reporte en el orden de `AGENTS.md` § 4; cada entrega contra `RUBRICA.md`.
 
 ## decisiones (con hora y quién)
 
@@ -46,3 +78,4 @@
 - 10 oct 11:5x · claude (lidera): repo verificado **público** y revisado: sin llaves, uuid ni datos de personas. encargos escritos en `encargos/`: **fable-01** (objeción al diseño antes de las 11:30 bog y el espacio de los accesos raros, cómo los programaría un autor apurado) y **sol-01** (un servicio de práctica con varias formas de acceso no comunes y un cambio a mitad, para medir el aprendizaje del acceso sin tocar el real). las dos entregan en rama y PR; integra quien lidera.
 - 10 oct 12:0x · claude (lidera): **`CAJA_URL` y `CAJA_TOKEN` de este entorno son la caja del ensayo de anoche, no el original del reto 2** (romina): nadie las usa hoy. el original entra como `ORIGINAL_URL` / `ORIGINAL_TOKEN` cuando el material lo diga. un claude en chrome está copiando el material del reto. escrita `herramientas/sonda.py`: manda un pedido exacto con `http.client` y lo graba crudo en `log.jsonl` (headers en orden, el token tapado); el número de línea es la cita de la spec. probada contra un servidor local, no contra el original.
 - 10 oct 12:1x · claude (lidera, `01MD7…`): **material incorporado** en `material/` (readme + 20 ejemplos). lo que cambia: **los headers no se comparan** (solo status y cuerpo; json sin orden de claves); el log tiene formato fijo (`experimentos.jsonl`: id, seq, x_req, hipotesis, request, status, response, conclusion); la spec tiene 7 secciones y confianza confirmado / probable / supuesto; **8.000 pedidos por token y día, 10/s**; el set son 100 tests (40 de 1, 45 de 2–5, 15 de 6–12). `DISENO.md` reescrito (D1–D8). `spec.md` con las 7 secciones. `herramientas/sonda.py` escribe el formato del material, deja los headers completos aparte (`experimentos_crudo.jsonl`) y no anota las respuestas de la infraestructura (`X-Frontier-Infra`). **el dígito de control no sale de ninguna fórmula simple** (suma, crc, adler, módulos 2–999, mayúsculas o no, con o sin separador; script en el scratchpad de esta sesión, a reescribir en `herramientas/` si sirve): es la primera hipótesis a explorar contra el original.
+- 10 oct 12:2x · claude (`01MD7…`): **relevo.** para darle el token del original a quien lidera hay que editar el entorno, y eso pide sesiones nuevas (para claude y para fable). dejé arriba la sección «relevo» con el estado, el orden de la ejecución y qué tiene cada pluma. `herramientas/vigilancia.sh` queda en el repo para que la sesión nueva la arme. el material que copió el claude en chrome coincide con `material/` (los 20 ejemplos, idénticos). la vigilancia de esta sesión se apaga cuando cierre.
