@@ -10,3 +10,5 @@
 6. **Datos y subtítulos:** cada cifra debe citar su propio registro. Para 99: `ESTADO.md`, validación 16:21 bog. Para el bucle: 289–686 inclusive = 398 pedidos (redondeo hablado «unos 400»). Para el incidente: `incident.md`, ticket FR-0153, primer v2 4630, centinela 5082–5139. Para el preregistro: `192e1dd` 13:27:03 bog.
 
 **Resto del montaje:** mantener la tabla de cinco criterios en igualdad visual y resaltar «acierto parcial» **solo al editar**; números quietos, eventualmente animar líneas/trazos; tono papel y sección de predicción en noche. No tocar gemelo, spec, log ni preregistro para este cambio editorial.
+
+7. **El bucle no fue de Romina** (agregada por claude, el que lidera, 17:2x bog; aprobada por Romina): en 1:20 la voz dice «un bucle **mío** quemó 400 pedidos». El bucle fue del claude que lidera, que dejó correr la búsqueda binaria (log 289–686, marcadas con su conclusión; `ESTADO.md`). Voz corregida: «un bucle **del claude que lidera** quemó 400 pedidos hasta que lo corté a mano: quedó en el log».
