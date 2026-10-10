@@ -50,6 +50,8 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 
 ## decisiones (con hora y quién)
 
+- 10 oct 12:1x bog · romina: **regla de desvíos.** si detectamos con evidencia que una parte del plan tiene problemas, nos desviamos sin pedir permiso. cada desvío va en «desvíos del diseño» (abajo) con qué planeábamos, qué vimos (id del log) y qué cambiamos; al final el README lleva «en qué nos desviamos del diseño y por qué». `DISENO.md` no se toca: es la entrega de las 12:00. **después de la corrida 3 (~19:15 bog), solo arreglos chicos.**
+
 - 10 oct 11:3x bog · romina (agents.md § 11): **la búsqueda de comandos ocultos sigue**, con una lista de nombres que arma sol (sin token, sin tocar el original) y que quien lidera corre con `lote.py`. si el clasificador corta de nuevo, se anota y se le avisa. **sobre `NOTAS`: el token no se manda a ningún lado**; la nota va en spec § 7 como riesgo (RI-12) y el gemelo la repite tal cual. `DISENO.md` ya está entregado: no se toca.
 
 - 10 oct 11:2x bog · claude (lidera), sobre lo que pidió romina (jev de typesafe, anunciado en la videollamada; no antes del incidente; solo para lo que respondemos como supuesto; solo si mejora `sol-03`): **jev no entra al gemelo.** el único supuesto de la spec es AL-04 (`AC-10000`), inalcanzable para tests de ≤ 12 pedidos; `sol-03` ya da 141/141 con el gemelo determinista; y un modelo agrega red, latencia y azar a respuestas que se comparan exactas. no se llamó al modelo. `typesafe/jev-1.13` no aparece en la lista pública de openrouter; aparece `typesafe/jev-router` (precio variable). se reabre si tras el incidente queda un comportamiento marcado supuesto. detalle en `DISENO.md` D6.
@@ -67,6 +69,15 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 - 10 oct 11:4x · claude (lidera): con lo que romina contó del brief (5 ejemplos, ~100 tests ocultos, servicio sin documentación con acceso raro, el incidente cambia el acceso): **el acceso se aprende, no se escribe.** `DISENO.md` § 0, § 5 (tres capas: aprender el acceso, aprender qué decide, responder), D0 y D0b. un canario antes de cada lote; si falla, se re-descubre en vez de reintentar.
 
 - 10 oct 11:3x · claude (lidera), sobre lo que pidió romina (diseño primero, incidente entre 15 y 16 bog, pi no es obligatorio, repo llamativo que muestre cómo trabajamos y que corra): **dos planos.** investigar con modelos solo en las sorpresas; predecir sin modelos, sin red y sin llave (`sabado/jurado/DISENO.md`, D1, D2 y D5). por qué: el costo por caso es 0 y escala a cualquier tamaño del set oculto; lo aprendido es un modelo como dato que se vuelve a investigar cuando la caja cambia, así que no sobreajustamos, y el juez puede correrlo en su máquina sin depender de qué proveedor usamos. **cae si el brief exige un llm por caso**; entonces el juicio se vuelve predictor y se mide costo por caso contra la reserva.
+
+## desvíos del diseño (regla de romina, 12:1x bog; `DISENO.md` en `3357774` no se toca)
+
+| # | qué planeábamos (`DISENO.md`) | qué vimos (log) | qué cambiamos | cuándo |
+|---|---|---|---|---|
+| V1 | centinela **desde las 15:00** (§ 7) | lo armamos desde las 10:4x por la objeción de fable, y en su primera vuelta encontró que la spec v1 decía mal el orden límite/saldo (737; la repetición exacta 776–806 descartó un cambio del original) | centinela todo el día, cada 15 min, y cada 5 min entre las 14:50 y las 16:40 (`herramientas/centinela_ciclo.sh`) | 10:4x |
+| V2 | **«tag de la spec v1»** al detectar el incidente (§ 7) | el proxy de la sesión rechaza el push de tags (403; `verde-01` existe solo en local) | la versión de la mañana se congela como archivo (`gemelo/modelo-manana.json`) y las líneas viejas del log se marcan `"fase": "manana"` (`incident.md`, protocolo) | 11:3x |
+| V3 | D7: **exploración por hipótesis, sin fuzzer aleatorio** | corrida 1: 83/100 (11:06) mientras las secuencias escritas desde la spec daban 141/141 (1003–1183): lo conocido estaba cubierto y los 17 estaban fuera de lo que sabíamos preguntar | un **fuzzer diferencial** chico y con semilla (`herramientas/fuzzer.py`): secuencias al azar sobre los bordes conocidos, comparadas pedido a pedido con el gemelo. 30 secuencias, 0 diferencias (1281–1613) | 11:2x |
+| V4 | D8: **fable escribe un segundo gemelo solo con la spec** | las predicciones escritas solo desde la spec ya miden la spec fila por fila: sol 141/141 (1003–1183), fable 238/238 (1905–2180), sin construir otro servidor | la spec se prueba con **predicciones ciegas** (`sol-03`, `fable-04`, `sol-04`), no con un segundo gemelo; fable hizo venenos en vez del gemelo | 12:0x |
 
 ## objeciones abiertas
 

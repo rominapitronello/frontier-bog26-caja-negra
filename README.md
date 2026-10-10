@@ -63,6 +63,15 @@ nuestras propias mediciones, sin gastar validaciones: el gemelo reproduce los 20
 - **reglas con estado que los ejemplos no muestran:** el límite de 100.000 no aplica entre cuentas del mismo titular (por nombre); tres transferencias rechazadas seguidas bloquean la cuenta (`E510`) hasta un depósito; anular puede dejar saldos negativos.
 - **el orden exacto de 20 códigos de error**, de la ruta al saldo, con un pedido que rompe dos cosas a la vez para cada par.
 
+## en qué nos desviamos del diseño y por qué
+
+el diseño se entregó a las 12:00 (`DISENO.md`, commit `3357774`) y no se toca. regla de romina: si la evidencia muestra que una parte del plan falla, nos desviamos sin pedir permiso y lo escribimos (`ESTADO.md`, «desvíos del diseño»). hasta ahora:
+
+- **el centinela empezó a las 10:4x, no a las 15:00.** en su primera vuelta encontró que nuestra propia spec decía mal el orden entre el límite y el saldo (log 737). sin él lo habríamos entregado así.
+- **la versión de la mañana se congela como archivo, no como tag:** el entorno no deja subir tags.
+- **sumamos un fuzzer diferencial**, que el diseño había descartado: con 83/100 en el set y 141/141 en nuestras propias secuencias, lo que fallaba estaba fuera de lo que sabíamos preguntar. no encontró diferencias en lo conocido (1281–1613), y eso también es un resultado.
+- **la spec se prueba con predicciones ciegas y no con un segundo gemelo:** otro modelo lee solo la spec y predice qué responde el original. sol acertó 141 de 141 y fable 238 de 238.
+
 ## cómo trabajamos
 
 este repo lo escribieron **una persona y varios modelos que firman lo que escriben**. no es un adorno: es parte de lo que estamos mostrando.
