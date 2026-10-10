@@ -38,6 +38,7 @@ cómo leer este repo:
 ## video
 
 - [video/](video/): láminas estáticas del video de 2 minutos (svg 1920×1080), cada una con su fuente en el pie; las que dependen del resultado final quedan en null hasta tenerlo
+- [pitch/](pitch/): el pitch del demo day, de sol: ocho láminas en una sola página html sin dependencias (`pitch/index.html`), con los datos quietos y la fuente de cada cifra al pie; la nota final queda en null hasta tenerla
 
 ## contexto
 
