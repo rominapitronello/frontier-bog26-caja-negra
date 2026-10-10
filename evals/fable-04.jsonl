@@ -1,0 +1,238 @@
+{"id":1,"seq":"f04-01","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"origen"}
+{"id":2,"seq":"f04-01","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"destino"}
+{"id":3,"seq":"f04-01","request":{"m":"TRANSFER;AC-0001;AC-0002;500;85"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"saldo 0: E507, racha 1"}
+{"id":4,"seq":"f04-01","request":{"m":"TRANSFER;AC-0001;AC-0002;500;85"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"racha 2"}
+{"id":5,"seq":"f04-01","request":{"m":"TRANSFER;AC-0001;AC-0002;500;85"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"racha 3: bloqueada"}
+{"id":6,"seq":"f04-01","request":{"m":"TRANSFER;AC-0001;AC-0009;1;25"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["TR-07"],"hipotesis":"doble falla: origen bloqueado y destino inexistente → existencia antes que bloqueo (TR-07)"}
+{"id":7,"seq":"f04-01","request":{"m":"TRANSFER;AC-0001;AC-0001;1;71"},"status":400,"response":{"error":"E304","mensaje":"origen y destino iguales"},"spec":["TR-07"],"hipotesis":"doble falla: origen bloqueado e igual al destino → iguales antes que bloqueo"}
+{"id":8,"seq":"f04-01","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":409,"response":{"error":"E510","mensaje":"cuenta bloqueada"},"spec":["TR-07","TR-08"],"hipotesis":"sigue bloqueada: E401 y E304 no cortan la racha"}
+{"id":9,"seq":"f04-02","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"origen"}
+{"id":10,"seq":"f04-02","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"destino"}
+{"id":11,"seq":"f04-02","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":12,"seq":"f04-02","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":13,"seq":"f04-02","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":14,"seq":"f04-02","request":{"m":"TRANSFER;AC-0001;AC-0002;0;44"},"status":400,"response":{"error":"E303","mensaje":"monto inválido"},"spec":["TR-07"],"hipotesis":"doble falla: bloqueada y monto inválido → E303 antes que bloqueo"}
+{"id":15,"seq":"f04-02","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":409,"response":{"error":"E510","mensaje":"cuenta bloqueada"},"spec":["TR-07","TR-08"],"hipotesis":"bloqueada"}
+{"id":16,"seq":"f04-02","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":0},"spec":["CO-01","CM-01"],"hipotesis":"el bloqueo no afecta consultar"}
+{"id":17,"seq":"f04-03","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"origen"}
+{"id":18,"seq":"f04-03","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"destino"}
+{"id":19,"seq":"f04-03","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":20,"seq":"f04-03","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":21,"seq":"f04-03","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":22,"seq":"f04-03","request":{"m":"DEPOSITO;AC-0001;1;28"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"un depósito de 1 reinicia la racha (RI-11)"}
+{"id":23,"seq":"f04-03","request":{"m":"ANULA;OP-0001;72"},"status":200,"response":{"ok":true,"anulada":"OP-0001"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"anular ese depósito: saldo vuelve a 0"}
+{"id":24,"seq":"f04-03","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"la racha ya estaba en 0 y anular no la toca: E507 (racha 1), no E510","ambiguo":"TR-08 dice que el depósito reinicia y que anular no reinicia; no dice que anular el depósito restaure la racha anterior. predigo que no: E507 y no E510"}
+{"id":25,"seq":"f04-04","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":26,"seq":"f04-04","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":27,"seq":"f04-04","request":{"m":"DEPOSITO;AC-0002;50;45"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"B con 50"}
+{"id":28,"seq":"f04-04","request":{"m":"TRANSFER;AC-0001;AC-0002;10;13"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"A saldo 0: E507, racha 1"}
+{"id":29,"seq":"f04-04","request":{"m":"TRANSFER;AC-0001;AC-0002;200000;33"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"titulares distintos y sobre el límite: E506 antes que saldo, racha 2"}
+{"id":30,"seq":"f04-04","request":{"m":"TRANSFER;AC-0001;AC-0002;10;13"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, racha 3: A bloqueada"}
+{"id":31,"seq":"f04-04","request":{"m":"TRANSFER;AC-0002;AC-0001;10;70"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"B no está bloqueada: pasa, A recibe 10"}
+{"id":32,"seq":"f04-04","request":{"m":"TRANSFER;AC-0001;AC-0002;10;13"},"status":409,"response":{"error":"E510","mensaje":"cuenta bloqueada"},"spec":["TR-07","TR-08"],"hipotesis":"A tiene saldo 10 pero recibir no reinicia la racha: E510"}
+{"id":33,"seq":"f04-05","request":{"m":"ALTA;Teo;45"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A, titular Teo"}
+{"id":34,"seq":"f04-05","request":{"m":"ALTA;Teo;45"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B, titular Teo"}
+{"id":35,"seq":"f04-05","request":{"m":"TRANSFER;AC-0001;AC-0002;5;29"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":36,"seq":"f04-05","request":{"m":"TRANSFER;AC-0001;AC-0002;5;29"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":37,"seq":"f04-05","request":{"m":"TRANSFER;AC-0001;AC-0002;5;29"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":38,"seq":"f04-05","request":{"m":"DEPOSITO;AC-0001;300000;48"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"desbloquea y fondea"}
+{"id":39,"seq":"f04-05","request":{"m":"TRANSFER;AC-0001;AC-0002;250000;92"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"mismo titular: sin límite; desbloqueada: pasa"}
+{"id":40,"seq":"f04-05","request":{"m":"TRANSFER;AC-0001;AC-0002;60000;32"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"saldo 50000 < 60000: E507 (racha 1, no bloqueada)"}
+{"id":41,"seq":"f04-06","request":{"m":"ALTA;Vera;3"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":42,"seq":"f04-06","request":{"m":"ALTA;Gael;23"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":43,"seq":"f04-06","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":44,"seq":"f04-06","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":45,"seq":"f04-06","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":46,"seq":"f04-06","request":{"m":"TRANSFER;AC-0001;AC-0002;9999999999;58"},"status":409,"response":{"error":"E510","mensaje":"cuenta bloqueada"},"spec":["TR-07","TR-08"],"hipotesis":"bloqueada + sobre el límite + sin saldo → bloqueo gana (TR-07)"}
+{"id":47,"seq":"f04-06","request":{"m":"DEPOSITO;AC-0001;1;28"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"desbloquea"}
+{"id":48,"seq":"f04-06","request":{"m":"TRANSFER;AC-0001;AC-0002;9999999999;58"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"sin bloqueo: límite antes que saldo (titulares distintos)"}
+{"id":49,"seq":"f04-07","request":{"m":"ALTA;Rosa;87"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":50,"seq":"f04-07","request":{"m":"ALTA;Iker;11"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":51,"seq":"f04-07","request":{"m":"DEPOSITO;AC-0001;10;77"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"A con 10"}
+{"id":52,"seq":"f04-07","request":{"m":"TRANSFER;AC-0001;AC-0002;20;80"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, racha 1"}
+{"id":53,"seq":"f04-07","request":{"m":"TRANSFER;AC-0001;AC-0002;20;80"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, racha 2"}
+{"id":54,"seq":"f04-07","request":{"m":"TRANSFER;AC-0001;AC-0002;10;13"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"saldo igual al monto alcanza (TR-05): pasa y la racha vuelve a 0"}
+{"id":55,"seq":"f04-07","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"si la racha se reinició: E507 (racha 1); si no: sería la tercera y daría E510"}
+{"id":56,"seq":"f04-07","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, racha 2: sigue sin bloquear"}
+{"id":57,"seq":"f04-08","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":58,"seq":"f04-08","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":59,"seq":"f04-08","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":60,"seq":"f04-08","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":61,"seq":"f04-08","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":62,"seq":"f04-08","request":{"m":"ANULA;OP-0001;72"},"status":404,"response":{"error":"E402","mensaje":"operación inexistente"},"spec":["AN-05","ME-03"],"hipotesis":"las tres transferencias fallidas no consumieron OP (ME-03): no hay nada que anular"}
+{"id":63,"seq":"f04-09","request":{"m":"ANULA;OP-0001;72"},"status":404,"response":{"error":"E402","mensaje":"operación inexistente"},"spec":["AN-05","ME-03"],"hipotesis":"sin operaciones: E402"}
+{"id":64,"seq":"f04-09","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":65,"seq":"f04-09","request":{"m":"DEPOSITO;AC-0001;100;82"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":66,"seq":"f04-09","request":{"m":"ANULA;OP-0001;72"},"status":200,"response":{"ok":true,"anulada":"OP-0001"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"revierte: saldo 0"}
+{"id":67,"seq":"f04-09","request":{"m":"ANULA;OP-0001;72"},"status":200,"response":{"ok":false,"motivo":"ya anulada"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"segunda anulación: 200 con ok:false"}
+{"id":68,"seq":"f04-09","request":{"m":"DEPOSITO;AC-0001;5;16"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["DE-01","TR-08"],"hipotesis":"anular no consumió OP: este es OP-0002"}
+{"id":69,"seq":"f04-09","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":5},"spec":["CO-01","CM-01"],"hipotesis":"saldo 5"}
+{"id":70,"seq":"f04-10","request":{"m":"ALTA;Bruno;78"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":71,"seq":"f04-10","request":{"m":"ALTA;Pilar;93"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":72,"seq":"f04-10","request":{"m":"DEPOSITO;AC-0001;100;82"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":73,"seq":"f04-10","request":{"m":"TRANSFER;AC-0001;AC-0002;100;24"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"OP-0002: A 0, B 100"}
+{"id":74,"seq":"f04-10","request":{"m":"ANULA;OP-0001;72"},"status":200,"response":{"ok":true,"anulada":"OP-0001"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"anular el depósito gastado: A queda en -100"}
+{"id":75,"seq":"f04-10","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":-100},"spec":["CO-01","CM-01"],"hipotesis":"saldo -100"}
+{"id":76,"seq":"f04-10","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"saldo negativo no alcanza para nada (ME-08): E507"}
+{"id":77,"seq":"f04-10","request":{"m":"TRANSFER;AC-0002;AC-0001;100;12"},"status":200,"response":{"status":"recieved","operacionId":"OP-0003"},"spec":["TR-01","TR-08"],"hipotesis":"B tiene 100: pasa, A vuelve a 0"}
+{"id":78,"seq":"f04-11","request":{"m":"ALTA;Bruno;78"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":79,"seq":"f04-11","request":{"m":"ALTA;Pilar;93"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":80,"seq":"f04-11","request":{"m":"ALTA;Teo;45"},"status":201,"response":{"cuentaId":"AC-0003"},"spec":["AL-01","AL-02"],"hipotesis":"C"}
+{"id":81,"seq":"f04-11","request":{"m":"DEPOSITO;AC-0001;100;82"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":82,"seq":"f04-11","request":{"m":"TRANSFER;AC-0001;AC-0002;100;24"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"OP-0002: B 100"}
+{"id":83,"seq":"f04-11","request":{"m":"TRANSFER;AC-0002;AC-0003;100;26"},"status":200,"response":{"status":"recieved","operacionId":"OP-0003"},"spec":["TR-01","TR-08"],"hipotesis":"OP-0003: B 0, C 100"}
+{"id":84,"seq":"f04-11","request":{"m":"ANULA;OP-0002;69"},"status":200,"response":{"ok":true,"anulada":"OP-0002"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"A recupera 100, B queda en -100 (AN-03)"}
+{"id":85,"seq":"f04-11","request":{"m":"Consulta;AC-0002;11"},"status":200,"response":{"cuenta_id":"AC-0002","saldo":-100},"spec":["CO-01","CM-01"],"hipotesis":"saldo -100"}
+{"id":86,"seq":"f04-12","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":87,"seq":"f04-12","request":{"m":"DEPOSITO;AC-0001;10;77"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":88,"seq":"f04-12","request":{},"status":200,"response":{"ok":true},"spec":["EN-07","ME-02"],"hipotesis":"reset a mitad de secuencia","metodo":"POST","ruta":"/__reset"}
+{"id":89,"seq":"f04-12","request":{"m":"ANULA;OP-0001;72"},"status":404,"response":{"error":"E402","mensaje":"operación inexistente"},"spec":["AN-05","ME-03"],"hipotesis":"el reset borró las operaciones"}
+{"id":90,"seq":"f04-12","request":{"m":"Consulta;AC-0001;14"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["CO-02","CO-03","CM-01"],"hipotesis":"y las cuentas"}
+{"id":91,"seq":"f04-12","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"los ids vuelven a AC-0001"}
+{"id":92,"seq":"f04-13","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":93,"seq":"f04-13","request":{"m":"DEPOSITO;AC-0001;10;77"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":94,"seq":"f04-13","request":{"m":"ANULA;OP-01;55"},"status":404,"response":{"error":"E402","mensaje":"operación inexistente"},"spec":["AN-05","ME-03"],"hipotesis":"id con otro ancho: no existe (comparación exacta)","ambiguo":"AN-05 probó op-0001 y un id de cuenta, no OP-01; predigo E402 por CO-03 y AN-05"}
+{"id":95,"seq":"f04-13","request":{"m":"ANULA;OP-0001;x;45"},"status":400,"response":{"error":"E302","mensaje":"aridad inválida"},"spec":["CM-02","ER-20"],"hipotesis":"aridad antes que la regla del comando"}
+{"id":96,"seq":"f04-13","request":{"m":"ANULA;OP-0001;1"},"status":400,"response":{"error":"E202","mensaje":"control inválido"},"spec":["IN-04","IN-11"],"hipotesis":"control inválido antes que todo lo del comando"}
+{"id":97,"seq":"f04-13","request":{"m":"ANULA;OP-0001;72"},"status":200,"response":{"ok":true,"anulada":"OP-0001"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"sigue sin anular tras los tres fallos"}
+{"id":98,"seq":"f04-14","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A, titular «Noa»"}
+{"id":99,"seq":"f04-14","request":{"m":"ALTA;Noa ;28"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B, titular «Noa » (el espacio no aporta al control: mismo control que «Noa»)"}
+{"id":100,"seq":"f04-14","request":{"m":"DEPOSITO;AC-0001;200000;27"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"fondeo"}
+{"id":101,"seq":"f04-14","request":{"m":"TRANSFER;AC-0001;AC-0002;150000;71"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"si el titular se compara exacto, «Noa» ≠ «Noa »: E506","ambiguo":"TR-06 compara exacto («Lucia» ≠ «lucia»), no probó espacios; predigo titulares distintos"}
+{"id":102,"seq":"f04-14","request":{"m":"Transfer;AC-0001;AC-0002;100000;12"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-06","CM-01"],"hipotesis":"en el límite: pasa"}
+{"id":103,"seq":"f04-15","request":{"m":"ALTA; ;85"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A, titular « »"}
+{"id":104,"seq":"f04-15","request":{"m":"ALTA; ;85"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B, titular « »"}
+{"id":105,"seq":"f04-15","request":{"m":"DEPOSITO;AC-0001;300000;48"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"fondeo"}
+{"id":106,"seq":"f04-15","request":{"m":"TRANSFER;AC-0001;AC-0002;250000;92"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"mismo titular (« » = « »): sin límite","ambiguo":"AL-02 acepta un espacio como nombre; TR-06 no probó un titular en blanco; predigo mismo titular"}
+{"id":107,"seq":"f04-15","request":{"m":"Consulta;AC-0002;11"},"status":200,"response":{"cuenta_id":"AC-0002","saldo":250000},"spec":["CO-01","CM-01"],"hipotesis":"saldo 250000"}
+{"id":108,"seq":"f04-16","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":109,"seq":"f04-16","request":{"m":"ALTA;INES;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":110,"seq":"f04-16","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0003"},"spec":["AL-01","AL-02"],"hipotesis":"C"}
+{"id":111,"seq":"f04-16","request":{"m":"DEPOSITO;AC-0001;500000;90"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"fondeo"}
+{"id":112,"seq":"f04-16","request":{"m":"TRANSFER;AC-0001;AC-0002;200000;33"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"«Ines» ≠ «INES»: límite"}
+{"id":113,"seq":"f04-16","request":{"m":"TRANSFER;AC-0001;AC-0003;200000;49"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"«Ines» = «Ines»: sin límite"}
+{"id":114,"seq":"f04-17","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":115,"seq":"f04-17","request":{"m":"ALTA;Inés;54"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B (é no aporta al control)"}
+{"id":116,"seq":"f04-17","request":{"m":"ALTA;Inés;54"},"status":201,"response":{"cuentaId":"AC-0003"},"spec":["AL-01","AL-02"],"hipotesis":"C"}
+{"id":117,"seq":"f04-17","request":{"m":"DEPOSITO;AC-0002;500000;9"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"fondeo en B"}
+{"id":118,"seq":"f04-17","request":{"m":"TRANSFER;AC-0002;AC-0001;150000;2"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"«Inés» ≠ «Ines»: límite","ambiguo":"TR-06 compara exacto; no probó tildes. predigo distintos"}
+{"id":119,"seq":"f04-17","request":{"m":"TRANSFER;AC-0002;AC-0003;150000;34"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"«Inés» = «Inés»: sin límite"}
+{"id":120,"seq":"f04-18","request":{"m":"ALTA;Vera;3"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":121,"seq":"f04-18","request":{"m":"ALTA;Gael;23"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":122,"seq":"f04-18","request":{"m":"DEPOSITO;AC-0001;300000;48"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"fondeo"}
+{"id":123,"seq":"f04-18","request":{"m":"Transfer;AC-0001;AC-0002;100000;12"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-06","CM-01"],"hipotesis":"100.000 pasa (comando con mayúscula inicial para no repetir el ejemplo 10 literal)"}
+{"id":124,"seq":"f04-18","request":{"m":"TRANSFER;AC-0001;AC-0002;100001;9"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"100.001 no"}
+{"id":125,"seq":"f04-18","request":{"m":"Transfer;AC-0001;AC-0002;100000;12"},"status":200,"response":{"status":"recieved","operacionId":"OP-0003"},"spec":["TR-06","ME-07"],"hipotesis":"no acumula: otros 100.000 pasan"}
+{"id":126,"seq":"f04-19","request":{"m":"ALTA;Rosa;87"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":127,"seq":"f04-19","request":{"m":"ALTA;Iker;11"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":128,"seq":"f04-19","request":{"m":"DEPOSITO;AC-0001;127;1"},"status":400,"response":{"error":"E202","mensaje":"control inválido"},"spec":["IN-06","IN-04"],"hipotesis":"resto 0: el control es 98, no 1"}
+{"id":129,"seq":"f04-19","request":{"m":"DEPOSITO;AC-0001;127;98"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["IN-06","DE-01"],"hipotesis":"con 98 pasa (OP-0001: el E202 no consumió OP)"}
+{"id":130,"seq":"f04-19","request":{"m":"TRANSFER;AC-0001;AC-0002;205;97"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["IN-06","TR-05"],"hipotesis":"resto 1: control 97; monto mayor que el saldo → E507 (el control pasó)"}
+{"id":131,"seq":"f04-19","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":127},"spec":["CO-01","CM-01"],"hipotesis":"saldo del depósito"}
+{"id":132,"seq":"f04-20","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":133,"seq":"f04-20","request":{"m":"DEPOSITO;AC-0001;34;05"},"status":400,"response":{"error":"E202","mensaje":"control inválido"},"spec":["IN-07"],"hipotesis":"control 5 escrito 05: bien formado, inválido"}
+{"id":134,"seq":"f04-20","request":{"m":"DEPOSITO;AC-0001;34;005"},"status":400,"response":{"error":"E201","mensaje":"control mal formado"},"spec":["IN-03"],"hipotesis":"005: tres dígitos, mal formado"}
+{"id":135,"seq":"f04-20","request":{"m":"DEPOSITO;AC-0001;34;5"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["IN-07","DE-01"],"hipotesis":"con 5 pasa: OP-0001"}
+{"id":136,"seq":"f04-20","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":34},"spec":["CO-01","CM-01"],"hipotesis":"saldo"}
+{"id":137,"seq":"f04-21","request":{"m":"ALTA;Vera;3"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":138,"seq":"f04-21","request":{"m":"ALTA;Gael;23"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":139,"seq":"f04-21","request":{"m":"DEPOSITO;AC-0001;9999999999;4"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"10 cifras: pasa"}
+{"id":140,"seq":"f04-21","request":{"m":"TRANSFER;AC-0001;AC-0002;10000000000;21"},"status":400,"response":{"error":"E303","mensaje":"monto inválido"},"spec":["TR-07"],"hipotesis":"11 cifras: inválido"}
+{"id":141,"seq":"f04-21","request":{"m":"TRANSFER;AC-0001;AC-0002;1 ;41"},"status":400,"response":{"error":"E303","mensaje":"monto inválido"},"spec":["TR-07"],"hipotesis":"espacio al final: el control no lo ve, el monto sí (sin recortar)"}
+{"id":142,"seq":"f04-21","request":{"m":"TRANSFER;AC-0001;AC-0002;0999999999;6"},"status":400,"response":{"error":"E303","mensaje":"monto inválido"},"spec":["TR-07"],"hipotesis":"cero a la izquierda"}
+{"id":143,"seq":"f04-21","request":{"m":"TRANSFER;AC-0001;AC-0002;9999999999;58"},"status":422,"response":{"error":"E506","mensaje":"límite excedido"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"válido pero sobre el límite entre titulares distintos"}
+{"id":144,"seq":"f04-22","request":{"m":"ALTA;Teo;45"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":145,"seq":"f04-22","request":{"m":"ALTA;Teo;45"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":146,"seq":"f04-22","request":{"m":"DEPOSITO;AC-0001;9999999999;4"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"fondeo"}
+{"id":147,"seq":"f04-22","request":{"m":"TRANSFER;AC-0001;AC-0002;9999999999;58"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"sin límite y saldo igual al monto: pasa"}
+{"id":148,"seq":"f04-22","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":0},"spec":["CO-01","CM-01"],"hipotesis":"0"}
+{"id":149,"seq":"f04-22","request":{"m":"Consulta;AC-0002;11"},"status":200,"response":{"cuenta_id":"AC-0002","saldo":9999999999},"spec":["CO-01","CM-01"],"hipotesis":"9999999999"}
+{"id":150,"seq":"f04-23","request":{"m":"CONSULTA;;5X"},"status":400,"response":{"error":"E104","mensaje":"segmento vacío"},"spec":["IN-02","IN-03","ER-20"],"hipotesis":"segmento vacío y control mal formado → E104 (par sin evidencia en ER-20)"}
+{"id":151,"seq":"f04-23","request":{"m":"DEPOSITO;AC-0001;abc;9"},"status":400,"response":{"error":"E202","mensaje":"control inválido"},"spec":["IN-04","IN-11"],"hipotesis":"control inválido y monto inválido → control"}
+{"id":152,"seq":"f04-23","request":{"m":"TRANSFER;AC-0009;AC-0009;abc;61"},"status":400,"response":{"error":"E303","mensaje":"monto inválido"},"spec":["TR-07"],"hipotesis":"monto inválido, iguales e inexistentes → monto"}
+{"id":153,"seq":"f04-23","request":{"m":"TRANSFER;AC-0009;AC-0009;5;32"},"status":400,"response":{"error":"E304","mensaje":"origen y destino iguales"},"spec":["TR-07"],"hipotesis":"iguales e inexistentes → iguales antes que existencia"}
+{"id":154,"seq":"f04-24","request":{"m":"SALDO;;"},"status":400,"response":{"error":"E104","mensaje":"segmento vacío"},"spec":["IN-02","ER-20"],"hipotesis":"segmento vacío antes que comando"}
+{"id":155,"seq":"f04-24","request":{"m":"SALDOS;AC-0002;5X"},"status":400,"response":{"error":"E201","mensaje":"control mal formado"},"spec":["IN-03","IN-11"],"hipotesis":"control mal formado antes que comando"}
+{"id":156,"seq":"f04-24","request":{"m":"SALDOS;AC-0002;1"},"status":400,"response":{"error":"E202","mensaje":"control inválido"},"spec":["IN-04","IN-11"],"hipotesis":"control inválido antes que comando"}
+{"id":157,"seq":"f04-24","request":{"m":"SALDOS;AC-0002;35"},"status":400,"response":{"error":"E301","mensaje":"comando desconocido "},"spec":["DC-01","DC-02"],"hipotesis":"control válido: comando desconocido, lejos de todos: sin sugerencia"}
+{"id":158,"seq":"f04-25","request":{"m":"PONG;98"},"status":400,"response":{"error":"E301","mensaje":"comando desconocido ","sugerencia":"PING"},"spec":["DC-02"],"hipotesis":"PONG → PING a 1"}
+{"id":159,"seq":"f04-25","request":{"m":"NOTA;88"},"status":400,"response":{"error":"E301","mensaje":"comando desconocido ","sugerencia":"NOTAS"},"spec":["DC-02"],"hipotesis":"NOTA → NOTAS a 1"}
+{"id":160,"seq":"f04-25","request":{"m":"ALTO;50"},"status":400,"response":{"error":"E301","mensaje":"comando desconocido ","sugerencia":"ALTA"},"spec":["DC-02","DC-03"],"hipotesis":"ALTO → ALTA a 1 (HALT queda a 3)"}
+{"id":161,"seq":"f04-25","request":{"m":"TRANSFERS;AC-0001;AC-0002;5;68"},"status":400,"response":{"error":"E301","mensaje":"comando desconocido ","sugerencia":"TRANSFER"},"spec":["DC-02","IN-11"],"hipotesis":"TRANSFERS → TRANSFER a 1; con argumentos, igual E301 (la aridad va después)"}
+{"id":162,"seq":"f04-26","request":{"m":"pingg;28"},"status":400,"response":{"error":"E301","mensaje":"comando desconocido ","sugerencia":"PING"},"spec":["DC-02","CM-01","IN-11"],"hipotesis":"PINGG → PING a 1: desconocido (con control válido, porque no es PING y sí lo valida)"}
+{"id":163,"seq":"f04-26","request":{"m":"PING;64;64"},"status":400,"response":{"error":"E302","mensaje":"aridad inválida"},"spec":["PI-02","CM-02"],"hipotesis":"PING con un argumento: aridad"}
+{"id":164,"seq":"f04-26","request":{"m":"ping;ZZ"},"status":200,"response":{"pong":true},"spec":["PI-01","IN-10","CM-01"],"hipotesis":"minúsculas y control no numérico: pong"}
+{"id":165,"seq":"f04-27","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":166,"seq":"f04-27","request":{"m":"HALT;1;2"},"status":400,"response":{"error":"E202","mensaje":"control inválido"},"spec":["IN-11","HA-02"],"hipotesis":"control inválido antes que el comando: no detiene"}
+{"id":167,"seq":"f04-27","request":{"m":"PING;7"},"status":200,"response":{"pong":true},"spec":["PI-01","IN-10"],"hipotesis":"sigue vivo"}
+{"id":168,"seq":"f04-27","request":{"m":"HALT;1;1;81"},"status":400,"response":{"error":"E302","mensaje":"aridad inválida"},"spec":["HA-04"],"hipotesis":"dos argumentos: aridad, no detiene"}
+{"id":169,"seq":"f04-27","request":{"m":"PING;7"},"status":200,"response":{"pong":true},"spec":["PI-01","IN-10"],"hipotesis":"sigue vivo"}
+{"id":170,"seq":"f04-27","request":{"m":"HALT;1 ;19"},"status":409,"response":{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"},"spec":["HA-05"],"hipotesis":"«1 » no es «1» como texto (el control es el mismo que HALT;1): E520 y no detiene","ambiguo":"HA-05 compara como texto y probó 0, 2 y 01; no probó espacios. predigo E520"}
+{"id":171,"seq":"f04-27","request":{"m":"PING;7"},"status":200,"response":{"pong":true},"spec":["PI-01","IN-10"],"hipotesis":"sigue vivo"}
+{"id":172,"seq":"f04-28","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":173,"seq":"f04-28","request":{"m":"DEPOSITO;AC-0001;10;77"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":174,"seq":"f04-28","request":{"m":"HALT;1;19"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["HA-02"],"hipotesis":"detiene"}
+{"id":175,"seq":"f04-28","request":{"m":"Consulta;AC-0001;14"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["CO-02","CO-03","CM-01"],"hipotesis":"detenido: E599"}
+{"id":176,"seq":"f04-28","request":{},"status":401,"response":{"error":"E001","mensaje":"no autorizado"},"spec":["EN-07","ER-20"],"hipotesis":"otro token: 401, y no repara","metodo":"POST","ruta":"/__reset","auth":"otro token"}
+{"id":177,"seq":"f04-28","request":{"m":"PING;7"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["PI-01","IN-10"],"hipotesis":"sigue detenido"}
+{"id":178,"seq":"f04-28","request":{},"status":200,"response":{"ok":true},"spec":["EN-07","ME-02"],"hipotesis":"el reset con el token repara","metodo":"POST","ruta":"/__reset"}
+{"id":179,"seq":"f04-28","request":{"m":"Consulta;AC-0001;14"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["CO-02","CO-03","CM-01"],"hipotesis":"y borró la cuenta"}
+{"id":180,"seq":"f04-29","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":181,"seq":"f04-29","request":{"m":"HALT;1;19"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["HA-02"],"hipotesis":"detiene"}
+{"id":182,"seq":"f04-29","request":{},"status":200,"response":{"ok":true},"spec":["HA-03","EN-06"],"hipotesis":"health sigue en 200","metodo":"GET","ruta":"/health"}
+{"id":183,"seq":"f04-29","request":{},"status":401,"response":{"error":"E001","mensaje":"no autorizado"},"spec":["EN-06","ER-20"],"hipotesis":"health sin token: 401 aunque detenido","metodo":"GET","ruta":"/health","auth":"sin token"}
+{"id":184,"seq":"f04-29","request":{"m":"PING;7"},"status":401,"response":{"error":"E001","mensaje":"no autorizado"},"spec":["ER-20"],"hipotesis":"msg sin token: token antes que detenido","metodo":"POST","ruta":"/msg","auth":"sin token"}
+{"id":185,"seq":"f04-29","request":{},"status":404,"response":{"error":"E404","mensaje":"ruta desconocida"},"spec":["EN-01","HA-03"],"hipotesis":"GET en /__reset: ruta antes que detenido","metodo":"GET","ruta":"/__reset"}
+{"id":186,"seq":"f04-30","request":{"m":"HALT;01;14"},"status":409,"response":{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"},"spec":["HA-05"],"hipotesis":"01 no es 1"}
+{"id":187,"seq":"f04-30","request":{"m":"HALT;1.0;84"},"status":409,"response":{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"},"spec":["HA-05"],"hipotesis":"1.0 no es 1"}
+{"id":188,"seq":"f04-30","request":{"m":"HALT; 1;19"},"status":409,"response":{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"},"spec":["HA-05"],"hipotesis":"espacio delante: no es 1 (mismo control que HALT;1)","ambiguo":"HA-05 no probó espacios; predigo E520"}
+{"id":189,"seq":"f04-30","request":{"m":"halt;1;19"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["HA-05","CM-01"],"hipotesis":"minúsculas: detiene"}
+{"id":190,"seq":"f04-30","request":{"m":"PING;7"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["PI-01","IN-10"],"hipotesis":"detenido"}
+{"id":191,"seq":"f04-31","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":192,"seq":"f04-31","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":193,"seq":"f04-31","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":194,"seq":"f04-31","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":195,"seq":"f04-31","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":196,"seq":"f04-31","request":{"m":"HALT;1;19"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["HA-02"],"hipotesis":"detiene"}
+{"id":197,"seq":"f04-31","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":503,"response":{"error":"E599","mensaje":"service halted"},"spec":["TR-07"],"hipotesis":"detenido antes que cualquier regla: E599, no E510"}
+{"id":198,"seq":"f04-31","request":{},"status":200,"response":{"ok":true},"spec":["EN-07","ME-02"],"hipotesis":"repara y borra las cuentas","metodo":"POST","ruta":"/__reset"}
+{"id":199,"seq":"f04-32","request":{"m":"DEPOSITO;AC-0001;5;16"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["DE-02","DE-04"],"hipotesis":"sin cuentas: E401"}
+{"id":200,"seq":"f04-32","request":{"m":"TRANSFER;AC-0001;AC-0002;5;29"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["TR-07"],"hipotesis":"sin cuentas: E401"}
+{"id":201,"seq":"f04-32","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"primera cuenta: AC-0001 (los fallos no consumieron AC)"}
+{"id":202,"seq":"f04-32","request":{"m":"DEPOSITO;AC-0001;5;16"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001 (ni OP)"}
+{"id":203,"seq":"f04-33","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":204,"seq":"f04-33","request":{"m":"DEPOSITO;AC-0001;5;16"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":205,"seq":"f04-33","request":{"m":"ANULA;OP-0002;69"},"status":404,"response":{"error":"E402","mensaje":"operación inexistente"},"spec":["AN-05","ME-03"],"hipotesis":"todavía no existe"}
+{"id":206,"seq":"f04-33","request":{"m":"DEPOSITO;AC-0001;5;16"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["DE-01","TR-08"],"hipotesis":"ahora sí: OP-0002"}
+{"id":207,"seq":"f04-33","request":{"m":"ANULA;OP-0002;69"},"status":200,"response":{"ok":true,"anulada":"OP-0002"},"spec":["AN-01","AN-02","AN-03","AN-04"],"hipotesis":"y se anula"}
+{"id":208,"seq":"f04-34","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":209,"seq":"f04-34","request":{"m":"CONSULTA;AC-0001;AC-0002;92"},"status":400,"response":{"error":"E302","mensaje":"aridad inválida"},"spec":["CM-02"],"hipotesis":"dos argumentos: aridad"}
+{"id":210,"seq":"f04-34","request":{"m":"consulta;ac-0001;14"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["CM-01","CO-03"],"hipotesis":"comando en minúsculas vale, el id no"}
+{"id":211,"seq":"f04-34","request":{"m":"CONSULTA;AC-0001 ;14"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["CO-03","IN-09"],"hipotesis":"espacio al final del id: mismo control que AC-0001, otro id","ambiguo":"CO-03 probó un espacio delante (255), no detrás; predigo E401"}
+{"id":212,"seq":"f04-34","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":0},"spec":["CO-01","CM-01"],"hipotesis":"el id exacto sí"}
+{"id":213,"seq":"f04-35","request":{"m":"ALTA;Luz;29"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":214,"seq":"f04-35","request":{"m":"DEPOSITO;AC-0001;10;77"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"OP-0001"}
+{"id":215,"seq":"f04-35","request":{"m":"Consulta;AC-0001;14","M":"x"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":10},"spec":["EN-11","CO-01"],"hipotesis":"clave extra: se ignora","metodo":"POST","ruta":"/msg"}
+{"id":216,"seq":"f04-35","request":{},"status":200,"response":{"pong":true},"spec":["EN-10"],"hipotesis":"clave m repetida: un parser json se queda con la última → PING","metodo":"POST","ruta":"/msg","cuerpo":"{\"m\":\"CONSULTA;AC-0001;14\",\"m\":\"PING;1\"}","ambiguo":"EN-10 no habla de claves repetidas; los parsers json comunes toman la última. predigo pong"}
+{"id":217,"seq":"f04-35","request":{},"status":200,"response":{"pong":true},"spec":["EN-09"],"hipotesis":"json con espacios alrededor sigue siendo json","metodo":"POST","ruta":"/msg","cuerpo":"  {\"m\":\"PING;1\"}  ","ambiguo":"EN-09 no probó relleno alrededor del json; predigo que es json válido"}
+{"id":218,"seq":"f04-35","request":{},"status":400,"response":{"error":"E100","mensaje":"json inválido"},"spec":["EN-09"],"hipotesis":"basura después del json: no es json","metodo":"POST","ruta":"/msg","cuerpo":"{\"m\":\"PING;1\"}x"}
+{"id":219,"seq":"f04-36","request":{"m":"PING；64"},"status":400,"response":{"error":"E103","mensaje":"falta control"},"spec":["IN-01"],"hipotesis":"punto y coma de ancho completo: un solo segmento"}
+{"id":220,"seq":"f04-36","request":{"m":"CONSULTA;AC-0001;１４"},"status":400,"response":{"error":"E201","mensaje":"control mal formado"},"spec":["IN-03"],"hipotesis":"dígitos de ancho completo: control mal formado"}
+{"id":221,"seq":"f04-36","request":{"m":"ALTA;Ñandú;41"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"ñ y ú no aportan al control: N viene de «ALTAand»"}
+{"id":222,"seq":"f04-36","request":{"m":"Consulta;AC-0001;14"},"status":200,"response":{"cuenta_id":"AC-0001","saldo":0},"spec":["CO-01","CM-01"],"hipotesis":"la cuenta existe"}
+{"id":223,"seq":"f04-37","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":224,"seq":"f04-37","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":225,"seq":"f04-37","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 1"}
+{"id":226,"seq":"f04-37","request":{"m":"TRANSFER;AC-0001;AC-0001;1;71"},"status":400,"response":{"error":"E304","mensaje":"origen y destino iguales"},"spec":["TR-07"],"hipotesis":"E304: ni suma ni corta"}
+{"id":227,"seq":"f04-37","request":{"m":"TRANSFER;AC-0001;AC-0009;1;25"},"status":404,"response":{"error":"E401","mensaje":"cuenta inexistente"},"spec":["TR-07"],"hipotesis":"E401: ni suma ni corta"}
+{"id":228,"seq":"f04-37","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 2"}
+{"id":229,"seq":"f04-37","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"E507, 3: bloqueada"}
+{"id":230,"seq":"f04-37","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":409,"response":{"error":"E510","mensaje":"cuenta bloqueada"},"spec":["TR-07","TR-08"],"hipotesis":"bloqueada"}
+{"id":231,"seq":"f04-38","request":{"m":"ALTA;Noa;28"},"status":201,"response":{"cuentaId":"AC-0001"},"spec":["AL-01","AL-02"],"hipotesis":"A"}
+{"id":232,"seq":"f04-38","request":{"m":"ALTA;Ines;29"},"status":201,"response":{"cuentaId":"AC-0002"},"spec":["AL-01","AL-02"],"hipotesis":"B"}
+{"id":233,"seq":"f04-38","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"A: E507, 1"}
+{"id":234,"seq":"f04-38","request":{"m":"TRANSFER;AC-0002;AC-0001;1;37"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"B: E507, 1"}
+{"id":235,"seq":"f04-38","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"A: 2"}
+{"id":236,"seq":"f04-38","request":{"m":"TRANSFER;AC-0001;AC-0002;1;41"},"status":422,"response":{"error":"E507","mensaje":"saldo insuficiente"},"spec":["TR-05","TR-06","TR-07","TR-08"],"hipotesis":"A: 3, bloqueada"}
+{"id":237,"seq":"f04-38","request":{"m":"DEPOSITO;AC-0002;5;83"},"status":200,"response":{"status":"recieved","operacionId":"OP-0001"},"spec":["DE-01","TR-08"],"hipotesis":"B: racha a 0 (ya estaba en 1); A sigue bloqueada"}
+{"id":238,"seq":"f04-38","request":{"m":"TRANSFER;AC-0002;AC-0001;5;25"},"status":200,"response":{"status":"recieved","operacionId":"OP-0002"},"spec":["TR-01","TR-08"],"hipotesis":"B no está bloqueada: pasa"}
