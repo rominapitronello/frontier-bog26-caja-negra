@@ -45,6 +45,8 @@ rutas, métodos, autenticación, forma del cuerpo y límites.
 | EN-13 | el mensaje `m` no se recorta: un espacio delante cambia el comando (`E301`) y un espacio o salto de línea al final dejan el control mal formado (`E201`) | 252, 253, 254 | confirmado |
 | EN-14 | la respuesta trae un header `X-Req` que cuenta los pedidos a `/msg` del token (también los que dan error 400) y **no** se reinicia con el reset. los headers no se comparan en la evaluación; el gemelo lo imita por proceso | 2–21, 62, 68 | probable |
 | EN-15 | un json con la clave `m` repetida vale (la última gana) y un json con espacios alrededor también; con basura después del json, E100 | 2155, 2156, 2157 | probable |
+| EN-16 | la ruta no se decodifica: `/%6dsg` y `/%5f_reset` dan 404; `GET`, `HEAD` y `OPTIONS` sobre `/__reset`, y `HEAD /msg`, también dan 404 | 2410, 2422; 2387, 2427, 2432, 2414 | confirmado |
+| EN-17 | `/__reset` ignora su cuerpo, aunque no sea json; un `Content-Encoding: gzip` sobre un cuerpo que no está comprimido se ignora; un BOM delante del json da E100 | 2342, 2418, 1240; 2402; 1248, 2406 | confirmado |
 
 ## 2 · integridad
 cómo valida el servicio que un mensaje está bien formado (el dígito de control).
@@ -134,6 +136,8 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | TR-10 | dobles fallas con la cuenta bloqueada: destino inexistente da E401, mismo destino E304 y monto inválido E303, los tres antes que E510; bloqueada y sobre el límite da E510 | 1911, 1912, 1920, 1956; 881–883 | confirmado |
 | TR-11 | anular el depósito que desbloqueó la cuenta no restaura el bloqueo; una transferencia por el saldo exacto, exitosa, reinicia la racha | 1929–1931; 1965–1967 | probable |
 | TR-12 | montos en TRANSFER: 11 cifras, `1 ` con espacio y `0999999999` dan E303, como en DEPOSITO | 2065, 2066, 2067 | confirmado |
+| TR-13 | un salto de línea al final del monto (`1\n`) o un dígito que no es ascii (`1٢`) dan E303, en DEPOSITO y en TRANSFER: el monto tiene que ser solo dígitos ascii. el control no los ve, así que el mensaje llega hasta el monto | 2280, 2323, 2332, 2379, 2394, 2398 | confirmado |
+| TR-14 | el titular no se normaliza: «José» escrito con `é` y con `e` + acento combinable, o «Isla Azul» con un espacio duro en vez de un espacio, son titulares distintos (con límite) | 2295–2298; 2304–2307 | probable |
 
 ### ANULA;operacion
 | ID | Comportamiento | Evidencia | Confianza |
@@ -144,6 +148,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | AN-04 | anular dos veces → **200** (no es error) `{"ok":false,"motivo":"ya anulada"}` | 15, 232 | confirmado |
 | AN-05 | operación que no existe (`OP-0099`, `op-0001` en minúsculas, un id de cuenta, una que todavía no ocurrió) → **404** `{"error":"E402","mensaje":"operación inexistente"}` | 114, 115, 119, 245 | confirmado |
 | AN-06 | `OP-01` (otro ancho de id) no existe (E402); anular cuando no hubo ninguna operación exitosa da E402 | 2011, 1974 | probable |
+| AN-07 | un salto de línea al final del id de operación (`OP-0003\n`) da E402 | 2290 | probable |
 
 ### HALT;confirmacion (oculto)
 no aparece en los ejemplos: lo reveló la sugerencia del error de comando desconocido (`HELP` → `HALT`).
@@ -230,6 +235,7 @@ qué cambió, desde cuándo y cómo lo detectamos.
 | CA-03 | una falsa alarma que no fue cambio: la v1 de esta spec decía «saldo antes que límite» por la línea 111, y el centinela vio lo contrario en 737. la repetición exacta (806) mostró que el original no había cambiado: la diferencia era el titular (TR-06) | 111, 737, 806 | confirmado |
 | CA-04 | **la spec pasó una prueba ciega:** sol escribió 40 secuencias (141 pedidos) solo desde esta spec, sin ver el código ni el log, y predijo lo que respondería el original; las 141 predicciones calzaron (40/40 secuencias), incluidas las 4 que marcó como ambiguas (`encargos/sol-03-oraculo.md`, `evals/sol-03.jsonl`) | 1003–1183 | confirmado |
 | CA-05 | **segunda prueba ciega, los venenos de fable:** 38 secuencias (238 pedidos) escritas solo desde la spec v2, con dobles fallas, bordes y órdenes inesperados; las 238 predicciones calzaron con el original, incluidas las 10 marcadas como ambiguas, y el gemelo también (38/38). sus 18 silencios quedan como filas EN-15, IN-13, IN-14, CO-04, TR-09 a TR-12, AN-06, HA-06, HA-07, ME-10 y ME-11 | 1905–2180 | confirmado |
+| CA-06 | **tercera prueba ciega, las secuencias largas de sol (`sol-04`):** 30 secuencias (189 pedidos) desde la spec. el original desmintió 15 predicciones, todas marcadas ambiguas y todas por un mismo silencio: el monto con salto de línea o con dígitos no ascii (TR-13). el gemelo calza en 30/30 | 2215–2433 | confirmado |
 | CA-02 | cómo se detecta un cambio: un **centinela** repite secuencias canónicas del log (los 20 ejemplos y una por familia de error) y compara con la regla del juez; solo una **repetición exacta que cambia** acredita un cambio. el detalle irá en `incident.md` | — | (método) |
 
 ## 7 · riesgos

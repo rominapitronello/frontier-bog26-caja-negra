@@ -1,0 +1,437 @@
+{
+ "prediccion": [
+  {
+   "seq": "s04-08",
+   "caso": 58,
+   "log": 2280,
+   "pedido": {
+    "m": "DEPOSITO;AC-0001;1\n;28"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0001"
+    }
+   ],
+   "original": [
+    400,
+    {
+     "error": "E303",
+     "mensaje": "monto inválido"
+    }
+   ],
+   "spec": [
+    "DE-01",
+    "DE-02",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Mejor predicción exploratoria: acepta LF, desbloquea y crea OP-0001. Si E303, sigue bloqueada y OP-0001 no existe."
+  },
+  {
+   "seq": "s04-08",
+   "caso": 59,
+   "log": 2281,
+   "pedido": {
+    "m": "ANULA;OP-0001;72"
+   },
+   "predicho": [
+    200,
+    {
+     "ok": true,
+     "anulada": "OP-0001"
+    }
+   ],
+   "original": [
+    404,
+    {
+     "error": "E402",
+     "mensaje": "operación inexistente"
+    }
+   ],
+   "spec": [
+    "AN-01",
+    "AN-02",
+    "AN-03",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 6: Mejor predicción exploratoria: acepta LF, desbloquea y crea OP-0001. Si E303, sigue bloqueada y OP-0001 no existe. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-08",
+   "caso": 60,
+   "log": 2282,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;1;41"
+   },
+   "predicho": [
+    422,
+    {
+     "error": "E507",
+     "mensaje": "saldo insuficiente"
+    }
+   ],
+   "original": [
+    409,
+    {
+     "error": "E510",
+     "mensaje": "cuenta bloqueada"
+    }
+   ],
+   "spec": [
+    "TR-05",
+    "TR-06",
+    "TR-07",
+    "TR-08"
+   ],
+   "ambiguo": "Con LF aceptado, E507 según TR-11. Con LF rechazado, E510 porque ningún depósito desbloqueó. La duda es léxica, no volver a preguntar TR-11."
+  },
+  {
+   "seq": "s04-13",
+   "caso": 96,
+   "log": 2323,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;7\n;23"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "original": [
+    400,
+    {
+     "error": "E303",
+     "mensaje": "monto inválido"
+    }
+   ],
+   "spec": [
+    "TR-01",
+    "TR-05",
+    "TR-06",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Mejor predicción exploratoria: éxito OP-0002 por regex con $. Si usa fullmatch o rechaza LF explícitamente, E303; cambian ids y saldos posteriores."
+  },
+  {
+   "seq": "s04-13",
+   "caso": 99,
+   "log": 2326,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;1;41"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0003"
+    }
+   ],
+   "original": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "spec": [
+    "TR-01",
+    "TR-05",
+    "TR-06",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 4: Mejor predicción exploratoria: éxito OP-0002 por regex con $. Si usa fullmatch o rechaza LF explícitamente, E303; cambian ids y saldos posteriores. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-13",
+   "caso": 100,
+   "log": 2327,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 12
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 19
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 4: Mejor predicción exploratoria: éxito OP-0002 por regex con $. Si usa fullmatch o rechaza LF explícitamente, E303; cambian ids y saldos posteriores. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-14",
+   "caso": 104,
+   "log": 2332,
+   "pedido": {
+    "m": "DEPOSITO;AC-0001;8888888888\n;20"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "original": [
+    400,
+    {
+     "error": "E303",
+     "mensaje": "monto inválido"
+    }
+   ],
+   "spec": [
+    "DE-01",
+    "DE-02",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Mejor predicción exploratoria: acepta LF, crea OP-0002 y acumula 18.888.888.887. Un fullmatch da E303; un tope acumulado sería otra regla no documentada."
+  },
+  {
+   "seq": "s04-14",
+   "caso": 105,
+   "log": 2333,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;9999999999;58"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0003"
+    }
+   ],
+   "original": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "spec": [
+    "TR-01",
+    "TR-05",
+    "TR-06",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 4: Mejor predicción exploratoria: acepta LF, crea OP-0002 y acumula 18.888.888.887. Un fullmatch da E303; un tope acumulado sería otra regla no documentada. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-14",
+   "caso": 107,
+   "log": 2335,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": -1111111111
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": -9999999999
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 4: Mejor predicción exploratoria: acepta LF, crea OP-0002 y acumula 18.888.888.887. Un fullmatch da E303; un tope acumulado sería otra regla no documentada. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-19",
+   "caso": 146,
+   "log": 2379,
+   "pedido": {
+    "m": "DEPOSITO;AC-0001;1\n;28"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0001"
+    }
+   ],
+   "original": [
+    400,
+    {
+     "error": "E303",
+     "mensaje": "monto inválido"
+    }
+   ],
+   "spec": [
+    "DE-01",
+    "DE-02",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Mejor predicción exploratoria: éxito OP-0001 por regex con $. Si E303, la racha vieja sigue en dos y los dos pasos siguientes divergen."
+  },
+  {
+   "seq": "s04-19",
+   "caso": 148,
+   "log": 2381,
+   "pedido": {
+    "m": "TRANSFER;AC-0001;AC-0002;1;41"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0002"
+    }
+   ],
+   "original": [
+    409,
+    {
+     "error": "E510",
+     "mensaje": "cuenta bloqueada"
+    }
+   ],
+   "spec": [
+    "TR-01",
+    "TR-05",
+    "TR-06",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 5: Mejor predicción exploratoria: éxito OP-0001 por regex con $. Si E303, la racha vieja sigue en dos y los dos pasos siguientes divergen. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-21",
+   "caso": 159,
+   "log": 2394,
+   "pedido": {
+    "m": "DEPOSITO;AC-0001;7\n;10"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0001"
+    }
+   ],
+   "original": [
+    400,
+    {
+     "error": "E303",
+     "mensaje": "monto inválido"
+    }
+   ],
+   "spec": [
+    "DE-01",
+    "DE-02",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Mejor predicción exploratoria: éxito OP-0001 por $. Con fullmatch, E303. Esta consulta busca refutar la descripción estricta de DE-02, no presenta una observación."
+  },
+  {
+   "seq": "s04-21",
+   "caso": 160,
+   "log": 2395,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 7
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 2: Mejor predicción exploratoria: éxito OP-0001 por $. Con fullmatch, E303. Esta consulta busca refutar la descripción estricta de DE-02, no presenta una observación. No es otro silencio independiente."
+  },
+  {
+   "seq": "s04-22",
+   "caso": 162,
+   "log": 2398,
+   "pedido": {
+    "m": "DEPOSITO;AC-0001;1٢;28"
+   },
+   "predicho": [
+    200,
+    {
+     "status": "recieved",
+     "operacionId": "OP-0001"
+    }
+   ],
+   "original": [
+    400,
+    {
+     "error": "E303",
+     "mensaje": "monto inválido"
+    }
+   ],
+   "spec": [
+    "DE-01",
+    "DE-02",
+    "TR-08",
+    "ME-04"
+   ],
+   "ambiguo": "Mejor predicción exploratoria: acepta 1٢, lo convierte en 12 y crea OP-0001 si usó \\d. Con el patrón ASCII escrito en la spec, E303. Es un posible contraejemplo, no un silencio literal de la cláusula ASCII."
+  },
+  {
+   "seq": "s04-22",
+   "caso": 163,
+   "log": 2399,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 12
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": "Predicción derivada de la rama elegida en paso 2: Mejor predicción exploratoria: acepta 1٢, lo convierte en 12 y crea OP-0001 si usó \\d. Con el patrón ASCII escrito en la spec, E303. Es un posible contraejemplo, no un silencio literal de la cláusula ASCII. No es otro silencio independiente."
+  }
+ ],
+ "gemelo": []
+}

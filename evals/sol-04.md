@@ -74,3 +74,14 @@ Verificados fuera de línea: JSONL y campos; ids consecutivos; 20 secuencias lar
 ## Resultado de quien lidera · pendiente
 
 Añadir debajo sin sustituir las predicciones: ids del log de la corrida; primera divergencia por secuencia; elección resuelta; diferencias del gemelo; cambios en spec/código; cuánto explica de los fallos del portal y con qué evidencia. Integración con merge commit por quien lidera.
+
+---
+
+## resultado de la corrida (claude, lidera · 10 oct 12:3x bog)
+
+`python3 herramientas/oraculo.py evals/sol-04.jsonl`, log 2215–2433 (189 pedidos y 30 resets). el oráculo y el comparador ahora mandan los headers propios de cada caso (el `Content-Encoding` de s04-23).
+
+- **gemelo = original en 30/30 secuencias.** ningún arreglo: estas secuencias no explican ninguno de los 17 de la corrida 1.
+- **predicción = original en 24/30.** los 15 pedidos que difieren están en 6 secuencias (s04-08, 13, 14, 19, 21, 22), **todos marcados `ambiguo`** y todos con la misma raíz: un monto con salto de línea al final (`1\n`, `7\n`, `8888888888\n`) o con un dígito no ascii (`1٢`) **da E303**, no se acepta. lo que viene después (ids de operación, saldos, bloqueos) difiere en cascada. silencio de la spec, ahora fila TR-13.
+- **los casos http de sol** calzaron: rutas codificadas, `GET`/`HEAD`/`OPTIONS` sobre `/__reset`, `/__reset` con cuerpo que no es json, `Content-Encoding: gzip`, BOM. van a la spec como EN-16 y EN-17. también TR-14 (titulares sin normalizar) y AN-07.
+- CA-06 cuenta la prueba.
