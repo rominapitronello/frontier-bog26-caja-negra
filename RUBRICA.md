@@ -47,6 +47,8 @@ se alimenta de: debrief individual de 10 min (romina, oral). ahí el juez corre 
 
 ## transversal (vale para todas)
 
+- **el repo es legible para un modelo, todo el día** (romina, 10 oct). quien agrega un archivo o carpeta en la raíz lo describe en `llms.txt`; quien escribe en `spec.md` cita ids que existen en el log. `bash herramientas/revisar_llms.sh` lo comprueba y debe salir en 0 antes de cada push que toque la raíz, la spec o `llms.txt`.
+
 0. **el incidente llega entre las 15:00 y las 16:00 bog (el portal dice 15:30) y cambia el entorno.** nada se sobreajusta a lo que la caja hace en la mañana: lo aprendido vive como datos que se vuelven a investigar, no como reglas en el código. la pregunta de cada entrega es «¿esto sobrevive a que la caja cambie?».
 
 1. **lo que no está escrito no existe.** decisión, supuesto, falla o hallazgo → a un archivo. lo que no sabemos, como «no sé»; lo inferido, como inferencia.

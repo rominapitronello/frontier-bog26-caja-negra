@@ -23,6 +23,7 @@ cómo leer este repo:
 - [gemelo/servidor.py](gemelo/servidor.py): el servidor (python, biblioteca estándar): la cadena de errores en el orden observado y el estado en memoria
 - [gemelo/modelo.json](gemelo/modelo.json): lo aprendido como dato (errores, aridades, límites, control, orden de validación, reglas de estado)
 - [smoke.sh](smoke.sh): reproduce los ejemplos y las secuencias del log contra el reemplazo
+- [pruebas/](pruebas/): pruebas del comparador y de las piezas del reemplazo que se cambian con datos (normalización, orden de errores, control, estado)
 - [medir.py](medir.py): el comparador con la regla del juez (status y cuerpo; json sin orden de claves)
 
 ## método
@@ -30,8 +31,12 @@ cómo leer este repo:
 - [PREDICCION_INCIDENTE.md](PREDICCION_INCIDENTE.md): predicción del incidente preregistrada antes de las 15:30, con su criterio de acierto y fallo
 - [LINAJES.md](LINAJES.md): el experimento de linajes: dos modelos diseñaron a ciegas una caja parecida para estudiar los sesgos del autor; con sus límites
 - [evals/](evals/): secuencias que otros modelos escribieron solo desde la spec, y sus resultados contra el original
-- [herramientas/](herramientas/): sonda, lotes, centinela, fuzzer, verificador de la spec
+- [herramientas/](herramientas/): sonda, lotes, centinela, fuzzer, verificador de la spec; `revisar_llms.sh` comprueba que este archivo y la spec sigan al día
 - [debrief.md](debrief.md): la hoja del debrief: fallas con su causa, límites, qué haríamos después
+
+## video
+
+- [video/](video/): láminas estáticas del video de 2 minutos (svg 1920×1080), cada una con su fuente en el pie; las que dependen del resultado final quedan en null hasta tenerlo
 
 ## contexto
 
