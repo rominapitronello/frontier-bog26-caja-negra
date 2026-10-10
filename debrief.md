@@ -29,6 +29,10 @@ el set: 100 tests, **40 fáciles (1 pedido), 40 regulares (2–5), 20 difíciles
 | | difíciles | 19/20 | **una falla en el primer pedido, por status**: un mensaje suelto. buscada por fuera del set (sol-07, el diferencial de dos gemelos en el primer pedido y uno mutacional: ~6.000 casos), **el único candidato es `pıng`** (i sin punto): python pasa `ı` a `I` con `.upper()` y el gemelo lo tomaba por PING (200, pong); el original solo pasa a mayúsculas en ascii y no lo reconoce (400; log 5680, 5681). arreglado en la v16. si la corrida 3 da 99, la causa queda sin encontrar y se dice así |
 | 3 · ~19:00 · contra v2 | | null | |
 
+**hipótesis de fable para el test que falta (17:0x bog), probadas contra el original sin tocar el gemelo:**
+1. *`HALT` cambió como el bloqueo y responde 423*: **descartada** por el log: `HALT;SI` sigue dando 409 E520 en v2 (4619, 6234, 6516).
+2. y 3. *el tope del cuerpo o el orden entre token y tamaño cambiaron en v2*: **descartadas** (6578–6582): 9.000 bytes sin token o con otro token dan 401, con el token bueno 413; 8.192 bytes pasan y 8.193 dan 413, como en la mañana, y el gemelo calza en los cinco.
+
 ## dónde estamos frente a los demás
 
 dato de la organización (10 oct, 14:4x bog): 40 equipos en caja negra; los 15 con resultados promedian **fácil 91 %, regular 73 %, difícil 39 %** (inferencia: fácil = tests de 1 pedido, regular = 2–5, difícil = 6–12). nuestra corrida 1 dio **83/100**, sobre el promedio ponderado (~75), y la corrida 2, ya contra la versión 2, **99/100**: 19 de 20 en las difíciles, donde el promedio es 39 %. lo difícil para todos son las secuencias largas con estado; por eso las medimos aparte: 18 secuencias de 8–12 pedidos que combinan las reglas raras entre sí, y el gemelo calza en las 18 (spec CA-07).
