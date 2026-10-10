@@ -48,6 +48,10 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 
 **con romina:** reporte en el orden de `AGENTS.md` § 4; cada entrega contra `RUBRICA.md`.
 
+## entrega de Sol · sol-04
+
+- **Sol, 10 oct:** `evals/sol-04.jsonl` y `evals/sol-04.md`, rama `sol/retenidas-04`: **30 secuencias (20 largas, 10 cortas), 189 pedidos; 219 con los 30 resets iniciales**, un solo HALT confirmado. Ambigüedades primarias y consecuencias separadas. Antes de publicar se revisó la spec de `efdb61e` y se reemplazaron preguntas ya resueltas por EN-15/TR-11. Verificados fuera de línea controles con otra fórmula y 12 referencias del material, saldos, ids, presupuesto y ausencia de copias de sol-03. **0 llamadas al original/gemelo y 0 validaciones del portal.** La misma ventana hizo sol-05 antes: el límite de cegamiento está declarado en el informe. Último tag según este estado: verde-01, solo local. **Siguiente:** quien lidera integra con merge commit y contrasta la tanda con su oráculo; preservar `cuerpo`, headers y método HEAD, y añadir al informe los resultados sin sustituir las predicciones. Los 17 fallos siguen sin atribuir: 83/100 no identifica su causa.
+
 ## decisiones (con hora y quién)
 
 - 10 oct 12:1x bog · romina: **regla de desvíos.** si detectamos con evidencia que una parte del plan tiene problemas, nos desviamos sin pedir permiso. cada desvío va en «desvíos del diseño» (abajo) con qué planeábamos, qué vimos (id del log) y qué cambiamos; al final el README lleva «en qué nos desviamos del diseño y por qué». `DISENO.md` no se toca: es la entrega de las 12:00. **después de la corrida 3 (~19:15 bog), solo arreglos chicos.**
