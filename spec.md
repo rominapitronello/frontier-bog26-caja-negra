@@ -198,6 +198,7 @@ qué recuerda el servicio y qué cambia una respuesta según los requests anteri
 | ME-09 | cada cuenta guarda el **nombre del alta** (decide el límite, TR-06) y su **racha de transferencias fallidas** por límite o saldo (decide el bloqueo, TR-08) | 813–816; 824–827, 885–886, 926–928 | confirmado |
 | ME-10 | `/__reset` con otro token no repara ni borra: el servicio sigue detenido y las cuentas siguen; solo el reset con el token del equipo lo hace | 2108–2111 | probable |
 | ME-11 | los fallos antes del alta no consumen ids: tras un depósito y una transferencia a cuentas que no existen, el alta es `AC-0001` y el depósito `OP-0001` | 2135–2138 | probable |
+| ME-12 | ninguna respuesta depende del contador global de pedidos (`X-Req`): 45 `PING` y 5 `CONSULTA` seguidos, cruzando el pedido 2.300 del token, responden siempre igual | 2618–2669; 2565–2567 | confirmado |
 | ME-08 | el saldo no tiene piso: puede quedar negativo por anulaciones y entonces ninguna transferencia sale de esa cuenta | 117, 230, 231 | confirmado |
 
 ## 5 · errores

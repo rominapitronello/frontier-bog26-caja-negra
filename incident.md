@@ -18,6 +18,18 @@
 6. **la spec:** § 6 dice qué cambió, desde cuándo y con qué ids; las filas que ya no valen se marcan «hasta las HH:MM», no se borran.
 7. **validación 2 (~17:00 bog):** solo con el gemelo adaptado, smoke en verde y romina avisada (`ESTADO.md`, reglas de las validaciones).
 
+## si el incidente cambia mecánica: cómo entra una regla nueva con estado (pensado antes, sin implementar)
+
+lectura de romina y del otro claude (13:2x bog): la caja parece pensada desde el lado gpt (trampas contra quien investiga, todo descubrible, significado que cambia con el tiempo). si es así, el cambio será de **mecánica** (estado, tiempo, autoridad) y no un número. el plan para absorberlo sin romper lo que ya calza:
+
+1. **medir antes de tocar.** el centinela y una repetición exacta delimitan la regla: qué comando, desde qué pedido, qué la dispara. tres preguntas de entrada: ¿depende de **cuántos pedidos** (desde el reset, o en total), del **tiempo**, o de **quién** (token, titular, una confirmación)? hoy sabemos que el contador global `X-Req` no cambia ninguna respuesta (H7: 2254 → 2303 sin un efecto, log 2618–2669).
+2. **la regla es una capa con nombre, apagada por defecto.** entra en la cadena de errores (D3) en el lugar que muestre el log, y se prende con un dato de `gemelo/modelo.json` (`"reglas": {"<nombre>": {…parámetros…}}`). con la regla apagada el gemelo es exactamente el de la mañana: el mismo código sirve para las dos versiones.
+3. **dos modelos, un servidor.** al confirmar el cambio se congela `gemelo/modelo-manana.json` (protocolo, paso 2) y el servidor lee el modelo de una variable (`GEMELO_MODELO`). el smoke corre las líneas `"fase": "manana"` contra el modelo de la mañana y el resto contra el de la tarde: lo que calzaba sigue probado, no se borra.
+4. **estado nuevo con valor neutro y que el reset borra**, como lo demás del `Banco`: contadores en 0, sin vencimientos, sin sesiones abiertas. una regla de tiempo se modela con reloj **solo si el log lo exige** (la misma secuencia con pausas distintas da respuestas distintas); si no, se cuenta en pedidos, que es determinista y reproducible. un test del set dura a lo sumo 12 pedidos y 5 s por paso: una regla de minutos casi nunca se ve dentro de un test, pero una de «n pedidos desde el reset» sí.
+5. **autoridad como dato.** si aparece un rol, otro token con permisos o una confirmación nueva (como la de `HALT`), sus valores van en `modelo.json`; el gemelo solo conoce el token del equipo, y «con otro token responde como el original».
+6. **volver a medir con la versión nueva:** las secuencias reproducibles (`repro-1`, `cmd-1`, `sol-03`, `fable-04`, `sol-04`, el centinela) se corren de nuevo contra el original con `herramientas/oraculo.py`, y el gemelo de la tarde tiene que calzar en las líneas nuevas y el de la mañana en las viejas.
+7. **subir solo fuera de una validación**, con `X-Gemelo-Version` nuevo, y confirmar en el header de railway antes de la validación 2.
+
 ## detección
 - primera señal, con consulta y hora: null
 - qué la detectó: el sistema solo / una pluma / el juez: null
