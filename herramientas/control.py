@@ -9,7 +9,7 @@ el verificador del IBAN. el servicio lo compara como texto ('2' vale, '02' no). 
 """
 import sys
 
-def numero(cuerpo):
+def digitos(cuerpo):
     out = []
     for c in cuerpo:
         if c.isdigit() and c.isascii():
@@ -17,10 +17,13 @@ def numero(cuerpo):
         elif c.isascii() and c.isalpha():
             out.append(str(ord(c.upper()) - 64))
         # lo demás no aporta: ';', '-', espacio, é, ñ (log 44, 45, 47); el punto, por probar
-    return int("".join(out)) if out else 0
+    return "".join(out)
 
 def control(cuerpo):
-    return 98 - (100 * numero(cuerpo)) % 97
+    r = 0
+    for d in digitos(cuerpo):  # módulo 97 dígito a dígito: sirve para mensajes de cualquier largo
+        r = (r * 10 + int(d)) % 97
+    return 98 - (r * 100) % 97
 
 if __name__ == "__main__":
     for a in sys.argv[1:]:

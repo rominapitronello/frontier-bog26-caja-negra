@@ -18,6 +18,20 @@ from sonda import pedir, tapar, como_json
 
 OTRO_TOKEN = "tok-que-no-existe-0000"
 
+# freno (cicatriz del 10 oct, log 289-686): una búsqueda binaria mal escrita repitió el mismo pedido ~400 veces.
+# el proceso se detiene si manda el mismo pedido más de REPETIDOS_MAX veces seguidas o más de TOPE en total.
+REPETIDOS_MAX, TOPE = 5, int(os.environ.get("LOTE_TOPE", "400"))
+_ultimo, _seguidos, _total = None, 0, 0
+
+def _frenar(clave):
+    global _ultimo, _seguidos, _total
+    _seguidos = _seguidos + 1 if clave == _ultimo else 1
+    _ultimo, _total = clave, _total + 1
+    if _seguidos > REPETIDOS_MAX:
+        sys.exit(f"lote: el mismo pedido {_seguidos} veces seguidas; me detengo (¿un bucle?)")
+    if _total > TOPE:
+        sys.exit(f"lote: más de {TOPE} pedidos en este proceso; me detengo (LOTE_TOPE lo sube)")
+
 def siguiente_id(log):
     n = 0
     if os.path.exists(log):
@@ -50,6 +64,8 @@ def correr(pasos, seq, base, token, log="experimentos.jsonl", crudo="experimento
             hs.insert(0, ("Authorization", f"Bearer {OTRO_TOKEN}"))
         elif auth not in ("sin token",):
             hs.insert(0, ("Authorization", auth.replace("<token>", token)))  # forma rara del header, a mano
+        if not p.get("reset"):
+            _frenar((metodo, ruta, cuerpo, auth))
         for intento in range(6):
             espera = 1.0 / ritmo - (time.monotonic() - t_ult)
             if espera > 0:
