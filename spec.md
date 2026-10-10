@@ -124,7 +124,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | TR-05 | saldo del origen menor que el monto → **422** `{"error":"E507","mensaje":"saldo insuficiente"}`. un saldo igual al monto alcanza; un saldo negativo no alcanza para nada | 17, 111, 231; 226 | confirmado |
 | TR-06 | monto **mayor que 100.000** **entre cuentas de titulares distintos** → **422** `{"error":"E506","mensaje":"límite excedido"}`. 100.000 pasa. el límite es **por operación, no acumulado**: tres transferencias seguidas de 100.000 pasan. **entre cuentas con el mismo nombre de titular no hay límite** (150.000 de «Lucia» a «Lucia» pasa); el nombre se compara exacto («Lucia» y «lucia» son titulares distintos) | 10, 105, 766, 768, 814, 816; 11, 106, 107, 108; 813, 817; 815 | confirmado |
 | TR-07 | orden dentro de TRANSFER: monto (E303) → origen = destino (E304) → existencia (E401) → bloqueo (E510, TR-08) → límite (E506, solo entre titulares distintos) → saldo (E507). por eso una transferencia sin fondos y sobre el límite da E506 entre titulares distintos (766, 816) y E507 entre cuentas del mismo titular (111, repetida idéntica en 806) | 220, 219, 221, 881–883, 771, 766, 816, 111, 806 | confirmado |
-| TR-08 | **bloqueo**: cada cuenta lleva la cuenta de sus transferencias seguidas rechazadas por límite (E506) o saldo (E507), mezcladas o no. con **tres**, toda transferencia **desde** esa cuenta → **409** `{"error":"E510","mensaje":"cuenta bloqueada"}`, y sigue así. lo **reinician** un depósito a la cuenta o una transferencia exitosa desde ella; **no** lo reinician recibir una transferencia ni anular. los errores E303, E304 y E401 no suman. el bloqueo no afecta consultar, depositar ni recibir. es por cuenta: las fallas de otra cuenta no suman ni cortan la racha | 771, 824–827, 837–840, 893–896; 879, 880, 898; 885, 886, 926–928, 858–862; 907, 908, 917, 918; 867–871; 828–832; 847–853 | confirmado |
+| TR-08 | **bloqueo**: cada cuenta lleva la cuenta de sus transferencias seguidas rechazadas por límite (E506) o saldo (E507), mezcladas o no. con **tres**, toda transferencia **desde** esa cuenta → **409** `{"error":"E510","mensaje":"cuenta bloqueada"}`, y sigue así. lo **reinician** un depósito a la cuenta o una transferencia exitosa desde ella; **no** lo reinician recibir una transferencia ni anular. los errores E303, E304 y E401 no suman **ni cortan la racha** (E507, E304, E507, E507 → bloqueada: 1175–1180). el bloqueo no afecta consultar, depositar ni recibir. es por cuenta: las fallas de otra cuenta no suman ni cortan la racha | 771, 1180, 824–827, 837–840, 893–896; 879, 880, 898; 885, 886, 926–928, 858–862; 907, 908, 917, 918; 867–871; 828–832; 847–853 | confirmado |
 
 ### ANULA;operacion
 | ID | Comportamiento | Evidencia | Confianza |
@@ -142,16 +142,16 @@ no aparece en los ejemplos: lo reveló la sugerencia del error de comando descon
 |---|---|---|---|
 | HA-01 | `HALT` con un argumento distinto de `1` (`AC-0001`, `CONFIRMAR`, `CONFIRMO`, `SI`, `CONFIRM`, `YES`, `OK`, `TRUE`) → **409** `{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` y no cambia nada | 145, 689–695 | confirmado |
 | HA-02 | `HALT;1` **detiene el servicio para el token** → **503** `{"error":"E599","mensaje":"service halted"}` | 696, 719 | confirmado |
-| HA-03 | detenido, **todo** `/msg` responde 503 `E599` (PING, CONSULTA, ALTA, json inválido, sin `m`, sin control, cuerpo grande), hasta el próximo `/__reset`, que lo repara | 697–699, 720–723, 726; 701–704, 727, 728 | confirmado |
+| HA-03 | detenido, **todo** `/msg` responde 503 `E599` (PING, CONSULTA, ALTA, json inválido, sin `m`, sin control, cuerpo grande), hasta el próximo `/__reset`, que lo repara. las rutas inexistentes siguen dando 404 (la ruta va antes) y `/health` sigue en 200 | 697–699, 720–723, 726, 1116; 701–704, 727, 728; 725, 1118; 700, 1113, 1117 | confirmado |
 | HA-04 | `HALT` sin argumentos o con dos → E302 | 137, 141, 718 | confirmado |
-| HA-05 | otras confirmaciones posibles (`0`, `2`, `01`, `true` en minúsculas) no se probaron: el gemelo solo acepta `1` | — | supuesto |
+| HA-05 | solo `1` confirma, comparado como texto: `0`, `2` y `01` dan E520. el comando en minúsculas (`halt;1`) también detiene | 991, 994, 997, 1110; 1000 | confirmado |
 
 ### comando desconocido
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | DC-01 | → **400** `{"error":"E301","mensaje":"comando desconocido "}`, con **un espacio al final** del mensaje | 13, 120–126, 129–132, 154, 161–206 | confirmado |
 | DC-02 | si hay un comando (de los siete, incluido `HALT`) a **distancia de edición (levenshtein) ≤ 2** del comando en mayúsculas, la respuesta agrega `"sugerencia":"<COMANDO>"`; a distancia 3, no | 127, 128, 147–153, 155–160, 209, 242, 252; 154 | confirmado |
-| DC-03 | gana la **menor distancia** (`HALA` → `HALT` a 1, no `ALTA` a 2); en un empate, el primero en orden alfabético (`PITA` → `ALTA` sobre `PING`; `HANG` → `HALT` sobre `PING`; `ALT` → `ALTA` sobre `HALT`) | 715; 208, 256, 151 | probable |
+| DC-03 | gana la **menor distancia** (`HALA` → `HALT` a 1, no `ALTA` a 2); en un empate, el primero en orden alfabético (`PITA` → `ALTA` sobre `PING`; `HANG` → `HALT` sobre `PING`; `ALT` → `ALTA` sobre `HALT`; `ALNG` → `ALTA` sobre `PING`, predicho por sol desde esta spec) | 715; 208, 256, 151, 1102 | confirmado |
 | DC-04 | 57 nombres probados (RETIRO, SALDO, LISTA, BAJA, STOP, DEBUG, ADMIN…) no son comandos ni sugieren nada: los comandos son siete | 120–126, 129–132, 161–206 | probable |
 
 ## 4 · memoria entre requests
@@ -204,6 +204,7 @@ qué cambió, desde cuándo y cómo lo detectamos.
 |---|---|---|---|
 | CA-01 | **sin cambios hasta las 10:5x bog**: los 20 ejemplos (grabados con la versión de la mañana) se reprodujeron idénticos a las 10:1x, y la secuencia `cmd-1` de las 10:1x repetida exacta a las 10:4x dio las mismas 31 respuestas | 2–21; 81–111 contra 776–806 | confirmado |
 | CA-03 | una falsa alarma que no fue cambio: la v1 de esta spec decía «saldo antes que límite» por la línea 111, y el centinela vio lo contrario en 737. la repetición exacta (806) mostró que el original no había cambiado: la diferencia era el titular (TR-06) | 111, 737, 806 | confirmado |
+| CA-04 | **la spec pasó una prueba ciega:** sol escribió 40 secuencias (141 pedidos) solo desde esta spec, sin ver el código ni el log, y predijo lo que respondería el original; las 141 predicciones calzaron (40/40 secuencias), incluidas las 4 que marcó como ambiguas (`encargos/sol-03-oraculo.md`, `evals/sol-03.jsonl`) | 1003–1183 | confirmado |
 | CA-02 | cómo se detecta un cambio: un **centinela** repite secuencias canónicas del log (los 20 ejemplos y una por familia de error) y compara con la regla del juez; solo una **repetición exacta que cambia** acredita un cambio. el detalle irá en `incident.md` | — | (método) |
 
 ## 7 · riesgos
