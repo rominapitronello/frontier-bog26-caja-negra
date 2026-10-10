@@ -14,7 +14,7 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v13"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v14"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -308,6 +308,41 @@ class Banco:
 
 
 ESTADO = {"banco": Banco(), "x_req": 0}
+
+
+# ---- telemetría de forma, sin contenido (decisión de romina, 15:4x bog; versión mínima de fable) ----
+# cuenta cuántos pedidos caen en cada rama, cuántos en ramas que la spec marca «supuesto», el largo de las
+# secuencias entre resets, la concurrencia y qué clase de token llega. las etiquetas salen de conjuntos fijos
+# (método conocido, destino, comando de los ocho o «?», código o status): nunca un texto, un nombre, un monto,
+# un id ni una ruta del pedido. sale por stdout (logs de railway) en cada reset y tras 20 s sin pedidos.
+TEL_CANDADO = threading.Lock()
+TEL = {"pedidos": 0, "resets": 0, "ramas": {}, "supuesto": {}, "largos": {}, "tokens": {}, "conexiones": set(),
+       "en_vuelo": 0, "en_vuelo_max": 0, "desde_reset": 0, "ultimo": 0.0, "impreso": True}
+METODOS = {"GET", "POST", "HEAD", "PUT", "DELETE", "PATCH", "OPTIONS"}
+TEL_IMPRIME = False   # solo el proceso desplegado (main) imprime; el centinela y el oráculo levantan el gemelo en un hilo
+
+
+def _sumar(campo, clave):
+    TEL[campo][clave] = TEL[campo].get(clave, 0) + 1
+
+
+def tel_linea():
+    if not TEL_IMPRIME:
+        return
+    with TEL_CANDADO:
+        foto = {k: v for k, v in TEL.items() if k not in ("conexiones", "en_vuelo", "desde_reset", "ultimo", "impreso")}
+        foto["conexiones"] = len(TEL["conexiones"])
+        foto["en_curso"] = TEL["desde_reset"]
+        TEL["impreso"] = True
+    foto.update(version=VERSION, arranque=ARRANQUE, t=time.strftime("%H:%M:%SZ", time.gmtime()))
+    print("telemetria " + json.dumps(foto, sort_keys=True, separators=(",", ":")), flush=True)
+
+
+def _tel_ocioso():
+    while True:
+        time.sleep(5)
+        if not TEL["impreso"] and TEL["ultimo"] and time.time() - TEL["ultimo"] > 20:
+            tel_linea()
 CANDADO = threading.Lock()
 TOKEN = os.environ.get("GEMELO_TOKEN", "").strip()   # un salto de línea pegado en la variable dejaría todo en 401
 
@@ -385,6 +420,57 @@ class Manejador(BaseHTTPRequestHandler):
             raise error("E102")
 
     def atender(self):
+        with TEL_CANDADO:
+            TEL["en_vuelo"] += 1
+            TEL["en_vuelo_max"] = max(TEL["en_vuelo_max"], TEL["en_vuelo"])
+            TEL["conexiones"].add(self.client_address)
+        try:
+            self._atender()
+        finally:
+            with TEL_CANDADO:
+                TEL["en_vuelo"] -= 1
+
+    def _telemetria(self, x, r):
+        """la rama de este pedido, sin su contenido (ver TEL)."""
+        metodo = self.command if self.command in METODOS else "OTRO"
+        auth = (self.headers.get("Authorization") or "").strip(" \t")
+        token = "equipo" if auth == f"Bearer {TOKEN}" else ("sin" if not auth else "otro")
+        codigo = r.cuerpo.get("error") if isinstance(r.cuerpo, dict) and "error" in r.cuerpo else str(r.status)
+        destino = x["destino"] or "ruta-desconocida"
+        cmd = "-"
+        if destino == "msg" and isinstance(x.get("cuerpo"), dict) and isinstance(x["cuerpo"].get("m"), str):
+            c = normalizar("comando", x["cuerpo"]["m"].split(";")[0])
+            cmd = c if c in M["comandos"] else "?"
+        rama = f"{metodo} {destino} {cmd} {codigo}" + (" +sug" if isinstance(r.cuerpo, dict) and "sugerencia" in r.cuerpo else "")
+        sup = None
+        if destino == "msg" and codigo == "E102" and isinstance(x.get("cuerpo"), (int, float)) and not isinstance(x.get("cuerpo"), bool):
+            sup = "EN-18 número suelto"
+        elif metodo == "HEAD" and destino == "ruta-desconocida" and self.requestline.split()[1:2] == ["/__reset"]:
+            sup = "EN-18 HEAD /__reset"
+        elif cmd == "NOTAS" and codigo == "200" and (ESTADO["banco"].cuentas or ESTADO["banco"].ops):
+            sup = "NO-04 NOTAS con estado"
+        elif cmd == "ALTA" and len(ESTADO["banco"].cuentas) > 9999:
+            sup = "AL-04 id sobre 9999"
+        with TEL_CANDADO:
+            TEL["pedidos"] += 1
+            TEL["ultimo"] = time.time()
+            TEL["impreso"] = False
+            _sumar("ramas", rama)
+            _sumar("tokens", token)
+            if sup:
+                _sumar("supuesto", sup)
+            if destino == "msg" and token == "equipo":
+                TEL["desde_reset"] += 1
+            reset = destino == "reset" and r.status == 200
+            if reset:
+                if TEL["resets"] or TEL["desde_reset"]:
+                    _sumar("largos", str(TEL["desde_reset"]))
+                TEL["resets"] += 1
+                TEL["desde_reset"] = 0
+        if reset:
+            tel_linea()
+
+    def _atender(self):
         if "chunked" in (self.headers.get("Transfer-Encoding") or "").lower():   # el original los lee (2471)
             crudo = self._leer_chunked()
         else:
@@ -412,6 +498,10 @@ class Manejador(BaseHTTPRequestHandler):
                 raise ESTADO["banco"].mensaje(x["cuerpo"]["m"])
             except Respuesta as r:
                 self.responder(r, x_req)
+                try:
+                    self._telemetria(x, r)
+                except Exception:               # la respuesta ya salió: la telemetría nunca afecta un pedido
+                    pass
 
     def __getattr__(self, nombre):              # cualquier método (TRACE, PROPFIND…) va a la tabla de rutas: 404 (1658, 1660)
         if nombre.startswith("do_"):
@@ -424,6 +514,9 @@ def main():
         sys.exit("gemelo: falta GEMELO_TOKEN (el token del equipo); sin él respondería 401 a todo")
     puerto = int(os.environ.get("PORT", "8080"))
     srv = ThreadingHTTPServer(("0.0.0.0", puerto), Manejador)
+    global TEL_IMPRIME
+    TEL_IMPRIME = True
+    threading.Thread(target=_tel_ocioso, daemon=True).start()
     print(f"gemelo escuchando en :{puerto}", flush=True)
     srv.serve_forever()
 
