@@ -81,7 +81,7 @@ ejemplo  ALTA;Lucia → A L T A L U C I A → 1 12 20 1 12 21 3 9 1 → N = 1122
 | IN-06 | el rango es **2 a 98**, no 0 a 96: cuando 100·N mod 97 es 1, el control es `97` (y `00` da E202); cuando es 0, el control es `98` (y `1` da E202) | 24–27 | confirmado |
 | IN-07 | se compara **como texto**: para un control de una cifra, `2` vale y `02` da E202 (bien formado pero inválido) | 29, 30; 5 (`ALTA;Mateo;3`) | confirmado |
 | IN-08 | las letras cuentan sin importar mayúsculas: `CONSULTa;AC-0001;14` y `CONSULTA;ac-0001;14` pasan el control | 12, 38 | confirmado |
-| IN-09 | los caracteres que no son letra ni dígito ascii no aportan a N: espacio, `é`, `ñ`, tabulación, emoji, punto, guion y `;` | 44, 45, 47, 264, 265, 716 | confirmado |
+| IN-09 | los caracteres que no son letra ni dígito ascii no aportan a N: espacio, `é`, `ñ`, tabulación, emoji, punto, guion y `;`. el filtro es ascii y va **antes** de cualquier paso a mayúsculas: `ß`, `ı` (i sin punto), `ſ` (s larga), `ﬁ` (ligadura) y `K` (signo kelvin) no aportan, aunque en mayúsculas o minúsculas unicode serían `SS`, `I`, `S`, `FI` y `k` | 44, 45, 47, 264, 265, 716; 5675–5679 | confirmado |
 | IN-10 | **`PING` no valida el control**: `PING;65` y `PING;XX` responden pong. sí valida la aridad (§ 3) | 39, 40, 714 | confirmado |
 | IN-11 | el control se valida **antes** que el comando y la aridad: un comando desconocido o con aridad mala y control malo da el error de control (E201 o E202), no E301 ni E302 | 42, 43, 213, 214 | confirmado |
 | IN-12 | mensajes largos también pasan el control (300 y 5.000 caracteres): N se reduce módulo 97 dígito a dígito | 262, 263 | probable |
@@ -93,7 +93,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CM-01 | el nombre del comando no distingue mayúsculas | 12, 133, 244 | confirmado |
+| CM-01 | el nombre del comando no distingue mayúsculas, **solo en ascii**: `pıng` (con i sin punto) no es `PING`: con el control de PING da E202 (PING no valida el control, pero `pıng` no es PING) y con su propio control da E301 con sugerencia `PING` | 12, 133, 244; 5680, 5681 | confirmado |
 | CM-02 | aridades: `PING` 0, `ALTA` 1, `CONSULTA` 1, `DEPOSITO` 2, `TRANSFER` 3, `ANULA` 1, `HALT` 1, `NOTAS` 0. cualquier otra cantidad → E302 | 21, 88, 89, 90, 99, 118, 137, 215, 217, 222, 714, 718, 1664, 1667–1678 | confirmado |
 
 ### PING

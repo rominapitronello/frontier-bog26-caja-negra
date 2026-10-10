@@ -1,0 +1,744 @@
+{
+ "prediccion": [
+  {
+   "seq": "sol-07-01-nfc-nfd-tilde",
+   "caso": 6,
+   "log": 5485,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-02-enie-compuesta",
+   "caso": 12,
+   "log": 5492,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-03-dieresis-compuesta",
+   "caso": 18,
+   "log": 5499,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-04-titular-acentuado-repetido",
+   "caso": 23,
+   "log": 5505,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 150001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "1500.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": false
+  },
+  {
+   "seq": "sol-07-05-apostrofo-teclado",
+   "caso": 29,
+   "log": 5512,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-06-apostrofo-repetido",
+   "caso": 34,
+   "log": 5518,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 150001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "1500.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": false
+  },
+  {
+   "seq": "sol-07-07-guion-duro",
+   "caso": 40,
+   "log": 5525,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-08-guion-tipografico",
+   "caso": 46,
+   "log": 5532,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-09-espacio-doble",
+   "caso": 51,
+   "log": 5538,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-10-espacio-duro",
+   "caso": 57,
+   "log": 5545,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-11-espacio-duro-estrecho",
+   "caso": 63,
+   "log": 5552,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-12-espacio-invisible",
+   "caso": 68,
+   "log": 5558,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-13-union-invisible",
+   "caso": 74,
+   "log": 5565,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-14-union-sin-salto",
+   "caso": 80,
+   "log": 5572,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05",
+    "ME-08"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-15-alfa-homoglifo",
+   "caso": 85,
+   "log": 5578,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-16-a-cirilica",
+   "caso": 90,
+   "log": 5584,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-19-ancho-completo-deposito",
+   "caso": 106,
+   "log": 5603,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-21-miles-punto",
+   "caso": 117,
+   "log": 5616,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 200001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "2000.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-22-miles-coma",
+   "caso": 123,
+   "log": 5623,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-23-miles-espacio-duro",
+   "caso": 128,
+   "log": 5629,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 200001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "2000.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-24-miles-espacio-estrecho",
+   "caso": 134,
+   "log": 5636,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-25-miles-espacio-doble",
+   "caso": 139,
+   "log": 5642,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 200001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "2000.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-26-decimal-coma",
+   "caso": 145,
+   "log": 5649,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-27-decimal-punto",
+   "caso": 150,
+   "log": 5655,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 200001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "2000.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-28-miles-decimal-chile",
+   "caso": 155,
+   "log": 5661,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 200001
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "2000.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-29-miles-decimal-ingles",
+   "caso": 161,
+   "log": 5668,
+   "pedido": {
+    "m": "CONSULTA;AC-0002;11"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": 0
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0002",
+     "saldo": "0.00"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  },
+  {
+   "seq": "sol-07-30-monto-invisible",
+   "caso": 165,
+   "log": 5673,
+   "pedido": {
+    "m": "CONSULTA;AC-0001;14"
+   },
+   "predicho": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": 1
+    }
+   ],
+   "original": [
+    200,
+    {
+     "cuenta_id": "AC-0001",
+     "saldo": "0.01"
+    }
+   ],
+   "spec": [
+    "CO-01",
+    "ME-05"
+   ],
+   "ambiguo": true
+  }
+ ],
+ "gemelo": []
+}
