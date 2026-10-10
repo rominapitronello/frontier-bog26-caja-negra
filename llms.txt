@@ -25,6 +25,7 @@ cómo leer este repo:
 - [smoke.sh](smoke.sh): reproduce los ejemplos y las secuencias del log contra el reemplazo
 - [pruebas/](pruebas/): pruebas del comparador y de las piezas del reemplazo que se cambian con datos (normalización, orden de errores, control, estado)
 - [medir.py](medir.py): el comparador con la regla del juez (status y cuerpo; json sin orden de claves)
+- [gemelo_fable/](gemelo_fable/): un **segundo** reemplazo que fable escribió solo leyendo `spec.md`, sin ver `gemelo/` (`DISENO.md`, D8); **no es el entregable**. `diferencial.py` corre secuencias al azar contra los dos: donde discrepan, la spec no fija el comportamiento y eso es lo que se le pregunta al original
 
 ## método
 
