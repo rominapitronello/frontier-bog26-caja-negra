@@ -4,7 +4,8 @@
 
 un proceso, un estado en memoria (D5). lo tabular vive en gemelo/modelo.json (D4); aquí está la lógica
 con estado y el orden en que se evalúan los errores (D3), que es el orden observado en el log:
-ruta → token → tamaño → json → m → segmentos → PING → control → comando → aridad → reglas del comando.
+ruta → token → detenido (HALT) → tamaño → json → m → segmentos → control (no en PING) → comando → aridad
+→ reglas del comando.
 solo biblioteca estándar, python 3.9+.
 """
 import json, os, re, sys, threading
@@ -82,21 +83,18 @@ class Banco:
         return int(texto)
 
     def mensaje(self, m):
-        if self.detenido:
-            raise error("E599")
         segs = m.split(";")
         if len(segs) < 2:
             raise error("E103")
         if any(s == "" for s in segs):
             raise error("E104")
         cmd = segs[0].upper()
-        if cmd == "PING":  # no valida el control (39-40)
-            return Respuesta(200, {"pong": True})
-        ctrl = segs[-1]
-        if not re.fullmatch(M["control"]["formato"], ctrl):
-            raise error("E201")
-        if ctrl != control_esperado(";".join(segs[:-1])):
-            raise error("E202")
+        if cmd not in M["sin_control"]:         # PING no valida el control (39-40)
+            ctrl = segs[-1]
+            if not re.fullmatch(M["control"]["formato"], ctrl):
+                raise error("E201")
+            if ctrl != control_esperado(";".join(segs[:-1])):
+                raise error("E202")
         if cmd not in M["comandos"]:
             s = sugerencia(cmd)
             raise error("E301", **({"sugerencia": s} if s else {}))
@@ -104,6 +102,9 @@ class Banco:
         if len(args) != M["comandos"][cmd]:
             raise error("E302")
         return getattr(self, "cmd_" + cmd.lower())(*args)
+
+    def cmd_ping(self):
+        return Respuesta(200, {"pong": True})
 
     def cmd_alta(self, nombre):
         cid = M["ids"]["cuenta"].format(len(self.cuentas) + 1)
@@ -197,7 +198,9 @@ class Manejador(BaseHTTPRequestHandler):
                     raise Respuesta(200, {"ok": True})
                 ESTADO["x_req"] += 1
                 x_req = ESTADO["x_req"]
-                if len(crudo) > M["cuerpo_max_bytes"]:   # supuesto: el tamaño se mira después del token
+                if ESTADO["banco"].detenido:            # antes que el tamaño, el json y el mensaje (720-726)
+                    raise error("E599")
+                if len(crudo) > M["cuerpo_max_bytes"]:   # después del token (712), antes del json (713)
                     raise error("E101")
                 try:
                     cuerpo = json.loads(crudo.decode("utf-8"))

@@ -185,8 +185,9 @@ def _respuesta_caso(configuracion, caso, token):
         carga = caso["cuerpo"].encode("utf-8")
     else:
         # GET y HEAD no llevan cuerpo aunque el JSONL documente request:{}.
+        # misma serialización que herramientas/lote.py, para que el replay mande los mismos bytes
         carga = None if metodo in ("GET", "HEAD") or caso["request"] is None else json.dumps(
-            caso["request"], ensure_ascii=False, separators=(",", ":"), allow_nan=False
+            caso["request"], ensure_ascii=False, allow_nan=False
         ).encode("utf-8")
     return pedir(configuracion, metodo, caso.get("ruta", "/msg"), carga, _auth_caso(caso, token))
 

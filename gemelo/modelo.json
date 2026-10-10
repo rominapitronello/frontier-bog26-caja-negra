@@ -6,7 +6,7 @@
     "POST /__reset": "reset"
   },
   "cuerpo_max_bytes": 8192,
-  "_cuerpo_max_bytes": "8191 pasa, 8194 da E101 (277-288). 8192 y 8193: probable, no medido",
+  "_cuerpo_max_bytes": "8192 bytes pasan, 8193 dan E101 (710-711). se mira después del token (712) y antes del json (713)",
   "control": {
     "modulo": 97,
     "multiplicador": 100,
@@ -15,6 +15,7 @@
     "_": "iso 7064 mod 97-10: letras A=1..Z=26 sin mayúsculas, dígitos tal cual, lo demás no cuenta (S2; 24-30, 44-47). formato: 3 cifras, signo, espacio o decimal dan E201 (28, 31-35, 37); se compara como texto (29-30)"
   },
   "comandos": {
+    "PING": 0,
     "ALTA": 1,
     "CONSULTA": 1,
     "DEPOSITO": 2,
@@ -22,11 +23,13 @@
     "ANULA": 1,
     "HALT": 1
   },
-  "_comandos": "argumentos sin contar el comando ni el control. PING va aparte: no valida control (39-40). HALT es oculto (127-128, 145)",
+  "_comandos": "argumentos sin contar el comando ni el control (aridad mala: E302). HALT es oculto (127-128, 145)",
+  "sin_control": ["PING"],
+  "_sin_control": "PING no valida el control (39-40) pero sí la aridad (714)",
   "sugerencia": {
     "candidatos": ["ALTA", "ANULA", "CONSULTA", "DEPOSITO", "HALT", "PING", "TRANSFER"],
     "distancia_max": 2,
-    "_": "levenshtein sobre el comando en mayúsculas; empate: orden alfabético (147-160, 208-209, 256)"
+    "_": "levenshtein sobre el comando en mayúsculas; gana la menor distancia (715), y en empate el primero alfabético (208, 256)"
   },
   "monto": {
     "formato": "^[1-9][0-9]{0,9}$",

@@ -85,7 +85,7 @@ def correr(pasos, seq, base, token, log="experimentos.jsonl", crudo="experimento
         reg = {"id": nid, "seq": seq, "x_req": hdr.get("x-req"), "hipotesis": p.get("hipotesis", ""),
                "request": como_json(cuerpo) if cuerpo is not None else None,
                "status": r["status"], "response": como_json(r["cuerpo"]), "conclusion": p.get("conclusion", "")}
-        if cuerpo is not None and not isinstance(reg["request"], dict):
+        if cuerpo is not None and ("cuerpo" in p or not isinstance(reg["request"], dict)):
             reg["cuerpo"] = cuerpo  # el texto exacto que se mandó: "request" no distingue 'hola' de '"hola"'
         if (metodo, ruta) != ("POST", "/msg") or auth != "token propio" or "headers" in p:
             reg["metodo"], reg["ruta"], reg["auth"] = metodo, ruta, auth.replace(token, "<token>") if token else auth
