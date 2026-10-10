@@ -14,7 +14,7 @@ PING) → comando → aridad → reglas del comando. solo biblioteca estándar, 
 import json, os, re, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "v12"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v13"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.environ.get("GEMELO_MODELO") or os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
@@ -354,6 +354,11 @@ class Manejador(BaseHTTPRequestHandler):
             raise error("E404")
 
     def _paso_token(self, x):
+        # el healthcheck de railway (host healthcheck.railway.app, sin token) recibe 200 en /health: así un despliegue
+        # que no arranca no reemplaza al que funciona. el juez nunca manda ese host; para él, /health es como el original
+        host = (self.headers.get("Host") or "").split(":")[0].strip().lower()
+        if x["destino"] == "health" and host == "healthcheck.railway.app":
+            return
         # los espacios de borde del valor no cuentan (http los recorta: 3532); adentro sí, y Bearer exacto (3530, 3531)
         if (self.headers.get("Authorization") or "").strip(" \t") != f"Bearer {TOKEN}":
             raise error("E001")
