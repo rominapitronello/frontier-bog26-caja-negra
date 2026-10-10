@@ -44,6 +44,7 @@ rutas, métodos, autenticación, forma del cuerpo y límites.
 | EN-12 | tope del cuerpo: **8.192 bytes pasan, 8.193 dan 413** `{"error":"E101","mensaje":"cuerpo demasiado grande"}`. se mira después del token (sin token da 401) y antes de parsear el json (un cuerpo grande que no es json da 413) | 710, 711; 274, 275, 277–288; 712; 713 | confirmado |
 | EN-13 | el mensaje `m` no se recorta: un espacio delante cambia el comando (`E301`) y un espacio o salto de línea al final dejan el control mal formado (`E201`) | 252, 253, 254 | confirmado |
 | EN-14 | la respuesta trae un header `X-Req` que cuenta los pedidos a `/msg` del token (también los que dan error 400) y **no** se reinicia con el reset. los headers no se comparan en la evaluación; el gemelo lo imita por proceso | 2–21, 62, 68 | probable |
+| EN-15 | un json con la clave `m` repetida vale (la última gana) y un json con espacios alrededor también; con basura después del json, E100 | 2155, 2156, 2157 | probable |
 
 ## 2 · integridad
 cómo valida el servicio que un mensaje está bien formado (el dígito de control).
@@ -77,6 +78,8 @@ ejemplo  ALTA;Lucia → A L T A L U C I A → 1 12 20 1 12 21 3 9 1 → N = 1122
 | IN-10 | **`PING` no valida el control**: `PING;65` y `PING;XX` responden pong. sí valida la aridad (§ 3) | 39, 40, 714 | confirmado |
 | IN-11 | el control se valida **antes** que el comando y la aridad: un comando desconocido o con aridad mala y control malo da el error de control (E201 o E202), no E301 ni E302 | 42, 43, 213, 214 | confirmado |
 | IN-12 | mensajes largos también pasan el control (300 y 5.000 caracteres): N se reduce módulo 97 dígito a dígito | 262, 263 | probable |
+| IN-13 | los controles de borde valen igual en comandos con estado: `98`, `97` y una cifra (`5`) pasan; `1` donde va 98 da E202, `05` da E202 y `005` da E201 | 2052, 2053, 2059; 2051, 2057, 2058 | confirmado |
+| IN-14 | el punto y coma y los dígitos de ancho completo no son ascii: `PING；64` es un solo segmento (E103) y `１４` es un control mal formado (E201) | 2159, 2160 | probable |
 
 ## 3 · comandos
 un bloque por comando: argumentos, efecto y respuesta. el comando no distingue mayúsculas (`CONSULTa`, `ping`, `alta`); los ids de cuenta y de operación sí. la **aridad** es el número de segmentos entre el comando y el control; si no calza → **400** `{"error":"E302","mensaje":"aridad inválida"}`.
@@ -106,6 +109,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | CO-01 | → **200** `{"cuenta_id":"AC-0001","saldo":0}`: el saldo es un entero json y puede ser negativo o pasar de 2³¹ | 6, 9, 12, 20, 117, 230, 273 | confirmado |
 | CO-02 | cuenta que no existe → **404** `{"error":"E401","mensaje":"cuenta inexistente"}` | 16, 25, 27, 30, 143 | confirmado |
 | CO-03 | el id se compara exacto, sin normalizar: `ac-0001`, `AC-1`, `AC-00001` y ` AC-0001` (con espacio) no existen | 38, 239, 240, 241, 255 | confirmado |
+| CO-04 | un espacio al final del id (`AC-0001 `) tampoco es la cuenta | 2149 | probable |
 
 ### DEPOSITO;cuenta;monto
 | ID | Comportamiento | Evidencia | Confianza |
@@ -126,6 +130,10 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | TR-06 | monto **mayor que 100.000** **entre cuentas de titulares distintos** → **422** `{"error":"E506","mensaje":"límite excedido"}`. 100.000 pasa. el límite es **por operación, no acumulado**: tres transferencias seguidas de 100.000 pasan. **entre cuentas con el mismo nombre de titular no hay límite** (150.000 de «Lucia» a «Lucia» pasa); el nombre se compara exacto («Lucia» y «lucia» son titulares distintos) | 10, 105, 766, 768, 814, 816; 11, 106, 107, 108; 813, 817; 815 | confirmado |
 | TR-07 | orden dentro de TRANSFER: monto (E303) → origen = destino (E304) → existencia (E401) → bloqueo (E510, TR-08) → límite (E506, solo entre titulares distintos) → saldo (E507). por eso una transferencia sin fondos y sobre el límite da E506 entre titulares distintos (766, 816) y E507 entre cuentas del mismo titular (111, repetida idéntica en 806) | 220, 219, 221, 881–883, 771, 766, 816, 111, 806 | confirmado |
 | TR-08 | **bloqueo**: cada cuenta lleva la cuenta de sus transferencias seguidas rechazadas por límite (E506) o saldo (E507), mezcladas o no. con **tres**, toda transferencia **desde** esa cuenta → **409** `{"error":"E510","mensaje":"cuenta bloqueada"}`, y sigue así. lo **reinician** un depósito a la cuenta o una transferencia exitosa desde ella; **no** lo reinician recibir una transferencia ni anular. los errores E303, E304 y E401 no suman **ni cortan la racha** (E507, E304, E507, E507 → bloqueada: 1175–1180). el bloqueo no afecta consultar, depositar ni recibir. es por cuenta: las fallas de otra cuenta no suman ni cortan la racha | 771, 1180, 824–827, 837–840, 893–896; 879, 880, 898; 885, 886, 926–928, 858–862; 907, 908, 917, 918; 867–871; 828–832; 847–853 | confirmado |
+| TR-09 | el titular se compara exacto en todas sus formas: un espacio al final («Noa» y «Noa ») y una tilde («Ines» e «Inés») hacen titulares distintos, con límite; un nombre que es solo un espacio, repetido, es el mismo titular, sin límite | 2019, 2039; 2040, 2025 | probable |
+| TR-10 | dobles fallas con la cuenta bloqueada: destino inexistente da E401, mismo destino E304 y monto inválido E303, los tres antes que E510; bloqueada y sobre el límite da E510 | 1911, 1912, 1920, 1956; 881–883 | confirmado |
+| TR-11 | anular el depósito que desbloqueó la cuenta no restaura el bloqueo; una transferencia por el saldo exacto, exitosa, reinicia la racha | 1929–1931; 1965–1967 | probable |
+| TR-12 | montos en TRANSFER: 11 cifras, `1 ` con espacio y `0999999999` dan E303, como en DEPOSITO | 2065, 2066, 2067 | confirmado |
 
 ### ANULA;operacion
 | ID | Comportamiento | Evidencia | Confianza |
@@ -135,6 +143,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | AN-03 | anular una transferencia devuelve el monto al origen y lo resta del destino, **aunque el destino quede negativo** | 14 y 20 (ejemplos 13 y 19), 228, 229, 230 | confirmado |
 | AN-04 | anular dos veces → **200** (no es error) `{"ok":false,"motivo":"ya anulada"}` | 15, 232 | confirmado |
 | AN-05 | operación que no existe (`OP-0099`, `op-0001` en minúsculas, un id de cuenta, una que todavía no ocurrió) → **404** `{"error":"E402","mensaje":"operación inexistente"}` | 114, 115, 119, 245 | confirmado |
+| AN-06 | `OP-01` (otro ancho de id) no existe (E402); anular cuando no hubo ninguna operación exitosa da E402 | 2011, 1974 | probable |
 
 ### HALT;confirmacion (oculto)
 no aparece en los ejemplos: lo reveló la sugerencia del error de comando desconocido (`HELP` → `HALT`).
@@ -146,6 +155,8 @@ no aparece en los ejemplos: lo reveló la sugerencia del error de comando descon
 | HA-03 | detenido, **todo** `/msg` responde 503 `E599` (PING, CONSULTA, ALTA, json inválido, sin `m`, sin control, cuerpo grande), hasta el próximo `/__reset`, que lo repara. las rutas inexistentes siguen dando 404 (la ruta va antes) y `/health` sigue en 200 | 697–699, 720–723, 726, 1116; 701–704, 727, 728; 725, 1118; 700, 1113, 1117 | confirmado |
 | HA-04 | `HALT` sin argumentos o con dos → E302 | 137, 141, 718 | confirmado |
 | HA-05 | solo `1` confirma, comparado como texto: `0`, `2` y `01` dan E520. el comando en minúsculas (`halt;1`) también detiene | 991, 994, 997, 1110; 1000 | confirmado |
+| HA-06 | `HALT;1 ` (espacio al final), `HALT; 1` y `HALT;1.0` dan E520 y no detienen | 2101, 2121, 2122 | confirmado |
+| HA-07 | detenido gana al bloqueo: con la cuenta bloqueada y el servicio detenido, la transferencia da E599 | 2132 | probable |
 
 ### NOTAS (oculto)
 no aparece en los ejemplos: lo reveló la sugerencia del error de comando desconocido (`TOTAL` → `NOTAS`).
@@ -178,6 +189,8 @@ qué recuerda el servicio y qué cambia una respuesta según los requests anteri
 | ME-06 | una operación anulada lo sigue estando (la segunda anulación lo dice) | 15, 232 | confirmado |
 | ME-07 | el límite no acumula: cada transferencia se mira sola | 106, 107, 108 | confirmado |
 | ME-09 | cada cuenta guarda el **nombre del alta** (decide el límite, TR-06) y su **racha de transferencias fallidas** por límite o saldo (decide el bloqueo, TR-08) | 813–816; 824–827, 885–886, 926–928 | confirmado |
+| ME-10 | `/__reset` con otro token no repara ni borra: el servicio sigue detenido y las cuentas siguen; solo el reset con el token del equipo lo hace | 2108–2111 | probable |
+| ME-11 | los fallos antes del alta no consumen ids: tras un depósito y una transferencia a cuentas que no existen, el alta es `AC-0001` y el depósito `OP-0001` | 2135–2138 | probable |
 | ME-08 | el saldo no tiene piso: puede quedar negativo por anulaciones y entonces ninguna transferencia sale de esa cuenta | 117, 230, 231 | confirmado |
 
 ## 5 · errores
@@ -205,7 +218,7 @@ cada error con su status, su cuerpo exacto y en qué orden se evalúa frente a l
 | ER-18 | `E507` · 422 · `saldo insuficiente` | 17, 111, 231 | confirmado |
 | ER-22 | `E510` · 409 · `cuenta bloqueada` | 771, 827, 840, 852, 879, 880, 896, 898, 908, 918 | confirmado |
 | ER-19 | `E520` · 409 · `operación destructiva: detiene el servicio; reenvía con confirmación` | 145, 689–695 | confirmado |
-| ER-20 | **orden de evaluación** (el primero que falla responde): ruta (E404) → token (E001) → detenido (E599) → tamaño (E101) → json (E100) → `m` (E102) → menos de 2 segmentos (E103) → segmento vacío (E104) → formato del control (E201, no en PING) → valor del control (E202, no en PING) → comando (E301) → aridad (E302) → reglas del comando (TRANSFER: TR-07, con E510 y E506 antes que E507; DEPOSITO: E303 → E401; ANULA: E402) | E404 antes que E001: 59, 725 · E001 antes que E101: 712 · E599 antes que E101, E100, E102, E103: 726, 720, 721, 722 · E101 antes que E100: 713 · E104 antes que E202: 210 · E201 antes que E302 y E301: 213, 214 · E202 antes que E301 y E302: 42, 43 · E302 antes que E303: 217 · E303 antes que E401: 218 · TR-07 | confirmado (cada par, una o dos veces) |
+| ER-20 | **orden de evaluación** (el primero que falla responde): ruta (E404) → token (E001) → detenido (E599) → tamaño (E101) → json (E100) → `m` (E102) → menos de 2 segmentos (E103) → segmento vacío (E104) → formato del control (E201, no en PING) → valor del control (E202, no en PING) → comando (E301) → aridad (E302) → reglas del comando (TRANSFER: TR-07, con E510 y E506 antes que E507; DEPOSITO: E303 → E401; ANULA: E402) | E404 antes que E001: 59, 725 · E001 antes que E101: 712 · E599 antes que E101, E100, E102, E103: 726, 720, 721, 722 · E101 antes que E100: 713 · E104 antes que E202: 210 · E201 antes que E302 y E301: 213, 214 · E202 antes que E301 y E302: 42, 43 · E302 antes que E303: 217 · E303 antes que E401: 218 · TR-07 | **confirmado para los pares citados** (cada uno, una o dos veces, más E104 antes que E201: 2077); **los eslabones sin un par citado se deducen por transitividad: probable** (objeción de fable, `evals/fable-04.md`) |
 | ER-21 | E103 antes que E104 cuando hay un solo segmento vacío (`m` = `""`) | 74 | probable |
 
 ## 6 · cambios durante el día
@@ -216,6 +229,7 @@ qué cambió, desde cuándo y cómo lo detectamos.
 | CA-01 | **sin cambios hasta las 10:5x bog**: los 20 ejemplos (grabados con la versión de la mañana) se reprodujeron idénticos a las 10:1x, y la secuencia `cmd-1` de las 10:1x repetida exacta a las 10:4x dio las mismas 31 respuestas | 2–21; 81–111 contra 776–806 | confirmado |
 | CA-03 | una falsa alarma que no fue cambio: la v1 de esta spec decía «saldo antes que límite» por la línea 111, y el centinela vio lo contrario en 737. la repetición exacta (806) mostró que el original no había cambiado: la diferencia era el titular (TR-06) | 111, 737, 806 | confirmado |
 | CA-04 | **la spec pasó una prueba ciega:** sol escribió 40 secuencias (141 pedidos) solo desde esta spec, sin ver el código ni el log, y predijo lo que respondería el original; las 141 predicciones calzaron (40/40 secuencias), incluidas las 4 que marcó como ambiguas (`encargos/sol-03-oraculo.md`, `evals/sol-03.jsonl`) | 1003–1183 | confirmado |
+| CA-05 | **segunda prueba ciega, los venenos de fable:** 38 secuencias (238 pedidos) escritas solo desde la spec v2, con dobles fallas, bordes y órdenes inesperados; las 238 predicciones calzaron con el original, incluidas las 10 marcadas como ambiguas, y el gemelo también (38/38). sus 18 silencios quedan como filas EN-15, IN-13, IN-14, CO-04, TR-09 a TR-12, AN-06, HA-06, HA-07, ME-10 y ME-11 | 1905–2180 | confirmado |
 | CA-02 | cómo se detecta un cambio: un **centinela** repite secuencias canónicas del log (los 20 ejemplos y una por familia de error) y compara con la regla del juez; solo una **repetición exacta que cambia** acredita un cambio. el detalle irá en `incident.md` | — | (método) |
 
 ## 7 · riesgos

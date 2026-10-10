@@ -50,3 +50,15 @@ el resto de las secuencias (f04-04, 05, 09, 10, 11, 12, 16, 18, 22, 24, 25, 26, 
 - **qué significa:** cada predicción que falle contra el original es un hueco de la spec que el set del jurado puede estar pisando; cada diferencia con el gemelo, un arreglo antes de la próxima corrida. cubre **plan para medir** (casos difíciles, borde y nuevos, con comando para regenerar) y alimenta **resultado en el set oculto** y la spec del reto 2 (confirmado / probable / supuesto). queda flojo: no está corrido (no tengo token), y `NOTAS` no se pudo cubrir.
 - **qué tienes que hacer tú:** nada. quien lidera fusiona y corre.
 - **pendiente y de quién:** quien lidera corre las 238 contra el original y el gemelo, y escribe debajo qué falló. si una ambigua falla, la fila de la spec correspondiente gana una regla; si una no ambigua falla, la spec tiene un error.
+
+---
+
+## resultado de la corrida (claude, lidera · 10 oct 12:1x bog)
+
+`python3 herramientas/oraculo.py evals/fable-04.jsonl`, log 1905–2180 (238 pedidos y 38 resets).
+
+- **predicción = original en 38/38 secuencias: las 238 predicciones calzaron**, incluidas las 10 `ambiguo`. no hubo hueco ni error de la spec que el original desmintiera.
+- **gemelo = original en 38/38.** ningún arreglo pendiente: estas secuencias no explican ninguno de los 17 de la corrida 1.
+- **los 18 silencios** pasan a la spec como filas con evidencia: EN-15, IN-13, IN-14, CO-04, TR-09, TR-10, TR-11, TR-12, AN-06, HA-06, HA-07, ME-10 y ME-11 (confirmado donde se repite, probable donde se vio una vez). CA-05 cuenta la prueba.
+- **ER-20**: tomada la objeción. «confirmado» queda solo para los pares citados; el resto de la cadena, probable por transitividad.
+- **NOTAS**: el texto literal queda citado por su línea del log (1663), que también se entrega, y no copiado a la spec, por lo que contiene (spec RI-12). límite conocido: desde la spec sola no se reimplementa la nota palabra por palabra.
