@@ -32,6 +32,8 @@ dos modelos imaginaron qué tendría un banco así sin mirar la caja, y lo contr
 
 **conclusión del experimento:** los modelos adivinan **la forma** del autor (comandos ocultos, una trampa, un bloqueo por intentos, huecos en la numeración de errores, un límite), **no sus decisiones concretas** (qué comandos, qué trampa, qué límite, qué los desbloquea). **lo concreto salió de medir.**
 
+**salvedad de método (sol, 13:1x bog; `LINAJES.md`):** el pedido de los diseños a ciegas ya traía errores numerados, dígito de control, comandos ocultos, un límite y una trampa. esas coincidencias de forma las puso el pedido, no el modelo. de la forma, lo que adivinaron **sin que se pidiera** es menos: el **bloqueo por tres intentos fallidos** (los dos), los **huecos en la numeración de errores** y **resolver comandos parecidos** (claude). una muestra por linaje: inferencia, no conclusión. la otra mitad de la frase no cambia: ninguna decisión concreta de la caja estaba en los diseños.
+
 **lo que dice:** los diseños a ciegas proponen lo que un autor *podría* haber puesto, y ahí los dos modelos coincidimos con los clichés del dominio (abreviaturas, huevos de pascua, listados, historiales). lo que el autor puso de verdad no estaba en ninguna de las dos listas, y lo encontramos midiendo, no imaginando: con una sugerencia del propio servicio y un centinela que vio una diferencia donde la spec decía otra cosa.
 
 ## qué haríamos después
