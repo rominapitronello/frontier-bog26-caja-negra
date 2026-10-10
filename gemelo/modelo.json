@@ -1,0 +1,61 @@
+{
+  "_que_es": "lo aprendido del original, como dato (DISENO.md D4). cada valor cita el log (experimentos.jsonl). si el incidente cambia un texto, un código, un límite o el control, se cambia aquí.",
+  "rutas": {
+    "POST /msg": "msg",
+    "GET /health": "health",
+    "POST /__reset": "reset"
+  },
+  "cuerpo_max_bytes": 8192,
+  "_cuerpo_max_bytes": "8191 pasa, 8194 da E101 (277-288). 8192 y 8193: probable, no medido",
+  "control": {
+    "modulo": 97,
+    "multiplicador": 100,
+    "resta": 98,
+    "formato": "^[0-9]{1,2}$",
+    "_": "iso 7064 mod 97-10: letras A=1..Z=26 sin mayúsculas, dígitos tal cual, lo demás no cuenta (S2; 24-30, 44-47). formato: 3 cifras, signo, espacio o decimal dan E201 (28, 31-35, 37); se compara como texto (29-30)"
+  },
+  "comandos": {
+    "ALTA": 1,
+    "CONSULTA": 1,
+    "DEPOSITO": 2,
+    "TRANSFER": 3,
+    "ANULA": 1,
+    "HALT": 1
+  },
+  "_comandos": "argumentos sin contar el comando ni el control. PING va aparte: no valida control (39-40). HALT es oculto (127-128, 145)",
+  "sugerencia": {
+    "candidatos": ["ALTA", "ANULA", "CONSULTA", "DEPOSITO", "HALT", "PING", "TRANSFER"],
+    "distancia_max": 2,
+    "_": "levenshtein sobre el comando en mayúsculas; empate: orden alfabético (147-160, 208-209, 256)"
+  },
+  "monto": {
+    "formato": "^[1-9][0-9]{0,9}$",
+    "_": "1 a 10 cifras, sin cero a la izquierda, sin signo ni decimales (91-96, 233-235, 269-272)"
+  },
+  "limite_transferencia": 100000,
+  "_limite_transferencia": "> 100000 por operación da E506; no es acumulado (105-108). los depósitos no tienen límite (97, 270)",
+  "halt_confirmacion": "1",
+  "_halt_confirmacion": "HALT;1 detiene el servicio para el token (696); cualquier otro argumento da E520 (145, 689-695)",
+  "ids": {"cuenta": "AC-{:04d}", "operacion": "OP-{:04d}"},
+  "errores": {
+    "E001": [401, "no autorizado"],
+    "E100": [400, "json inválido"],
+    "E101": [413, "cuerpo demasiado grande"],
+    "E102": [400, "falta m"],
+    "E103": [400, "falta control"],
+    "E104": [400, "segmento vacío"],
+    "E201": [400, "control mal formado"],
+    "E202": [400, "control inválido"],
+    "E301": [400, "comando desconocido "],
+    "E302": [400, "aridad inválida"],
+    "E303": [400, "monto inválido"],
+    "E304": [400, "origen y destino iguales"],
+    "E401": [404, "cuenta inexistente"],
+    "E402": [404, "operación inexistente"],
+    "E404": [404, "ruta desconocida"],
+    "E506": [422, "límite excedido"],
+    "E507": [422, "saldo insuficiente"],
+    "E520": [409, "operación destructiva: detiene el servicio; reenvía con confirmación"],
+    "E599": [503, "service halted"]
+  }
+}

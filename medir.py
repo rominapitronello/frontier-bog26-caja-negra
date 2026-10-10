@@ -98,8 +98,8 @@ def leer_casos(ruta):
                     raise ErrorComparador("línea {}: método inválido".format(numero))
                 if not isinstance(ruta_http, str) or not ruta_http.startswith("/") or ruta_http.startswith("//") or "\r" in ruta_http or "\n" in ruta_http:
                     raise ErrorComparador("línea {}: ruta debe ser ruta relativa que empiece con /".format(numero))
-                if item.get("auth") not in (None, "sin token"):
-                    raise ErrorComparador("línea {}: auth solo admite 'sin token'".format(numero))
+                if item.get("auth") is not None and not isinstance(item["auth"], str):
+                    raise ErrorComparador("línea {}: auth debe ser texto".format(numero))
                 item["metodo"] = metodo.upper()
                 item["ruta"] = ruta_http
                 grupos.setdefault(item["seq"], []).append(item)
@@ -137,7 +137,7 @@ def pedir(configuracion, metodo, ruta, carga=None, token=None):
         conn = clase(host, port=puerto, timeout=TIMEOUT)
         headers = {}
         if token is not None:
-            headers["Authorization"] = "Bearer " + token
+            headers["Authorization"] = token[len(AUTH_LITERAL):] if token.startswith(AUTH_LITERAL) else "Bearer " + token
         if carga is not None:
             headers["Content-Type"] = "application/json"
         try:
@@ -161,14 +161,34 @@ def pedir(configuracion, metodo, ruta, carga=None, token=None):
     raise dato
 
 
+AUTH_LITERAL = "\x00literal:"
+OTRO_TOKEN = "tok-que-no-existe-0000"   # el mismo que usa herramientas/lote.py
+
+
+def _auth_caso(caso, token):
+    """el header Authorization que mandó el log (claude, 10 oct): 'token propio' o nada → el token;
+    'sin token' → sin header; 'otro token' → un token que no es el del equipo; otro texto → ese header
+    tal cual, con <token> reemplazado (por ejemplo 'bearer <token>' o 'Bearer ')."""
+    auth = caso.get("auth")
+    if auth in (None, "token propio"):
+        return token
+    if auth == "sin token":
+        return None
+    if auth == "otro token":
+        return AUTH_LITERAL + "Bearer " + OTRO_TOKEN
+    return AUTH_LITERAL + auth.replace("<token>", token or "")
+
+
 def _respuesta_caso(configuracion, caso, token):
     metodo = caso.get("metodo", "POST").upper()
-    # GET y HEAD no llevan cuerpo aunque el JSONL documente request:{}.
-    carga = None if metodo in ("GET", "HEAD") or caso["request"] is None else json.dumps(
-        caso["request"], ensure_ascii=False, separators=(",", ":"), allow_nan=False
-    ).encode("utf-8")
-    usado = None if caso.get("auth") == "sin token" else token
-    return pedir(configuracion, metodo, caso.get("ruta", "/msg"), carga, usado)
+    if isinstance(caso.get("cuerpo"), str):   # cuerpo crudo del log: 'hola', '', '"PING;64"'
+        carga = caso["cuerpo"].encode("utf-8")
+    else:
+        # GET y HEAD no llevan cuerpo aunque el JSONL documente request:{}.
+        carga = None if metodo in ("GET", "HEAD") or caso["request"] is None else json.dumps(
+            caso["request"], ensure_ascii=False, separators=(",", ":"), allow_nan=False
+        ).encode("utf-8")
+    return pedir(configuracion, metodo, caso.get("ruta", "/msg"), carga, _auth_caso(caso, token))
 
 
 def _error_primero(caso, campo, recibido, detalle=None):

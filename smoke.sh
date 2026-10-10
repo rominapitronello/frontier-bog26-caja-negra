@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
-# Prueba de humo del entrypoint (Ley 2). Se completa el sábado, cuando el brief diga
-# cómo se invoca el entrypoint. Mientras tanto FALLA a propósito, para que nadie crea
-# que hay algo verde que no existe.
+# prueba de humo (agents.md § 5): levanta el gemelo en local y le pasa, con el comparador de la regla del juez,
+# los 20 ejemplos del material y todas las secuencias del log. no toca el original. sale con error si algo difiere.
 set -euo pipefail
-
-ENTRYPOINT_CMD="${ENTRYPOINT_CMD:-}"   # ej: "python main.py --input ejemplos/caso1.json"
-
-if [ -z "$ENTRYPOINT_CMD" ]; then
-  echo "smoke: ENTRYPOINT_CMD no está definido todavía. Completar este script según el brief."
-  exit 1
-fi
-
-echo "smoke: corriendo -> $ENTRYPOINT_CMD"
-OUT=$(eval "$ENTRYPOINT_CMD")
-echo "$OUT" | head -20
-
-# TODO sábado: chequear que la salida tenga la forma que pide el brief.
-# Ejemplo: echo "$OUT" | python -c 'import json,sys; json.load(sys.stdin)'
-
+cd "$(dirname "$0")"
+PUERTO="${PUERTO:-18080}"; TOKEN="smoke-local"
+GEMELO_TOKEN="$TOKEN" PORT="$PUERTO" python3 gemelo/servidor.py > /dev/null 2>&1 & PID=$!
+trap 'kill $PID 2>/dev/null || true' EXIT
+python3 - "$PUERTO" "$TOKEN" <<'PY'
+import sys, time, http.client
+for _ in range(50):
+    try:
+        c = http.client.HTTPConnection("127.0.0.1", int(sys.argv[1]), timeout=1)
+        c.request("GET", "/health", headers={"Authorization": "Bearer " + sys.argv[2]})
+        if c.getresponse().status == 200: sys.exit(0)
+    except OSError:
+        time.sleep(0.1)
+sys.exit("smoke: el gemelo no respondió /health en 5 s")
+PY
+echo "smoke: ejemplos del material"; python3 medir.py --casos material/pruebas/ejemplos.jsonl --gemelo "http://127.0.0.1:$PUERTO" --token "$TOKEN"
+echo "smoke: secuencias del log";    python3 medir.py --casos experimentos.jsonl --gemelo "http://127.0.0.1:$PUERTO" --token "$TOKEN"
 echo "smoke: OK"
