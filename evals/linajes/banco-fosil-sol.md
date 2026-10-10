@@ -1,4 +1,4 @@
-# banco fósil 77 · diseño a ciegas de sol (familia gpt)
+# banco fósil 77 · diseño a ciegas de sol 6 (familia gpt, razonamiento alto)
 
 > pegado por romina en el chat, 10 oct ~12:50 bog. texto de sol; aquí solo se pasaron las fórmulas a texto plano y las tablas a markdown.
 

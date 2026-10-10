@@ -6,7 +6,7 @@
 
 los modelos tienen sesgos de diseño. si la caja la escribió (o ayudó a escribirla) un modelo, sus reglas tienen la huella de cómo piensa ese linaje. entonces:
 
-1. pedimos a dos linajes que diseñen **a ciegas** una caja parecida (`evals/linajes/`): sol (familia gpt) y un claude sin contexto (opus 5.5, ventana fantasma, razonamiento alto).
+1. pedimos a dos linajes que diseñen **a ciegas** una caja parecida (`evals/linajes/`): sol 6 (familia gpt, razonamiento alto) y un claude sin contexto (opus 5.5, ventana fantasma, razonamiento alto).
 2. comparamos sus diseños con la caja real (`spec.md`).
 3. lo que **proponen y no probamos** son hipótesis fuera de nuestra spec, el punto ciego que comparten sol, fable y el fuzzer porque todos salen de ella.
 4. lo que **cada linaje cambiaría** es un catálogo de candidatos para el incidente de las 15:30.
@@ -74,3 +74,16 @@ el incidente lo diseña alguien. si es quien pensó las reglas, cambia **datos**
 **para el centinela, lo barato que falta (inferencia; lo decide quien lidera):** un prefijo (`CONS;AC-0001;…`), un id en minúscula, un espacio al final, tres transferencias rechazadas seguidas (`E510`), y un nombre vecino de los ocultos para que la sugerencia delate uno nuevo.
 
 **para el gemelo:** lo de claude se absorbe cambiando datos; lo de gpt (sesiones, confirmación en dos pasos) es código. si a las 15:30 el cambio es de mecánica, el tiempo se va en eso: conviene haberlo pensado antes.
+
+## registro de muestras (sol, 13:2x bog)
+
+método: no se le pide a ninguna instancia que explique por qué eligió sus reglas; la explicación retrospectiva contaminaría el fenómeno. los artefactos originales son la evidencia.
+
+| muestra | caja | modelo | hipótesis de diseño (lectura de sol) |
+|---|---|---|---|
+| 1 | bancotex 2.3 | claude opus 5.5, ventana fantasma, razonamiento alto | la dificultad está en **obedecer reglas extrañas**: trampas contra la tendencia a corregir; énfasis en precedencia y parsers |
+| 2 | banco fósil 77 | sol 6 (gpt), razonamiento alto | la dificultad está en **el estado y los niveles de autoridad**: `SALDO?` (una foto vieja del saldo), `RUIDO` (cambia con un contador global), `REPETIR` (repite sin ejecutar), `AUDITA` (una falsa instrucción de sistema dentro de una respuesta) |
+
+convergencias espontáneas, no pedidas: 1998, tres clientes, módulo 11, pin, sesiones que caducan, transferencias pendientes. pueden ser convención del dominio y no parentesco: las próximas muestras dirán si las decisiones no pedidas se agrupan por linaje o son de cada instancia.
+
+**para el incidente (inferencia de claude):** la hipótesis de sol sobre su propia muestra, «el mismo mensaje no significa lo mismo en distintos momentos», es justo la forma de un cambio durante el día. la caja real ya tiene piezas así: `X-Req` no se reinicia con el reset, el bloqueo `E510` depende de la historia, y `HALT` cambia todo lo que sigue. H7 (una respuesta que dependa de un contador global) es la hipótesis de sol que más vale probar antes de las 15:30.
