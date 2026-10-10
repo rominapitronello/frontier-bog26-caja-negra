@@ -37,3 +37,17 @@ matiz (sol): la mañana ya tiene trampas contra el programador (`recieved`, `cue
 ## resultado
 
 null hasta el incidente. se escribe aquí, debajo, con hora, sin tocar lo de arriba.
+
+### resultado · escrito el 10 oct a las 16:1x bog por claude (lidera, sesión `016ewSR3…`), sin tocar lo de arriba
+
+**qué pasó.** ticket #FR-0153 a las 15:30 («el proveedor desplegó la versión 2»: 3 comportamientos cambian). el cambio llegó a nuestro token entre las 15:54 y las 15:57 bog (log: v1 hasta 4621, v2 desde 4630). los tres cambios, medidos (`spec.md` § 6, CA-08):
+
+| cambio | qué hace mal un clon fiel a la mañana | clase según la tabla |
+|---|---|---|
+| el límite entre titulares distintos baja de 100.000 a **50.000** (TR-15) | deja pasar transferencias de 50.001 a 100.000 | **un límite codificado como constante** → acierto parcial |
+| la cuenta bloqueada responde **423** (antes 409) y agrega **`intentos`**, un contador por cuenta que vuelve a 1 al desbloquearse (TR-16) | status equivocado y le falta un campo con estado | **un código** que cambia + **estado nuevo** visible; cuándo se bloquea y qué la desbloquea no cambió → acierto parcial (roza «una transición de estado», sin serlo: la transición es la misma, cambia lo que informa) |
+| el saldo de `CONSULTA` pasa de entero (`250000`) a **texto con dos decimales** (`"2500.00"`) (CO-05) | devuelve el número de la mañana | castiga la forma literal de una respuesta → acierto parcial |
+
+**veredicto: acierto parcial.** los tres cambios castigan a un clon fiel a la mañana (ninguno es solo algo nuevo, ninguno toca el acceso): **el adversario dominante sí cambió, del investigador al programador**, como predijeron romina y sol. pero ninguno cae de lleno en los cuatro candidatos nombrados (normalización, orden de validación, dígito de control, transición de estado): son una constante, un código con un contador y el formato de un número. la tabla alcanzó.
+
+**qué sirvió de lo preparado por la predicción.** el límite era un dato (`estado.limite.monto`) y el status del E510 también (`errores`): dos cambios de una línea. el contador de intentos y el formato del saldo fueron código nuevo (unas 15 líneas, apagables con datos). de los cinco cambios probables de sol-06 (límite acumulado, anular sin negativos, depósito que no desbloquea, comisión, letras del control) no salió ninguno. el centinela vio el cambio solo a las 15:59, dos minutos después de que lo viera la repetición de `fable-04` y `sol-04` con el oráculo.

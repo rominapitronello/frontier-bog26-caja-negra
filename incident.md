@@ -54,14 +54,19 @@ lo que no está preparado y sería código: sesiones o créditos que vencen, con
 
 ## detección
 - primera señal, con consulta y hora: el ticket (15:30), no el original. **hasta las 15:40 bog el original sigue respondiendo como v1** para nuestro token: el centinela de las 15:33 y las 15:38 sin cambios (3769–3826, 4156–4213) y dos tandas de **repetición exacta** de secuencias de la mañana (`evals/v2/tanda-1.jsonl` y `tanda-2.jsonl`, seq `v2-*`): 316 pedidos (3827–4155: los 20 ejemplos, control, entrada, comandos, sugerencias, orden de errores, bordes, titular, bloqueo, HALT) y 217 (4214–4447: sin token, búsquedas de entrada, comandos ocultos, `NOTAS`, huecos E503/E508/E509, E507, bloqueo largo, parser). **0 diferencias en 533 pedidos**; los headers del original tampoco cambian. lectura: v2 todavía no llegó a nuestro token, o sus tres cambios están en rincones que nada de lo grabado toca.
-- qué la detectó: el juez (el ticket). el sistema todavía no ve el cambio: null hasta que lo vea
+- qué la detectó: el juez (el ticket) avisó; **en el original, la repetición exacta de `fable-04` y `sol-04` con el oráculo** (propuesta de fable en el issue #12) a las 15:57–15:58 bog (4630: el primer E510 con 423), y **el centinela solo** a las 15:59 (5082–5139: saldo, límite y la cascada). el cambio llegó a nuestro token entre las 15:54:21 (4621, último v1) y las 15:57:47 (4630, primer v2): 24 min después del ticket
 
 ## qué cambió (mecanismo, con evidencia)
-null
+tres comportamientos, como dijo el ticket, y nada más: en 460 pedidos que repiten exacto `fable-04` y `sol-04` (4622–5081), cada diferencia es de una de estas tres clases (27, 15 y 3).
+1. **el límite entre titulares distintos baja de 100.000 a 50.000** (TR-15): 50.000 pasa (5147) y 50.001 no (5184; búsqueda acotada que acertó al primer paso); 99.999 y 100.000 dan E506 (5145, 5146). el mismo titular sigue exento (5148, 5149). antes: 100.000 pasaba (2020, 2045).
+2. **el bloqueo responde 423 y cuenta los intentos** (TR-16, ER-23): `{"error":"E510","mensaje":"cuenta bloqueada","intentos":n}`. `intentos` sube con cada intento de transferir desde la cuenta bloqueada (5161–5163, 5165), no suma un E401 (5164), es por cuenta (5170) y vuelve a 1 cuando un depósito desbloquea y la cuenta se bloquea otra vez (5171–5176). cuándo se bloquea (tres E506/E507) y qué desbloquea no cambiaron. antes: 409 sin `intentos` (1913, 2222).
+3. **el saldo de `CONSULTA` es texto con dos decimales** (CO-05): `250000` → `"2500.00"`, `-80` → `"-0.80"`, `10000049999` → `"100000499.99"` (4743, 4975, 5153). los montos de entrada siguen en enteros.
 
 ## cómo se adaptó
-- qué hizo el sistema solo: null
-- qué hicimos nosotros: null
+- qué hizo el sistema solo: el centinela avisó a las 15:59 («CAMBIO DEL ORIGINAL» y «GEMELO DIFIERE», con los ids); `fase.py` separó solo la mañana de la tarde (167 secuencias, 3045 líneas marcadas `"fase": "manana"`, y las 167 calzan con `modelo-manana.json`).
+- qué hicimos nosotros (16:0x–16:1x bog): congelamos `gemelo/modelo-manana.json`; en `gemelo/modelo.json`, **dos datos** (límite 50.000, status 423 del E510) y **dos interruptores nuevos** con su código (`estado.bloqueo.informa_intentos`, `saldo_formato: "decimal2"`; ~15 líneas en `servidor.py`). smoke con los dos modelos (tarde 172/172, mañana 167/167) y pruebas 23/23, con una clase nueva para la tarde. **gemelo v15**. de lo preparado, el límite y el código de error eran datos; el contador y el formato no estaban previstos.
 
 ## lo que queda sin separar
-null
+- si `intentos` tiene tope o vuelve a empezar por otra causa (anular, recibir): no se probó.
+- si el saldo con texto aparece en alguna otra respuesta: hoy solo `CONSULTA` muestra saldos; `NOTAS` no cambió (5136).
+- el límite nuevo con montos de 50.001 a 99.999 entre titulares distintos: probado en los bordes (50.001, 99.999), no en el medio.
