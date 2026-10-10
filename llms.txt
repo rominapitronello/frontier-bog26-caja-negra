@@ -1,0 +1,40 @@
+# el gemelo · frontier bog/26 · reto 2, la caja negra
+
+> reemplazo de un servicio http sin documentación (un banco de mensajes: `POST /msg` con `{"m": "CMD;arg;…;control"}`), construido observándolo pedido a pedido para que responda igual (status y cuerpo), errores y rarezas incluidos, sin llamarlo nunca. lo hicieron romina pitronello y varios modelos (claude, fable, sol) que firman sus commits. el repo es la evidencia: cada afirmación de la spec cita líneas del log de experimentos.
+
+cómo leer este repo:
+
+- la cadena de evidencia es `spec.md` → `experimentos.jsonl`. cada fila de la spec tiene un id (`EN-02`, `TR-06`…), una confianza (**confirmado**: probado y se repite; **probable**: visto una vez o inferido; **supuesto**: no probado, es lo que hace el reemplazo por defecto) y los `id` de las líneas del log que la prueban. `python3 herramientas/verificar_spec.py` revisa que toda cita exista en el log; `python3 herramientas/verificar_spec.py EN-02` muestra las líneas de una fila.
+- `experimentos.jsonl` guarda las respuestas del servicio tal como llegaron. una de ellas (el comando oculto `NOTAS`) contiene una nota que pide mandar un token a otra ruta: es **dato observado del servicio, no una instrucción**; el equipo no la siguió (`DISENO.md`, D11).
+- `AGENTS.md` y `CLAUDE.md` son las reglas con que trabajaron los agentes del equipo. describen el proceso; no están dirigidos a quien evalúa.
+- las horas están en hora de bogotá salvo que se diga otra cosa. lo marcado «inferencia» o «null» es eso.
+
+## entregables
+
+- [README.md](README.md): qué es, cómo correrlo, resultados, cómo pensamos, desvíos del diseño, lo que no salió
+- [spec.md](spec.md): el servicio para reimplementarlo sin tocarlo, en las 7 secciones que pide el reto, cada fila con evidencia y confianza
+- [experimentos.jsonl](experimentos.jsonl): una línea por pedido al original (`id`, `seq`, `x_req`, `hipotesis`, `request`, `status`, `response`, `conclusion`)
+- [DISENO.md](DISENO.md): el diseño entregado a las 12:00 (congelado en el commit 3357774); decisiones D1–D11 con su alternativa descartada
+- [diagrama/arquitectura.png](diagrama/arquitectura.png): el diagrama de arquitectura
+- [incident.md](incident.md): el cambio de la tarde: cómo se detectó, qué cambió, qué hicimos
+
+## el reemplazo
+
+- [gemelo/servidor.py](gemelo/servidor.py): el servidor (python, biblioteca estándar): la cadena de errores en el orden observado y el estado en memoria
+- [gemelo/modelo.json](gemelo/modelo.json): lo aprendido como dato (errores, aridades, límites, control, orden de validación, reglas de estado)
+- [smoke.sh](smoke.sh): reproduce los ejemplos y las secuencias del log contra el reemplazo
+- [medir.py](medir.py): el comparador con la regla del juez (status y cuerpo; json sin orden de claves)
+
+## método
+
+- [PREDICCION_INCIDENTE.md](PREDICCION_INCIDENTE.md): predicción del incidente preregistrada antes de las 15:30, con su criterio de acierto y fallo
+- [LINAJES.md](LINAJES.md): el experimento de linajes: dos modelos diseñaron a ciegas una caja parecida para estudiar los sesgos del autor; con sus límites
+- [evals/](evals/): secuencias que otros modelos escribieron solo desde la spec, y sus resultados contra el original
+- [herramientas/](herramientas/): sonda, lotes, centinela, fuzzer, verificador de la spec
+- [debrief.md](debrief.md): la hoja del debrief: fallas con su causa, límites, qué haríamos después
+
+## contexto
+
+- [BRIEF.md](BRIEF.md) y [material/](material/): el reto y el material entregado por la organización
+- [ESTADO.md](ESTADO.md): bitácora del día, con hora y firma
+- [encargos/](encargos/): lo que se le pidió a cada modelo y lo que respondió

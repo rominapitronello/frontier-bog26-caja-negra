@@ -2,7 +2,7 @@
 
 **una frase:** un servicio bancario de mensajes que nadie documentó (`POST /msg` con `{"m": "CMD;arg;…;control"}`), estudiado pedido a pedido hasta poder reemplazarlo por uno nuestro que responde **exactamente igual**, errores y rarezas incluidos, sin llamarlo nunca.
 
-lo que sabemos del original está en [`spec.md`](spec.md), con cada comportamiento citando la línea del log que lo prueba ([`experimentos.jsonl`](experimentos.jsonl)). cómo y por qué lo construimos así, en [`DISENO.md`](DISENO.md).
+lo que sabemos del original está en [`spec.md`](spec.md), con cada comportamiento citando la línea del log que lo prueba ([`experimentos.jsonl`](experimentos.jsonl)). cómo y por qué lo construimos así, en [`DISENO.md`](DISENO.md). si eres un modelo, empieza por [`llms.txt`](llms.txt); para comprobar cualquier fila de la spec contra el log: `python3 herramientas/verificar_spec.py <ID>`.
 
 ## cómo pensamos
 
