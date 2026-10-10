@@ -1,0 +1,25 @@
+# lecciones para el repo de mañana
+
+reglas de trabajo que romina fijó durante el ensayo del viernes 9 oct. van al repo nuevo del sábado.
+
+1. **un modelo que entrega activa al siguiente, sin pasar por romina.** quien coordina deja una vigilancia sobre el repo (pushes y PRs) y reacciona a lo nuevo. límite: un chat sin terminal (sol en chatgpt) no despierta con un push; a ese hay que escribirle.
+2. **antes de empezar cualquier cosa, mirar lo que evalúan** y separar: lo que es **código directo** lo hace una instancia sola en una ventana aparte; lo que es **juicio** se conversa; lo que es **optimizar algo** se le da a un solo modelo con presupuesto grande y se le deja en paz.
+3. **siempre hay una versión provisional de cada entregable** que corre y respeta el contrato, subida temprano, por si no alcanza el terminado. el terminado la reemplaza.
+4. **varias plumas, un diferencial.** el motor vale porque plumas distintas implementan el mismo contrato sin verse; el generador automático no basta: los venenos escritos a mano (fable) encontraron el error grande ("Empresa Ficticia 2021 - 2024" no se leía).
+5. **el acuerdo entre plumas ordena el presupuesto, no lo exime.** coincidir no es observar.
+6. **quien lidera, al pedir algo en otra ventana, dice qué modelo y qué nivel de razonamiento corresponden.** va en la primera línea del encargo. ahorra tiempo sin sacar al modelo de lo que está haciendo.
+7. **la vigilancia mira todas las ramas y PRs, no solo `main`.** la fase 1 se detuvo en un PR y quien coordinaba no lo vio hasta que romina lo trajo.
+8. **un solo integrador.** las ramas ajenas las fusiona a `main` una sola instancia (la que lidera); las demás verifican y anotan. dos plumas vigilando el mismo repo fusionan lo mismo a la vez.
+
+## cicatrices de la noche (claude que lideró, 10 oct 00:1x)
+
+9. **las credenciales de la caja tienen que estar donde trabaja quien lidera.** esta sesión se abrió antes de que existieran en el entorno y el clasificador (con razón) no dejó sacarlas del chat. cada consulta tuvo que pasar por otra sesión y por romina. mañana: abrir la sesión que lidera *después* de cargar el entorno, o que la sesión con la caja sea la que lidera.
+10. **acordar con el juez cómo se anuncia la fase 2.** el cambio llegó sin aviso; lo vimos por el contador de la caja (`query_number` 1). el alto para confirmar fue lo correcto, pero costó unos 15 minutos de los 40 de la fase.
+11. **el código de la entrega se lanza al principio, no cuando urge.** `ENCARGO_CODIGO.md` nunca tuvo ventana propia; el predictor real y los modelos se hicieron sobre la marcha. lo salvó la regla de la versión provisional (lección 3).
+12. **el motor es ciego a lo que no imagina, y ahí está lo importante.** los dos altos (texto vacío, frase fija) y la reserva de fable sobre la confianza 1,0 vinieron de lo que el espacio no tenía. las sondas a mano de fable fueron las mejores consultas de la noche.
+13. **un atajo automático puede razonar mal con seguridad.** el exportador post, para acomodar FA17, botó todas las duraciones pre y concluyó "ya no lee meses" sin evidencia. se notó al mirar los ejes resultantes. mirar siempre qué cambió en el modelo antes de sellar.
+14. **la objeción de una tercera pluma vale más tarde que nunca.** "suma refutada" descansaba en una observación de la regla vieja; fable lo vio a las 00:05 y el modelo se corrigió a tiempo.
+15. **`preguntar.py` relee todo el log en cada consulta.** el centinela de 16 tardó ~9 minutos. mañana: un proceso que mantenga el espacio en memoria.
+16. **después del cierre no se consulta.** la sesión de la caja siguió preparando vecinos pasadas las 00:08:54; el que lidera tiene que decir "cerrado" en el repo, no solo en el chat.
+17. **el agente es el entregable, no el andamio, y mañana hay tiempo para hacerlo.** esta noche el investigador fue un motor programado y el juicio (hipótesis, vecinos, lectura del incidente) lo hicimos las plumas conversando, en varias ventanas. el brief pide un proceso que corra solo con un comando. la prueba real dura horas (diseño 12:00, incidente 15:30, cierre 20:00), no los 40 minutos de nuestra fase 2: el agente completo —motor + un llm que toma el juicio cuando el motor queda refutado + `investiga.py` con `--backend` y replay— se arma primero, antes del diseño, y las plumas quedan para diseñarlo, mirarlo y objetar.
+18. **los ejes del espacio salen de cómo escribe regex quien programa en una tarde, no de cómo creemos que lee un ats.** el juez puntuó 84,4 % (3/4) y 3/4 en incidente; **todas** las fallas fueron mecanismos que el espacio no tenía, y todas con confianza 1,0: `\s+` entre "power" y "bi" (teníamos "un espacio" o "cualquier cosa, incluso nada"), decimales ("1,5 años" leído como 5), límite de palabra en "tableau" ("TableauServer"). es la lección 1 de `CALIBRACION.md` del ensayo anterior, otra vez: predecir el código simple del autor. antes de sellar el espacio, recorrer los patrones de manual (`\s+`, `\b`, `\d+([.,]\d+)?`, `re.I`) y preguntar en cada eje "¿está el patrón de manual entre las opciones?". y la consulta que separa dos hipótesis vivas (mayor/suma) se pregunta apenas aparecen, no al final.
