@@ -6,6 +6,15 @@
 
 **reto:** 2 — la caja negra · **equipo:** romina pitronello con claude y sol (pasaelfiltro) · **fecha:** sábado 10 oct 2026
 
+## 0. lo que sabemos del reto
+
+**según romina, resumen del brief (10 oct, 11:4x chile); el texto del brief manda cuando esté en el repo:**
+- ~100 casos: **5 ejemplos** visibles y **~100 tests ocultos** detrás. alta incertidumbre.
+- la caja es un **servicio sin documentación**, y **la forma de acceder a su api no es la común**.
+- **el incidente cambia el acceso.** no se trata de memorizar cómo acceder: el sistema tiene que **aprender del entorno**.
+
+consecuencia para el diseño: hay **dos cajas negras**, no una. la primera es **cómo se le habla** al servicio; la segunda, **qué decide**. las dos se aprenden, y las dos pueden cambiar.
+
 ## 1. problema
 
 null: en nuestras palabras, no las del brief.
@@ -32,38 +41,47 @@ null: en nuestras palabras, no las del brief.
 
 ## 5. arquitectura
 
-**[pre-brief]** dos planos separados: **investigar** (caro, pocas veces, con modelos) y **predecir** (barato, muchas veces, sin modelos).
+tres capas, cada una con lo aprendido guardado como **dato**, nunca como código:
 
 ```mermaid
 flowchart LR
-  subgraph investigar["investigar · consultas a la caja (presupuesto)"]
-    M[motor<br/>espacio de hipótesis<br/>0 tokens] -->|elige la consulta que más divide| C[(caja)]
-    C -->|respuesta| M
-    M -->|sorpresa: ninguna hipótesis la predecía| J[juicio<br/>3 modelos baratos en paralelo]
-    J -->|divergen| V[un modelo mira la evidencia<br/>y clasifica]
-    J -->|coinciden| E[un modelo escéptico<br/>aprueba o veta el acuerdo]
-    V & E -->|nuevo eje o nueva sonda| M
-    M --> L[(log.jsonl<br/>append-only)]
+  subgraph acceso["1 · aprender el acceso (cambia en el incidente)"]
+    SO[sondas de protocolo<br/>métodos · rutas · formato · auth · codificación] --> SV[(servicio)]
+    SV -->|respuesta o error, leído como pista| LE[lector de respuestas<br/>reglas + un modelo si no entiende]
+    LE --> SO
+    LE --> PA[(perfil de acceso.json)]
   end
-  M -->|cierre de fase, con hash| MOD[(modelo.json)]
-  subgraph predecir["predecir · el entrypoint del juez"]
-    MOD --> P[predictor<br/>stdlib, sin red, 0 tokens] --> S[predicciones]
+  subgraph comportamiento["2 · aprender qué decide"]
+    PA --> M[motor<br/>espacio de hipótesis<br/>0 tokens]
+    M -->|consulta que más divide| SV
+    M -->|sorpresa| J[juicio con modelos]
+    J --> M
+    M --> L[(log.jsonl)]
+    M --> MOD[(modelo.json)]
   end
-  L --> SP[spec.md / incident.md]
+  subgraph responder["3 · el entrypoint del juez"]
+    CK{canario:<br/>¿el perfil sigue sirviendo?} -->|sí| P[predictor / cliente]
+    CK -->|no| SO
+    PA --> CK
+    MOD --> P --> S[respuestas]
+  end
 ```
 
 | componente | responsabilidad | entra | sale |
 |---|---|---|---|
-| motor | mantener las hipótesis vivas, elegir la consulta que más las divide, presupuesto, fases | consultas candidatas, respuestas | log, modelo |
-| juicio | solo ante una sorpresa: proponer el mecanismo que falta y la consulta que lo separa | la sorpresa y lo observado | un eje nuevo o una sonda |
-| centinela | repetir consultas ya hechas para notar un cambio | log de la fase anterior | alerta de cambio con evidencia |
-| predictor | votar con las cajas vivas; abstenerse donde difieren | modelo.json, casos | predicciones con confianza |
+| sondas de protocolo | probar formas de hablarle al servicio, de la más común a la más rara, con presupuesto | lo que sabemos del entorno (variables, ejemplos) | respuestas y errores crudos al log |
+| lector de respuestas | convertir una respuesta o un error en la siguiente sonda; un modelo solo cuando las reglas no entienden | respuesta cruda | hipótesis sobre el protocolo |
+| perfil de acceso | **cómo se habla hoy** con el servicio, como dato versionado | lo que funcionó | json con hash y fecha |
+| canario | antes de cada lote, una llamada mínima que confirma que el perfil sigue vivo; si falla, vuelve a descubrir **en vez de reintentar a ciegas** | perfil | ok / cambio detectado |
+| motor, juicio, predictor | como en el ensayo: hipótesis sobre qué decide la caja, modelos solo en sorpresas | perfil, consultas | modelo.json, log |
 
 ## 6. decisiones y alternativas descartadas
 
 | # | decisión | alternativa descartada | por qué esta | costo que aceptamos |
 |---|---|---|---|---|
-| D1 | **[pre-brief]** el predictor no llama modelos | un llm que lee cada caso y predice | costo 0 por caso, determinista, corre en cualquier máquina sin llave: escala a cualquier n del set oculto | no generaliza a lo que el modelo no capturó; lo mitigamos investigando mejor, no prediciendo más caro |
+| D0 | **el acceso se aprende y se guarda como perfil (dato); el código solo sabe *cómo descubrir*** | escribir el cliente http para la forma que vemos hoy | el incidente cambia el acceso: un cliente escrito a mano se rompe a las 15:30 y hay que reescribirlo en vivo; un perfil se vuelve a descubrir solo | las sondas gastan llamadas y tiempo al arrancar; lo medimos |
+| D0b | **canario antes de cada lote; si falla, se re-descubre y se escribe en `incident.md`** | reintentar con backoff | un reintento a ciegas trata un cambio de entorno como si fuera red mala | una llamada extra por lote |
+| D1 | **[pre-brief]** el predictor no llama modelos **(en riesgo: si el juez necesita que el entrypoint hable con el servicio, la capa 1 corre también al responder)** | un llm que lee cada caso y predice | costo 0 por caso, determinista, corre en cualquier máquina sin llave: escala a cualquier n del set oculto | no generaliza a lo que el modelo no capturó; lo mitigamos investigando mejor, no prediciendo más caro |
 | D2 | **[pre-brief]** lo aprendido es un **modelo como dato** (json), no reglas en el código | escribir a mano las reglas que vimos | cuando la caja cambie, se vuelve a investigar y se exporta otro modelo; el código no se toca. es lo que impide sobreajustar | hay que declarar el espacio de hipótesis (media hora por dominio) |
 | D3 | **[pre-brief]** los modelos solo en las sorpresas (en el ensayo, 4 de 55 consultas) | un agente llm que conduce toda la investigación | el motor elige mejor y sin tokens lo procedimental; el modelo aparece donde el motor quedó ciego | si una sorpresa no se nota (la caja coincide por azar), el juicio no se llama |
 | D4 | **[pre-brief]** el modelo escéptico va en la puerta del **acuerdo**, no del desacuerdo | escalar solo cuando los modelos discrepan | en el ensayo los errores salieron del acuerdo, con confianza 1,0: coincidir no es observar | una llamada más por acuerdo en sorpresas |
@@ -89,7 +107,8 @@ flowchart LR
 ## 9. absorber el cambio (incidente, 15:00–16:00 bog)
 
 **[pre-brief]** no sabemos qué cambia. lo que sí está decidido:
-- **detectar:** el centinela repite consultas ya hechas; solo una **repetición exacta** que cambia acredita un cambio (una respuesta nueva puede ser algo que no habíamos preguntado). también vigila señales del entorno (un contador que vuelve a empezar, un error de forma) y se detiene en vez de seguir.
+- **el acceso (lo que según romina cambia):** el canario falla → no se reintenta a ciegas → las sondas vuelven a descubrir partiendo del perfil anterior (lo más probable es que haya cambiado una cosa, no todo) → perfil nuevo con hash → se registra qué cambió. el código no se toca.
+- **detectar un cambio de comportamiento:** el centinela repite consultas ya hechas; solo una **repetición exacta** que cambia acredita un cambio (una respuesta nueva puede ser algo que no habíamos preguntado). también vigila señales del entorno (un contador que vuelve a empezar, un error de forma) y se detiene en vez de seguir.
 - **adaptarse:** se congela el modelo de antes (con hash), se vuelve a investigar desde el espacio con las observaciones que siguen válidas, y se exporta un modelo nuevo. no se edita código para acomodar el cambio.
 - **explicar:** `incident.md` sale del log: qué consulta, a qué hora, qué cambió, qué quedó sin separar.
 - **[pre-brief] evidencia:** en el ensayo detectamos el cambio en 13 consultas y el juez nos dio 3/4 en incidente. lo que no salió: la consulta que separaba las dos hipótesis vivas no se alcanzó a hacer.
