@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# lado a lado: el mismo mensaje al original y al gemelo, para grabar el video.
+# pide los dos tokens sin mostrarlos en pantalla y no los guarda en ningún lado.
+#   bash video/lado_a_lado.sh
+ORIG="https://caja-negra-production-c64f.up.railway.app"
+GEM="https://frontier-bog26-caja-negra-production.up.railway.app"
+read -rsp "token personal de la caja (el de MOSTRAR): " TO; echo
+read -rsp "token del equipo (el de COPIAR): " TG; echo
+norm() { if command -v python3 >/dev/null; then python3 -c 'import sys,json
+t=sys.stdin.read()
+try: print(json.dumps(json.loads(t),ensure_ascii=False,sort_keys=True))
+except Exception: print(t)'; else cat; fi; }
+paso() {
+  local m="$1"
+  local a b sa sb
+  a=$(curl -s -w '\n%{http_code}' -X POST "$ORIG/msg" -H "Authorization: Bearer $TO" -H 'Content-Type: application/json' -d "{\"m\": \"$m\"}")
+  b=$(curl -s -w '\n%{http_code}' -X POST "$GEM/msg"  -H "Authorization: Bearer $TG" -H 'Content-Type: application/json' -d "{\"m\": \"$m\"}")
+  sa=${a##*$'\n'}; sb=${b##*$'\n'}
+  a=$(printf '%s' "${a%$'\n'*}" | norm); b=$(printf '%s' "${b%$'\n'*}" | norm)
+  printf '\n\033[1m> %s\033[0m\n' "$m"
+  printf '  original  %s %s\n' "$sa" "$a"
+  printf '  gemelo    %s %s\n' "$sb" "$b"
+  if [ "$sa" = "$sb" ] && [ "$a" = "$b" ]; then printf '  \033[32m✓ iguales\033[0m\n'; else printf '  \033[31m✗ distintos\033[0m\n'; fi
+  sleep 1.2
+}
+curl -s -o /dev/null -X POST "$ORIG/__reset" -H "Authorization: Bearer $TO"
+curl -s -o /dev/null -X POST "$GEM/__reset"  -H "Authorization: Bearer $TG"
+printf '\033[2m(reset en los dos)\033[0m\n'
+paso "PING;64"
+paso "ALTA;Lucia;83"
+paso "ALTA;Lucia;82"
+paso "ALTA;Mateo;3"
+paso "DEPOSITO;AC-0001;250000;86"
+paso "CONSULTA;AC-0001;14"
+paso "TRANSFER;AC-0001;AC-0002;120000;55"
+paso "SALDOS;AC-0001;38"
+paso "TOTAL;22"
+unset TO TG
