@@ -11,7 +11,10 @@ las cuatro piezas del preregistro del incidente (PREDICCION_INCIDENTE.md) tienen
   · orden de errores:  los pares de doble falla (SALDOS;…;XX, DEPOSITO;…;abc;x, …;AC-0009;abc, TRANSFER;AC-0009;AC-0009,
                        ALTA;…;Gomez;12, CONSULTA;;99) y la transferencia sobre el límite sin saldo (límite antes que saldo)
   · dígito de control: XX, 15, 014 y todos los controles válidos de la secuencia
-  · transiciones:      el bloqueo E510 (tres rechazos y el cuarto), ANULA dos veces, HALT;SI y HALT;1, y NOTAS
+  · transiciones:      el bloqueo E510 (tres rechazos y el cuarto) y el depósito que lo levanta, ANULA dos veces y un
+                       depósito ya gastado, dos transferencias de 60.000 seguidas, HALT;SI y HALT;1, y NOTAS
+  (los cinco cambios de sol-06 tienen cada uno un paso que los delata; el quinto, la tabla de letras del control,
+  lo delata cualquier mensaje con control)
 imprime una línea por vuelta: «centinela HH:MM sin cambios» o qué cambió, con los ids del log. sale con 3 si
 el original cambió y con 4 si solo el gemelo difiere. toma el turno del token (lote.turno): no pisa la exploración.
 """
@@ -74,6 +77,16 @@ PASOS = [
     {"m": c("TRANSFER;AC-0002;AC-0001;999999"), "hipotesis": "centinela TR-08: racha 2"},
     {"m": c("TRANSFER;AC-0002;AC-0001;999999"), "hipotesis": "centinela TR-08: racha 3"},
     {"m": c("TRANSFER;AC-0002;AC-0001;1"), "hipotesis": "centinela TR-08: bloqueada (E510)"},
+    {"m": c("DEPOSITO;AC-0002;1"), "hipotesis": "centinela sol-06 #3: depósito a la cuenta bloqueada (hoy la desbloquea)"},
+    {"m": c("TRANSFER;AC-0002;AC-0001;1"), "hipotesis": "centinela sol-06 #3: tras el depósito (hoy pasa; si el depósito ya no desbloquea, E510)"},
+    {"m": c("ALTA;Ana"), "hipotesis": "centinela sol-06: AC-0003"},
+    {"m": c("ALTA;Beto"), "hipotesis": "centinela sol-06: AC-0004"},
+    {"m": c("DEPOSITO;AC-0003;200000"), "hipotesis": "centinela sol-06: OP-0005"},
+    {"m": c("TRANSFER;AC-0003;AC-0004;60000"), "hipotesis": "centinela sol-06 #1: primera de 60.000"},
+    {"m": c("TRANSFER;AC-0003;AC-0004;60000"), "hipotesis": "centinela sol-06 #1: segunda de 60.000 (hoy pasa; con límite acumulado, no)"},
+    {"m": c("CONSULTA;AC-0003"), "hipotesis": "centinela sol-06 #4: saldo 80.000 (con comisión por transferencia, menos)"},
+    {"m": c("ANULA;OP-0005"), "hipotesis": "centinela sol-06 #2: anular un depósito ya gastado (hoy pasa y deja negativo; con E509, no)"},
+    {"m": c("CONSULTA;AC-0003"), "hipotesis": "centinela sol-06 #2: saldo -120.000 hoy"},
     {"m": c("TOTAL"), "hipotesis": "centinela DC-02 (sugerencia NOTAS)"},
     {"m": c("NOTAS"), "hipotesis": "centinela NO-01"},
     {"m": c("HALT;SI"), "hipotesis": "centinela HA-01"},

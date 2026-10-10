@@ -199,6 +199,8 @@ qué recuerda el servicio y qué cambia una respuesta según los requests anteri
 | ME-10 | `/__reset` con otro token no repara ni borra: el servicio sigue detenido y las cuentas siguen; solo el reset con el token del equipo lo hace | 2108–2111 | probable |
 | ME-11 | los fallos antes del alta no consumen ids: tras un depósito y una transferencia a cuentas que no existen, el alta es `AC-0001` y el depósito `OP-0001` | 2135–2138 | probable |
 | ME-12 | ninguna respuesta depende del contador global de pedidos (`X-Req`): 45 `PING` y 5 `CONSULTA` seguidos, cruzando el pedido 2.300 del token, responden siempre igual | 2618–2669; 2565–2567 | confirmado |
+| ME-13 | no hay cupo de cuentas por token a la vista: doce altas seguidas pasan (`AC-0001` a `AC-0012`) | 2717–2729 | probable |
+| ME-14 | los huecos de la numeración de errores (E403, E501–E505, E508, E509) no aparecen con las condiciones que un autor les habría asignado (nombre de un espacio o repetido, doce cuentas, depósitos de 1 y de 100.001, anular dos veces, anular un depósito gastado): la caja responde como en el resto de la spec | 2712–2748 | probable |
 | ME-08 | el saldo no tiene piso: puede quedar negativo por anulaciones y entonces ninguna transferencia sale de esa cuenta | 117, 230, 231 | confirmado |
 
 ## 5 · errores

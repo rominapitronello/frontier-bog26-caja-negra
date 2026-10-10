@@ -87,3 +87,18 @@ método: no se le pide a ninguna instancia que explique por qué eligió sus reg
 convergencias espontáneas, no pedidas: 1998, tres clientes, módulo 11, pin, sesiones que caducan, transferencias pendientes. pueden ser convención del dominio y no parentesco: las próximas muestras dirán si las decisiones no pedidas se agrupan por linaje o son de cada instancia.
 
 **para el incidente (inferencia de claude):** la hipótesis de sol sobre su propia muestra, «el mismo mensaje no significa lo mismo en distintos momentos», es justo la forma de un cambio durante el día. la caja real ya tiene piezas así: `X-Req` no se reinicia con el reset, el bloqueo `E510` depende de la historia, y `HALT` cambia todo lo que sigue. H7 (una respuesta que dependa de un contador global) es la hipótesis de sol que más vale probar antes de las 15:30.
+
+## sol-06: los huecos de la numeración y cinco cambios para el incidente (sol 6, `encargos/sol-06-autor.md`)
+
+**los huecos, contra la caja real** (claude, lidera, 13:5x bog; log 2712–2748): sol atribuyó cada hueco a una regla que el autor habría escrito y luego retirado (inferencia de autor). corridas sus secuencias exactas, **ningún código reservado aparece** y la caja responde como en la mañana: un espacio como nombre se acepta (E501), un nombre repetido también (E502), **doce altas seguidas pasan sin cupo** (E503, 2717–2729), un depósito de 1 y uno de 100.001 pasan (E504, E505), anular dos veces da 200 `ok:false` (E508) y anular un depósito ya gastado deja −100 (E509). E403 no tiene disparador con un solo token. el gemelo calza en las siete secuencias. lectura de sol, que estos datos no contradicen: los huecos parecen reglas reservadas o retiradas, no comportamientos ocultos vivos.
+
+**los cinco cambios que sol haría como autor, y cómo los vería el centinela** (desde las 13:5x tiene un paso para cada uno):
+
+| # | cambio (sol) | qué paso del centinela lo delata | cómo lo absorbe el gemelo (v9) |
+|---|---|---|---|
+| 1 | el límite de 100.000 pasa a ser **acumulado** por origen | dos transferencias seguidas de 60.000 a otro titular: hoy pasan las dos | `estado.limite` + un acumulador por cuenta (código chico) |
+| 2 | **ANULA rechaza** un reverso que dejaría saldo negativo (E509) | anular `OP-0005`, un depósito ya gastado: hoy pasa y deja −120.000 | `estado.anula.permite_saldo_negativo` (dato) + el chequeo antes de mutar |
+| 3 | **depositar ya no desbloquea** | depósito de 1 a la cuenta bloqueada y una transferencia: hoy pasa | `estado.bloqueo.reinician` (dato: sacar `deposito`) |
+| 4 | **comisión fija** de 1 por transferencia entre titulares distintos | la consulta de saldo después de dos transferencias: hoy 80.000 | código chico (débito y reverso) |
+| 5 | la tabla de letras del control pasa a **A=10…Z=35** | cualquier mensaje con control daría E202 | `control.letras` (dato, si se agrega la tabla) |
+
