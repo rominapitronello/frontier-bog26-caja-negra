@@ -159,7 +159,7 @@ no aparece en los ejemplos: lo reveló la sugerencia del error de comando descon
 |---|---|---|---|
 | HA-01 | `HALT` con un argumento distinto de `1` (`AC-0001`, `CONFIRMAR`, `CONFIRMO`, `SI`, `CONFIRM`, `YES`, `OK`, `TRUE`) → **409** `{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` y no cambia nada | 145, 689–695 | confirmado |
 | HA-02 | `HALT;1` **detiene el servicio para el token** → **503** `{"error":"E599","mensaje":"service halted"}` | 696, 719 | confirmado |
-| HA-03 | detenido, **todo** `/msg` responde 503 `E599` (PING, CONSULTA, ALTA, json inválido, sin `m`, sin control, cuerpo grande), hasta el próximo `/__reset`, que lo repara. las rutas inexistentes siguen dando 404 (la ruta va antes) y `/health` sigue en 200 | 697–699, 720–723, 726, 1116; 701–704, 727, 728; 725, 1118; 700, 1113, 1117 | confirmado |
+| HA-03 | detenido, **todo** `/msg` responde 503 `E599` (PING, CONSULTA, ALTA, json inválido, sin `m`, sin control, cuerpo grande; tampoco lo despiertan `RESUME`, `START`, `RESTART`, `UNHALT`, `CONTINUE`, `HALT;0` ni otro `HALT;1`), hasta el próximo `/__reset`, que lo repara. las rutas inexistentes siguen dando 404 (la ruta va antes) y `/health` sigue en 200 | 697–699, 720–723, 726, 1116, 3364–3373; 701–704, 727, 728; 725, 1118; 700, 1113, 1117 | confirmado |
 | HA-04 | `HALT` sin argumentos o con dos → E302 | 137, 141, 718 | confirmado |
 | HA-05 | solo `1` confirma, comparado como texto: `0`, `2` y `01` dan E520. el comando en minúsculas (`halt;1`) también detiene | 991, 994, 997, 1110; 1000 | confirmado |
 | HA-06 | `HALT;1 ` (espacio al final), `HALT; 1` y `HALT;1.0` dan E520 y no detienen | 2101, 2121, 2122 | confirmado |
@@ -179,9 +179,9 @@ no aparece en los ejemplos: lo reveló la sugerencia del error de comando descon
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | DC-01 | → **400** `{"error":"E301","mensaje":"comando desconocido "}`, con **un espacio al final** del mensaje | 13, 120–126, 129–132, 154, 161–206 | confirmado |
-| DC-02 | si hay un comando (de los ocho, incluidos `HALT` y `NOTAS`) a **distancia de edición (levenshtein) ≤ 2** del comando en mayúsculas, la respuesta agrega `"sugerencia":"<COMANDO>"`; a distancia 3, no | 127, 128, 147–153, 155–160, 209, 242, 252, 1641; 154 | confirmado |
+| DC-02 | si hay un comando (de los ocho, incluidos `HALT` y `NOTAS`) a **distancia de edición (levenshtein) ≤ 2** del comando en mayúsculas, la respuesta agrega `"sugerencia":"<COMANDO>"`; a distancia 3, no | 127, 128, 147–153, 155–160, 209, 242, 252, 1641, 3384; 154 | confirmado |
 | DC-03 | gana la **menor distancia** (`HALA` → `HALT` a 1, no `ALTA` a 2); en un empate, el primero en orden alfabético (`PITA` → `ALTA` sobre `PING`; `HANG` → `HALT` sobre `PING`; `ALT` → `ALTA` sobre `HALT`; `ALNG` → `ALTA` sobre `PING`, predicho por sol desde esta spec) | 715; 208, 256, 151, 1102 | confirmado |
-| DC-04 | cerca de 100 nombres probados (RETIRO, SALDO, LISTA, BAJA, STOP, DEBUG, ADMIN, DESBLOQUEO, REANUDA…) no son comandos. **la v2 de esta spec decía «los comandos son siete» y era falso**: `TOTAL` sugirió `NOTAS`, un octavo comando oculto. la lista no es exhaustiva: un comando lejano de todo lo probado no se delata | 120–126, 129–132, 161–206, 1616–1657; 1641 | probable |
+| DC-04 | cerca de 100 nombres probados (RETIRO, SALDO, LISTA, BAJA, STOP, DEBUG, ADMIN, DESBLOQUEO, REANUDA…, y en inglés LIST, ACCOUNT, CANCEL, QUERY, CREATE, PAY, SHUTDOWN, QUIT, REPEAT; `NOTES` solo sugiere `NOTAS`) no son comandos. **la v2 de esta spec decía «los comandos son siete» y era falso**: `TOTAL` sugirió `NOTAS`, un octavo comando oculto. la lista no es exhaustiva: un comando lejano de todo lo probado no se delata | 120–126, 129–132, 161–206, 1616–1657, 3375–3384; 1641 | probable |
 
 ## 4 · memoria entre requests
 qué recuerda el servicio y qué cambia una respuesta según los requests anteriores.
