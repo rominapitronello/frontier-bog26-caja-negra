@@ -2,7 +2,7 @@
 
 > estructura del material (`material/README.md`). cada fila: `ID | Comportamiento | Evidencia | Confianza`. la evidencia son `id` de `experimentos.jsonl`; el ejemplo *k* del material es la línea *k*+1 del log (los 20 se reprodujeron idénticos, 2–21). **confirmado**: probado y se repite · **probable**: visto una vez o inferido · **supuesto**: no probado, es lo que hace el gemelo por defecto. una afirmación falsa resta: ante la duda, se baja la confianza.
 >
-> versión: 10 oct 2026, 10:5x bog, sobre 728 líneas del log (las 289–686 son una repetición por un error nuestro, sin valor de evidencia). el gemelo (`gemelo/servidor.py`, con lo tabular en `gemelo/modelo.json`) implementa esta spec y reproduce todas las secuencias del log (`bash smoke.sh`).
+> versión: 10 oct 2026, 11:0x bog, sobre 928 líneas del log (las 289–686 son una repetición por un error nuestro, sin valor de evidencia). **v2 corrige el orden entre límite y saldo de la v1**, que estaba mal: lo detectó el centinela (737) y lo explican TR-06 a TR-08. el gemelo (`gemelo/servidor.py`, con lo tabular en `gemelo/modelo.json`) implementa esta spec y reproduce todas las secuencias del log (`bash smoke.sh`).
 
 **el camino de un pedido, en orden** (cada paso puede cortar con un error; § 5 tiene la tabla):
 
@@ -95,7 +95,7 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | AL-01 | crea una cuenta con saldo 0 → **201** `{"cuentaId":"AC-0001"}`; los ids son `AC-` + 4 dígitos, correlativos desde `AC-0001` tras cada reset | 4, 5, 6, 23, 82–87 | confirmado |
-| AL-02 | el nombre no se valida: cualquier segmento no vacío sirve, incluidos repetidos, solo dígitos, una letra, guion, espacio, un espacio solo, tildes, `ñ`, tabulación, emoji y 5.000 caracteres. el nombre no aparece en ninguna respuesta | 84, 85, 86, 87, 44, 717, 45, 47, 264, 265, 262, 263 | confirmado |
+| AL-02 | el nombre no se valida: cualquier segmento no vacío sirve, incluidos repetidos, solo dígitos, una letra, guion, espacio, un espacio solo, tildes, `ñ`, tabulación, emoji y 5.000 caracteres. no aparece en ninguna respuesta, **pero se guarda: decide si una transferencia tiene límite** (TR-06) | 84, 85, 86, 87, 44, 717, 45, 47, 264, 265, 262, 263 | confirmado |
 | AL-03 | la clave es `cuentaId` (camelCase), distinta de `cuenta_id` de CONSULTA | 4, 6 | confirmado |
 | AL-04 | sobre `AC-9999` el gemelo escribe `AC-10000` | — | supuesto |
 
@@ -122,8 +122,9 @@ un bloque por comando: argumentos, efecto y respuesta. el comando no distingue m
 | TR-03 | origen igual a destino → **400** `{"error":"E304","mensaje":"origen y destino iguales"}` | 101, 219 | confirmado |
 | TR-04 | origen o destino inexistente → 404 `E401` | 102, 103, 104, 221 | confirmado |
 | TR-05 | saldo del origen menor que el monto → **422** `{"error":"E507","mensaje":"saldo insuficiente"}`. un saldo igual al monto alcanza; un saldo negativo no alcanza para nada | 17, 111, 231; 226 | confirmado |
-| TR-06 | monto **mayor que 100.000** → **422** `{"error":"E506","mensaje":"límite excedido"}`. 100.000 pasa. el límite es **por operación, no acumulado**: tres transferencias seguidas de 100.000 pasan | 10, 105; 11, 106, 107, 108 | confirmado |
-| TR-07 | orden dentro de TRANSFER: monto (E303) → origen = destino (E304) → existencia (E401) → saldo (E507) → límite (E506) | 220, 219, 221, 111, 10 | confirmado |
+| TR-06 | monto **mayor que 100.000** **entre cuentas de titulares distintos** → **422** `{"error":"E506","mensaje":"límite excedido"}`. 100.000 pasa. el límite es **por operación, no acumulado**: tres transferencias seguidas de 100.000 pasan. **entre cuentas con el mismo nombre de titular no hay límite** (150.000 de «Lucia» a «Lucia» pasa); el nombre se compara exacto («Lucia» y «lucia» son titulares distintos) | 10, 105, 766, 768, 814, 816; 11, 106, 107, 108; 813, 817; 815 | confirmado |
+| TR-07 | orden dentro de TRANSFER: monto (E303) → origen = destino (E304) → existencia (E401) → bloqueo (E510, TR-08) → límite (E506, solo entre titulares distintos) → saldo (E507). por eso una transferencia sin fondos y sobre el límite da E506 entre titulares distintos (766, 816) y E507 entre cuentas del mismo titular (111, repetida idéntica en 806) | 220, 219, 221, 881–883, 771, 766, 816, 111, 806 | confirmado |
+| TR-08 | **bloqueo**: cada cuenta lleva la cuenta de sus transferencias seguidas rechazadas por límite (E506) o saldo (E507), mezcladas o no. con **tres**, toda transferencia **desde** esa cuenta → **409** `{"error":"E510","mensaje":"cuenta bloqueada"}`, y sigue así. lo **reinician** un depósito a la cuenta o una transferencia exitosa desde ella; **no** lo reinician recibir una transferencia ni anular. los errores E303, E304 y E401 no suman. el bloqueo no afecta consultar, depositar ni recibir. es por cuenta: las fallas de otra cuenta no suman ni cortan la racha | 771, 824–827, 837–840, 893–896; 879, 880, 898; 885, 886, 926–928, 858–862; 907, 908, 917, 918; 867–871; 828–832; 847–853 | confirmado |
 
 ### ANULA;operacion
 | ID | Comportamiento | Evidencia | Confianza |
@@ -165,6 +166,7 @@ qué recuerda el servicio y qué cambia una respuesta según los requests anteri
 | ME-05 | cada CONSULTA refleja todas las operaciones anteriores, incluidas las anuladas | 9, 12, 20, 112, 113, 117, 229, 230 | confirmado |
 | ME-06 | una operación anulada lo sigue estando (la segunda anulación lo dice) | 15, 232 | confirmado |
 | ME-07 | el límite no acumula: cada transferencia se mira sola | 106, 107, 108 | confirmado |
+| ME-09 | cada cuenta guarda el **nombre del alta** (decide el límite, TR-06) y su **racha de transferencias fallidas** por límite o saldo (decide el bloqueo, TR-08) | 813–816; 824–827, 885–886, 926–928 | confirmado |
 | ME-08 | el saldo no tiene piso: puede quedar negativo por anulaciones y entonces ninguna transferencia sale de esa cuenta | 117, 230, 231 | confirmado |
 
 ## 5 · errores
@@ -190,8 +192,9 @@ cada error con su status, su cuerpo exacto y en qué orden se evalúa frente a l
 | ER-16 | `E402` · 404 · `operación inexistente` | 114, 115, 119, 245 | confirmado |
 | ER-17 | `E506` · 422 · `límite excedido` | 10, 105 | confirmado |
 | ER-18 | `E507` · 422 · `saldo insuficiente` | 17, 111, 231 | confirmado |
+| ER-22 | `E510` · 409 · `cuenta bloqueada` | 771, 827, 840, 852, 879, 880, 896, 898, 908, 918 | confirmado |
 | ER-19 | `E520` · 409 · `operación destructiva: detiene el servicio; reenvía con confirmación` | 145, 689–695 | confirmado |
-| ER-20 | **orden de evaluación** (el primero que falla responde): ruta (E404) → token (E001) → detenido (E599) → tamaño (E101) → json (E100) → `m` (E102) → menos de 2 segmentos (E103) → segmento vacío (E104) → formato del control (E201, no en PING) → valor del control (E202, no en PING) → comando (E301) → aridad (E302) → reglas del comando (TR-07; DEPOSITO: E303 → E401; ANULA: E402) | E404 antes que E001: 59, 725 · E001 antes que E101: 712 · E599 antes que E101, E100, E102, E103: 726, 720, 721, 722 · E101 antes que E100: 713 · E104 antes que E202: 210 · E201 antes que E302 y E301: 213, 214 · E202 antes que E301 y E302: 42, 43 · E302 antes que E303: 217 · E303 antes que E401: 218 · TR-07 | confirmado (cada par, una o dos veces) |
+| ER-20 | **orden de evaluación** (el primero que falla responde): ruta (E404) → token (E001) → detenido (E599) → tamaño (E101) → json (E100) → `m` (E102) → menos de 2 segmentos (E103) → segmento vacío (E104) → formato del control (E201, no en PING) → valor del control (E202, no en PING) → comando (E301) → aridad (E302) → reglas del comando (TRANSFER: TR-07, con E510 y E506 antes que E507; DEPOSITO: E303 → E401; ANULA: E402) | E404 antes que E001: 59, 725 · E001 antes que E101: 712 · E599 antes que E101, E100, E102, E103: 726, 720, 721, 722 · E101 antes que E100: 713 · E104 antes que E202: 210 · E201 antes que E302 y E301: 213, 214 · E202 antes que E301 y E302: 42, 43 · E302 antes que E303: 217 · E303 antes que E401: 218 · TR-07 | confirmado (cada par, una o dos veces) |
 | ER-21 | E103 antes que E104 cuando hay un solo segmento vacío (`m` = `""`) | 74 | probable |
 
 ## 6 · cambios durante el día
@@ -199,7 +202,8 @@ qué cambió, desde cuándo y cómo lo detectamos.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CA-01 | **sin cambios hasta las 10:5x bog**: los 20 ejemplos (grabados con la versión de la mañana) se reprodujeron idénticos a las 10:1x, y lo visto después es coherente con ellos | 2–21; 1–728 | confirmado |
+| CA-01 | **sin cambios hasta las 11:0x bog**: los 20 ejemplos (grabados con la versión de la mañana) se reprodujeron idénticos a las 10:1x, y la secuencia `cmd-1` de las 10:1x repetida exacta a las 11:0x dio las mismas 31 respuestas | 2–21; 81–111 contra 776–806 | confirmado |
+| CA-03 | una falsa alarma que no fue cambio: la v1 de esta spec decía «saldo antes que límite» por la línea 111, y el centinela vio lo contrario en 737. la repetición exacta (806) mostró que el original no había cambiado: la diferencia era el titular (TR-06) | 111, 737, 806 | confirmado |
 | CA-02 | cómo se detecta un cambio: un **centinela** repite secuencias canónicas del log (los 20 ejemplos y una por familia de error) y compara con la regla del juez; solo una **repetición exacta que cambia** acredita un cambio. el detalle irá en `incident.md` | — | (método) |
 
 ## 7 · riesgos
@@ -212,6 +216,8 @@ comportamientos que un cliente nuevo no debería heredar, y cómo los cerraríam
 | RI-03 | **anular deja saldos negativos**: se puede gastar un depósito y después anularlo, o anular una transferencia que el destino ya gastó. cerrarlo: rechazar la anulación si deja una cuenta bajo cero, o anular solo dentro de una ventana y con fondos | 116, 117, 228–231 | confirmado |
 | RI-04 | **el límite es por operación**: fraccionar evita el tope (tres de 100.000 pasan). cerrarlo: límite diario por cuenta | 106–108 | confirmado |
 | RI-05 | **los depósitos no tienen límite** (9.999.999.999 en un pedido) | 270 | confirmado |
+| RI-10 | **el límite se evita con un nombre**: entre cuentas del mismo titular no hay límite, y el titular es solo el texto del alta, sin verificar. cualquiera abre `ALTA;<el mismo nombre>` y mueve montos sin tope. cerrarlo: titular verificado (un id de cliente), no un nombre libre | 813, 817 | confirmado |
+| RI-11 | **el bloqueo se levanta con un depósito de 1**: tres intentos fallidos bloquean, pero cualquier depósito, de cualquier monto, desbloquea. cerrarlo: desbloqueo por un canal aparte, o tras un tiempo | 885, 886, 926–928 | confirmado |
 | RI-06 | **el dígito de control no es seguridad**: es una suma de verificación pública (la del iban), y `PING` ni la mira. no autentica ni impide fraude: solo detecta errores de tipeo | 2–21, 39, 40 | confirmado |
 | RI-07 | **cualquier cuenta del token se consulta y se mueve por su id correlativo** (`AC-0001`, `AC-0002`…): no hay dueño de cuenta. cerrarlo: ids no adivinables y autorización por cuenta | 6, 9, 102–104 | probable |
 | RI-08 | **el nombre no se valida** (5.000 caracteres, emoji, tabulaciones, un espacio). cerrarlo: largo máximo y caracteres permitidos | 263, 264, 265, 717 | confirmado |
