@@ -48,6 +48,10 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 
 ## decisiones (con hora y quién)
 
+- 10 oct 10:4x bog · romina: **el tráfico del set oculto no se usa ni se anota, ni siquiera aparte.** el oráculo interno es **sol-03**: secuencias escritas por sol solo desde `spec.md`, sin ver el código ni el log, que quien lidera corre contra el original y el gemelo (`encargos/sol-03-oraculo.md`).
+- 10 oct 10:4x bog · romina: **el gemelo se despliega en railway** (una réplica, sin dormir). `Dockerfile` y `railway.json` en el repo; romina crea el servicio y carga `GEMELO_TOKEN` como variable secreta.
+- 10 oct 10:3x bog · romina: **sí a probar `HALT` confirmado con nuestro token** (resultado: log 687–704).
+
 - 10 oct 11:5x · romina y claude: **reto 2**. por qué (lectura de claude, aceptada por romina): se mide antes de construir (grabar el original y comparar), el set oculto no cuesta plata, la rúbrica de la spec premia nuestro método del ensayo, y el reto 1 arriesgaba quedarse sin saldo a mitad de la corrida del debrief. **no se puede importar código escrito antes**: del ensayo se trae el método, no el código. **no sobre-testear** (romina): un solo instrumento, el log, sirve de set, evidencia y centinela (`DISENO.md` D1).
 - 10 oct 11:5x · claude: los encargos fable-01 y sol-01 quedan reemplazados (eran sobre un acceso raro que el brief no confirma). el PR #1 de sol (servicio de práctica, 5/5 pruebas) no se fusiona por ahora: se rescata lo que sirva para el gemelo.
 
@@ -59,7 +63,6 @@ lo dejó la sesión `01MD7…` el 10 oct a las 12:2x chile (10:2x bog). con esto
 
 - **`HALT` con confirmación (romina decide):** el original responde a `HALT;<arg>` con 409 `E520 operación destructiva: detiene el servicio; reenvía con confirmación` (log 145). no se ha mandado ninguna variante más. el material dice que nada de lo hecho con el token es irreversible (el reset lo repara), pero el mensaje dice que detiene el servicio, y el original lo comparten todos los equipos. hasta que romina decida, nadie manda `HALT` con más de un argumento.
 - **bloqueo de entorno (agents.md § 11), 10 oct 10:4x bog:** el push de tags (`verde-01`) lo rechaza el proxy git de esta sesión con 403; las ramas sí suben. no lo rodeo. el tag existe en local sobre `1e41a1b` (smoke en verde).
-- **decisión de romina (de la objeción de fable, `encargos/fable-02-respuesta.md` § 2):** si el gemelo registra lo que el set le manda en cada validación y eso dirige qué preguntarle al original.
 - (resuelta) el bloqueo de entorno de `01MD7…`: esta sesión sí tiene el token del original.
 
 ## bitácora breve
