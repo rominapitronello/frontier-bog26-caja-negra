@@ -167,7 +167,7 @@ class Banco:
 
 ESTADO = {"banco": Banco(), "x_req": 0}
 CANDADO = threading.Lock()
-TOKEN = os.environ.get("GEMELO_TOKEN", "")
+TOKEN = os.environ.get("GEMELO_TOKEN", "").strip()   # un salto de línea pegado en la variable dejaría todo en 401
 
 
 class Manejador(BaseHTTPRequestHandler):
