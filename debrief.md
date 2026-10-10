@@ -40,7 +40,7 @@ dato de la organización (10 oct, 14:4x bog): 40 equipos en caja negra; los 15 c
 ## límites
 - **la falla que queda (corrida 2) no tiene causa probada.** `pıng` es el único candidato que encontramos sin mirar el set; puede ser otro mensaje suelto que ni la spec ni dos gemelos independientes supieron preguntar.
 - **lo que no se probó no se sabe:** el id `AC-10000` después de 9.999 cuentas (supuesto, AL-04); si `intentos` tiene tope; si la caja depende del tiempo (minutos u hora del día): el set final corre después de las 20:00 a una hora que no sabemos, y con el token muerto no se puede medir.
-- **el gemelo es un solo proceso**: un reinicio a mitad de una secuencia la rompe, como creemos que pasó en la corrida 1. el healthcheck de railway ahora evita que un despliegue roto reemplace al bueno, pero no evita un reinicio.
+- **el gemelo es un solo proceso**: un reinicio a mitad de una secuencia la rompe (en la corrida 1 subimos la v5 con el set corriendo; a lo más rompió el test en curso). el healthcheck de railway ahora evita que un despliegue roto reemplace al bueno, pero no evita un reinicio.
 - **la spec dice lo que cada fila prueba, no siempre qué la refutaría**: la confianza (confirmado, probable, supuesto) dice cuánto se repitió, y la regla para refutar es la misma para todas: una repetición exacta de sus ids que dé otra respuesta.
 
 ## diseños a ciegas contra la caja real (segunda mitad del experimento)

@@ -72,7 +72,7 @@ tres comportamientos, como dijo el ticket, y nada más: en 460 pedidos que repit
 - el límite nuevo con montos de 50.001 a 99.999 entre titulares distintos: probado en los bordes (50.001, 99.999), no en el medio.
 
 ## después de adaptarse: la corrida 2 y la falla que queda
-- **corrida 2 (16:21 bog), la primera contra v2, con el gemelo v15 adaptado: 99/100** (fáciles 40/40, regulares 40/40, difíciles 19/20). la deriva de estado de la corrida 1 (14 fallas más adelante en la secuencia) no volvió: el gemelo no cambió en reglas de estado entre las dos corridas, y lo más probable es que la causara el redespliegue de la v5 a mitad de la corrida 1.
+- **corrida 2 (16:21 bog), la primera contra v2, con el gemelo v15 adaptado: 99/100** (fáciles 40/40, regulares 40/40, difíciles 19/20). las fallas de secuencia de la corrida 1 (14 más adelante en la secuencia) no volvieron. su causa más probable es `NOTAS`, el comando oculto que el gemelo de esa hora no conocía (el gemelo v5 contra el log de la mañana falla en 46 secuencias, todas más adelante, 35 por `NOTAS`; `debrief.md`).
 - **la falla que queda** cae en el primer pedido de un test difícil y es de status: un mensaje suelto. se buscó **por fuera del set**, sin mirar lo que el set le mandó al gemelo (D10; la telemetría que estuvo en las v14–v16 salió en la v17 sin que su salida se leyera):
   - `sol-07` (texto humano: tildes compuestas, homoglifos, espacios invisibles, miles y decimales; log 5479–5673): el gemelo calza en 30/30.
   - el diferencial de fable (`gemelo_fable/`) restringido al primer pedido: 3.000 secuencias de un pedido, 0 discrepancias.
