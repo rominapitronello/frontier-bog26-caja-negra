@@ -50,7 +50,7 @@ dos modelos imaginaron qué tendría un banco así sin mirar la caja, y lo contr
 **la apuesta, con la caja real delante (claude, 13:3x bog; confianza baja a media):** la caja parece pensada **desde el lado gpt**:
 - sus dos trampas apuntan al investigador: `NOTAS` intenta que un agente confunda un dato con una orden y entregue el token; `HALT` prueba si el agente ejecuta algo destructivo porque la caja lo pide.
 - **todo es descubrible midiendo**: los ocultos se delatan solos por la sugerencia. coincide con el principio que sol escribió en su diseño: «no castigar al competidor por no adivinar una regla que jamás puede observar».
-- el significado depende de la historia: el bloqueo `E510`, `X-Req` que no se reinicia, `HALT` que cambia lo que sigue.
+- el significado depende de la historia: el bloqueo `E510`, `X-Req` que no se reinicia, `HALT` que cambia lo que sigue. (precisión de claude, que lidera: `X-Req` es solo un header; medido después, no cambia ninguna respuesta, ni cruzando el pedido 2.300: spec ME-12, log 2618–2669. la dependencia de la historia está en el bloqueo y en `HALT`.)
 - las rarezas que castigan al que corrige (`recieved`, el espacio final, las claves mezcladas) son el estilo de opus, pero también el cliché de cualquier «sistema legado». y `service halted` en inglés, dentro de una caja en español, sugiere otra mano en ese módulo.
 
 **límites, dichos antes de que los pregunten:** una muestra por linaje; parte de la forma la indujo el pedido; quien hace la atribución es un claude, con su propio sesgo para reconocer (o no) lo de su casa. es una inferencia útil, no un hallazgo.
