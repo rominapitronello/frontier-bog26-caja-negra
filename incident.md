@@ -17,6 +17,3 @@ null
 
 ## lo que queda sin separar
 null
-
-## para las personas
-null

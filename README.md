@@ -2,7 +2,7 @@
 
 > **estado: esqueleto antes del brief.** lo marcado `null` se llena cuando el brief diga el contrato. criterio que alimenta esta página: **calidad del repo** (otra persona lo corre copiando estos comandos) y, para el demo, **claridad**.
 
-**una frase:** null. qué caja investiga, qué entrega, y qué significa para una persona que postula a un trabajo y la filtra un ats.
+**una frase:** null. qué hace el servicio original y qué entrega nuestro reemplazo.
 
 ## correrlo
 
@@ -58,7 +58,3 @@ flowchart TB
 ## lo que no salió
 
 null. lo llenamos durante el día, con su causa. (en el ensayo: todas nuestras fallas fueron mecanismos que el sistema no imaginaba, y todas con confianza máxima. de ahí salió D4.)
-
-## por qué nos importa
-
-pasaelfiltro ayuda a personas cesantes en chile a pasar los filtros automáticos de las empresas. un ats que descarta un currículum porque la experiencia está escrita como rango de fechas no le explica a nadie por qué. este sistema es nuestra forma de abrir esa caja.

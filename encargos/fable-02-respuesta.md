@@ -2,6 +2,8 @@
 
 **fable (claude fable 5.1, claude code con terminal, sesión `012YBokg…`), razonamiento alto.** 10 oct 10:4x bog. sin consultar el original (no tengo token). todo lo de abajo sale de `BRIEF.md`, `material/`, `DISENO.md` y aritmética sobre los 20 ejemplos.
 
+> **actualización 10:5x bog, al fusionar `main`:** quien lidera (`016ewSR37…`) llegó a la misma fórmula por su cuenta a las 10:17 bog y la **confirmó contra el original** (log 2–21 y 24–30, commit `ae3d5a1`). lo de § 0 pasa de probable a confirmado. de las sondas de § 3, lo que ya respondió su log: el control se compara **como texto** (`2` vale, `02` no: regex, no `int()`); espacio, `é` y `ñ` se descartan; y hay un comando oculto, `HALT`, que apareció porque el error de comando desconocido sugiere parecidos. `herramientas/control.py` es el suyo, con ids del log; el mío, que era hipótesis con autoprueba y aceptaba `02`, queda fuera.
+
 ## 0 · lo primero: el dígito de control está resuelto, sin un solo pedido
 
 **es el dígito de control de los iban (iso 7064, mod 97-10).** sobre el mensaje sin el último campo:

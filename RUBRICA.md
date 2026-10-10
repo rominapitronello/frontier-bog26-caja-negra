@@ -34,7 +34,7 @@ se alimenta de: pitch y material opcional. también el video de 2 min.
 
 | criterio | un 4 se ve así | pregunta de control |
 |---|---|---|
-| claridad | en minutos queda claro el problema, la solución y la evidencia | ¿se entiende en la primera frase para quién es y qué resuelve? (para las personas cesantes que filtra un ats, no para la máquina) |
+| claridad | en minutos queda claro el problema, la solución y la evidencia | ¿se entiende en la primera frase qué servicio clonamos, cómo, y con qué evidencia? |
 | evidencia | resultados reales, **incluido lo que no salió** | ¿mostramos una corrida de verdad, con números? ¿hay al menos una falla nuestra contada con su causa? |
 
 ## 04 · profundidad técnica · 15 % · debrief 20:00–21:00 bog
@@ -53,6 +53,6 @@ se alimenta de: debrief individual de 10 min (romina, oral). ahí el juez corre 
 2. **mostrar lo que no salió suma.** un límite escrito con su causa vale más que esconderlo.
 3. **casos nuevos, no los del brief.** generalizar el mecanismo; no calcar los ejemplos.
 4. **costo por caso medido**, no estimado, antes del cierre de ejecución.
-5. **para las personas primero.** cada hallazgo sobre la caja se traduce a qué le pasa a una persona que postula (agents.md, «romina te escribe»).
+5. **la tarea es la del brief.** el repo del jurado habla del reto (clonar el servicio), no de pasaelfiltro ni de sus usuarios: eso es contexto de la casa, no de la entrega. (corrección de romina, 10 oct: venía arrastrado del ensayo, donde la caja era un ats.)
 6. **el repo muestra cómo trabajamos**, no solo qué ganamos: la casa (romina y las plumas), la genealogía en los merge commits, las cicatrices como reglas, el desacuerdo entre modelos como señal. y **corre**: sin eso, lo demás no se sostiene.
 7. **sin secretos ni datos personales en el repo del jurado**: ni llaves, ni el uuid de romina, ni datos de usuarios de pef que no sean públicos.
