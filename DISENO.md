@@ -1,6 +1,6 @@
 # DISENO.md · el gemelo: clonar un servicio que nadie entiende
 
-> systems design (30 %), cierre 12:00 bog. fuentes: `BRIEF.md`, `material/README.md` y **288 pedidos útiles al original** (`experimentos.jsonl`; los números entre paréntesis son sus ids). el log tiene 686: los otros 398 son un bucle nuestro (límites, § 2). lo que todavía no probamos contra el original está marcado **supuesto**.
+> systems design (30 %), cierre 12:00 bog. fuentes: `BRIEF.md`, `material/README.md` y **1.280 pedidos al original** al cierre del diseño (`experimentos.jsonl`; los números entre paréntesis son sus ids). 398 de ellos son un bucle nuestro (límites, § 2). lo que todavía no probamos contra el original está marcado **supuesto**.
 
 **reto 2, la caja negra** · romina pitronello con claude (lidera), fable y sol · pasaelfiltro · 10 oct 2026
 
@@ -16,8 +16,8 @@ lo que ya sabemos de la forma: el mensaje son segmentos separados por `;` y el �
 | S2 | el dígito de control es **ISO 7064 MOD 97-10, el del iban**: N = el mensaje sin su último segmento leído como número (dígitos tal cual, letras A=1…Z=26 sin importar mayúsculas, lo demás no cuenta) y control = 98 − (100·N mod 97), de 2 a 98, comparado **como texto** (`2` vale, `02` no) | **confirmado**: salió fuera de línea de los 16 ejemplos con control válido, sin gastar pedidos (las tres `CONSULTA` fijan el módulo 97); lo confirmaron 24–30 y 44–47. las fórmulas de bytes (suma, crc, adler) no calzaban porque el servicio lee el mensaje como número. `herramientas/control.py` | el gemelo rechazaría mensajes válidos y caería todo test con mensajes nuevos; por eso el centinela lo vigila (§ 7) |
 | S3 | el estado vive por token y `/__reset` lo vuelve a cero | material; **confirmado** (143: tras el reset, `AC-0001` ya no existe). el contador del header `X-Req` no se reinicia (62), pero los headers no se comparan | — |
 | S4 | lo que el set prueba fuera de `/msg` responde igual siempre | **confirmado**: toda ruta o método distinto de `POST /msg`, `GET /health` y `POST /__reset` da 404 `E404 ruta desconocida`, **incluso sin token** (52–61); la query string se ignora (62); sin token, con otro token o con `Bearer` mal escrito, 401 `E001 no autorizado` (50–51, 63–67) | — |
-| S5 | **no ejecutamos `HALT` con confirmación**: sin argumentos da `E302` (137) y con uno, 409 `E520 operación destructiva: detiene el servicio; reenvía con confirmación` (145). no sabemos qué hace confirmado | decisión pendiente de romina: el original lo comparten todos los equipos y el mensaje dice que lo detiene | si el set prueba `HALT` confirmado, el gemelo responde lo que suponemos, escrito como **supuesto** en la spec |
-| **límites** | 10 pedidos/s y **8.000 por día por token**; tokens a las 20:00 dejan de servir; 5 s por paso. un cuerpo grande da 413 `E101 cuerpo demasiado grande`: 8.191 bytes pasan, 8.194 no (277–288; probable: el tope es 8 KiB) | material | el presupuesto de pedidos manda sobre el fuzzer. **llevamos 686 de 8.000**: 398 son un error nuestro, una búsqueda binaria que repitió el mismo pedido en bucle (289–686). ahora `herramientas/lote.py` se detiene si un pedido se repite más de 5 veces seguidas |
+| S5 | **`HALT` detiene el servicio para el token que lo manda, y `/__reset` lo repara** (no probamos si afecta a otros tokens): sin argumentos da `E302` (137); con un argumento cualquiera, 409 `E520 operación destructiva…` (145, 690–695); **`HALT;1` confirma**: desde ahí todo `/msg` responde 503 `E599 service halted` (696–699) hasta un `/__reset`, que lo deja como nuevo (700–704) | **confirmado**. lo probamos con nuestro token porque el material garantiza que nada es irreversible con él (decisión de romina, 10:3x bog) | — |
+| **límites** | 10 pedidos/s y **8.000 por día por token**; tokens a las 20:00 dejan de servir; 5 s por paso. un cuerpo grande da 413 `E101 cuerpo demasiado grande`: 8.191 bytes pasan, 8.194 no (277–288; probable: el tope es 8 KiB) | material | el presupuesto de pedidos manda sobre el fuzzer. **llevamos 1.280 de 8.000 al cierre del diseño**: 398 son un error nuestro, una búsqueda binaria que repitió el mismo pedido en bucle (289–686). ahora `herramientas/lote.py` se detiene si un pedido se repite más de 5 veces seguidas |
 
 ## 3 · casos difíciles y lo que dejamos fuera
 - **difíciles, ya resueltos con el log:**
@@ -31,7 +31,6 @@ lo que ya sabemos de la forma: el mensaje son segmentos separados por `;` y el �
   - el mensaje no se recorta: un espacio delante cambia el comando, un espacio o salto al final rompe el control (252–254).
 - **errores nuevos que no estaban en los ejemplos:** `E100 json inválido`, `E101 cuerpo demasiado grande` (413), `E102 falta m`, `E103 falta control`, `E104 segmento vacío`, `E303 monto inválido`, `E304 origen y destino iguales`, `E402 operación inexistente`, `E404 ruta desconocida`, `E001 no autorizado` (401) y `E510 cuenta bloqueada` (409), `E520` (409, `HALT`) y `E599 service halted` (503).
 - **siguen difíciles:**
-  - `HALT` (S5).
   - la **sugerencia** del comando desconocido: aparece solo si hay un comando a distancia de edición ≤ 2, sin importar mayúsculas, y en un empate gana el primero en orden alfabético (147–160, 208–209, 256). hay que copiarla exacta, porque es parte del cuerpo.
   - el lugar de `E101` en la cadena de errores, y si el corte es exactamente 8.192 bytes.
   - lo que cambie a las 15:30.
@@ -75,17 +74,21 @@ flowchart LR
 
 ## 6 · plan para medir (antes de construir)
 - **métrica:** % de **tests** que pasan (todas las respuestas de la secuencia iguales), con la forma del set: 40 % de un pedido, 45 % de 2–5, 15 % de 6–12. por categoría: entrada · integridad · cada comando · memoria · errores.
-- **set propio:** las secuencias del log (hoy 11: ejemplos, control, entrada, comandos, `HALT`, sugerencias, orden de errores, bordes, tamaño). cada una empieza con un reset, igual que los tests del juez.
+- **set propio:** las secuencias del log (ejemplos, control, entrada, comandos, `HALT`, sugerencias, orden de errores, bordes, tamaño). cada una empieza con un reset, igual que los tests del juez.
 - **retenido:** los 20 ejemplos oficiales + secuencias que el explorador no eligió (venenos a mano de fable, secuencias de sol). el gemelo nunca se ajusta mirando el retenido.
 - **umbral:** > 75 % en el retenido = territorio de 4. una categoría bajo 50 % es la próxima hora de trabajo.
-- **primer hito medible:** el gemelo reproduce los 20 ejemplos. **el original ya los reproduce 20/20** (2–21): la vara es real. el gemelo, hoy 0/20.
-- **cómo se corre:** `python3 medir.py --log experimentos.jsonl --gemelo URL` (`medir.py` es el encargo `sol-02`, todavía sin entregar).
+- **primer hito medible:** el gemelo reproduce los 20 ejemplos. **el original ya los reproduce 20/20** (2–21): la vara es real. **logrado:** el gemelo reproduce los 20 ejemplos y todas las secuencias del log.
+- **cómo se corre:** `python3 medir.py --log experimentos.jsonl --gemelo URL` (`medir.py` lo escribió sol, encargo `sol-02`, con sus pruebas en `pruebas/test_medir.py`).
+- **lo medido al cierre del diseño (11:2x bog):**
+  - **la spec la entiende otro modelo:** sol, de otra casa de modelos, escribió 40 secuencias **solo leyendo `spec.md`** y predijo las 141 respuestas del original sin un error (1003–1183, encargo `sol-03`). el gemelo pasa las mismas 40.
+  - **set oculto, corrida 1 de 3 (11:06 bog): 83/100.** la plataforma da solo el total. los 17 que fallan se buscan **sin gastar corridas**: comparando original y gemelo donde la spec no habla, y con secuencias largas y con estado escritas por sol (`sol-04`).
+  - **las 3 corridas del día** se usan como mediciones planeadas: la 1 como línea base, la 2 después de adaptarnos al incidente, la 3 como verificación final.
 
 ## 7 · escalar y cambiar
 - **por test:** el gemelo no llama a nadie: costo 0 y microsegundos. 100 o 10.000 tests, igual.
 - **por regla aprendida:** pedidos al original crecen con las hipótesis vivas, no con los comandos. el equipo puede abrir más tokens en paralelo (estados separados).
 - **el incidente (15:30):** desde las 15:00 el centinela repite cada pocos minutos 3–4 secuencias canónicas que tocan cada comando y cada error: los 20 ejemplos (`repro-1`) y una secuencia por familia de error, sacadas del log. **solo una repetición exacta que cambia acredita un cambio.** entonces: tag de la spec v1, explorar la diferencia, el gemelo pasa a la versión nueva (el set evalúa la de las 20:00), spec § 6 dice qué cambió, desde cuándo y con qué ids. en `incident.md`. lo más barato de cambiar para el autor (un texto, un código, el límite, el módulo del control) es justamente lo que D4 guarda como dato.
-- **dónde se rompe:** `HALT` confirmado, que no exploramos (S5); un cambio en el control que el centinela no toque; o un cambio a las 19:50 que el centinela ve tarde.
+- **dónde se rompe:** un cambio en el control que el centinela no toque; o un cambio a las 19:50 que el centinela ve tarde.
 
 ## 8 · cómo trabajamos
 una persona y varios modelos que firman lo que escriben (`AGENTS.md`). claude lidera e integra; fable objeta y reimplementa desde la spec; sol construye en paralelo desde otra casa de modelos. el log manda: lo que no tiene línea, no se afirma.
