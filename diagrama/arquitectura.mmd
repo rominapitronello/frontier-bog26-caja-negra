@@ -1,0 +1,40 @@
+flowchart LR
+  subgraph A["① aprender · contra el original, hasta las 20:00"]
+    direction TB
+    EX["explorador<br/>sondas por hipótesis + fuzzer propio<br/><i>D7</i>"]
+    CEN["centinela<br/>repite secuencias canónicas cada 15 min"]
+    OR[("servicio original<br/>un token = un estado")]
+    LOG[("experimentos.jsonl<br/>hipótesis · x_req · respuesta<br/><i>D1 · fuente de verdad</i>")]
+    HI["hipótesis vivas<br/><i>sorpresa → juicio con modelos</i>"]
+    EX -->|"pedido que separa<br/>dos hipótesis"| OR
+    CEN -->|"repite"| OR
+    OR --> LOG --> HI
+    HI -.->|"siguiente pregunta"| EX
+  end
+
+  subgraph B["② escribir · lo aprendido como dato"]
+    direction TB
+    SPEC["spec.md · 7 secciones<br/>cada fila cita ids del log<br/>confirmado / probable / supuesto"]
+    DAT[("modelo.json · comandos, aridad,<br/>errores, límites <i>(D4)</i>")]
+    INC["incident.md + spec § 6<br/>si una repetición exacta cambia"]
+  end
+
+  subgraph C["③ responder · el entrypoint"]
+    direction TB
+    GE["gemelo · un proceso, estado en memoria <i>(D5)</i><br/>ruta → token → cuerpo → control → comando<br/>→ aridad → monto → cuentas → bloqueo → límite → saldo <i>(D3)</i><br/>sin llm <i>(D6)</i> · sin red hacia el original"]
+  end
+
+  subgraph D["④ medir"]
+    direction TB
+    RET["secuencias retenidas de sol<br/>escritas solo desde la spec <i>(D8)</i>"]
+    CMP{"comparador<br/>status + cuerpo<br/>regla del juez <i>(D2)</i>"}
+    RET --> CMP
+  end
+
+  HI --> SPEC
+  HI --> DAT
+  HI --> INC
+  DAT --> GE
+  SPEC --> RET
+  GE --> CMP
+  LOG -.->|"las mismas secuencias"| CMP
