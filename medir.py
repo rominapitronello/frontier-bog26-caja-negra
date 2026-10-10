@@ -96,7 +96,7 @@ def leer_casos(ruta):
                 ruta_http = item.get("ruta", "/msg")
                 if not isinstance(metodo, str) or not metodo or not metodo.isascii() or not all(ch.isalpha() for ch in metodo):
                     raise ErrorComparador("línea {}: método inválido".format(numero))
-                if not isinstance(ruta_http, str) or not ruta_http.startswith("/") or ruta_http.startswith("//") or "\r" in ruta_http or "\n" in ruta_http:
+                if not isinstance(ruta_http, str) or not ruta_http.startswith("/") or "\r" in ruta_http or "\n" in ruta_http:
                     raise ErrorComparador("línea {}: ruta debe ser ruta relativa que empiece con /".format(numero))
                 if item.get("auth") is not None and not isinstance(item["auth"], str):
                     raise ErrorComparador("línea {}: auth debe ser texto".format(numero))

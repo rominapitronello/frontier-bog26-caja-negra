@@ -10,12 +10,15 @@ solo biblioteca estándar, python 3.9+.
 """
 import json, os, re, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlsplit
 
-VERSION = "v5"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
+VERSION = "v6"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 ARRANQUE = __import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime())  # X-Gemelo-Arranque: delata un reinicio
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
+
+
+def _no_json(constante):
+    raise ValueError(constante)
 
 
 class Respuesta(Exception):
@@ -196,7 +199,9 @@ class Manejador(BaseHTTPRequestHandler):
     def atender(self):
         largo = int(self.headers.get("Content-Length") or 0)
         crudo = self.rfile.read(largo) if largo > 0 else b""
-        ruta = urlsplit(self.path).path            # la query string se ignora (62)
+        partes = self.requestline.split()           # la ruta cruda: http.server colapsa '//msg' en '/msg' en self.path
+        cruda = partes[1] if len(partes) >= 2 else self.path
+        ruta = cruda.split("?", 1)[0]              # la query string se ignora (62); '//msg' es otra ruta (1233, 1252)
         destino = M["rutas"].get(f"{self.command} {ruta}")
         x_req = None
         with CANDADO:
@@ -216,8 +221,8 @@ class Manejador(BaseHTTPRequestHandler):
                     raise error("E599")
                 if len(crudo) > M["cuerpo_max_bytes"]:   # después del token (712), antes del json (713)
                     raise error("E101")
-                try:
-                    cuerpo = json.loads(crudo.decode("utf-8"))
+                try:   # json estricto: NaN e Infinity no son json (1245-1247); python los aceptaría
+                    cuerpo = json.loads(crudo.decode("utf-8"), parse_constant=_no_json)
                 except (ValueError, UnicodeDecodeError):
                     raise error("E100")
                 if not isinstance(cuerpo, dict) or not isinstance(cuerpo.get("m"), str):

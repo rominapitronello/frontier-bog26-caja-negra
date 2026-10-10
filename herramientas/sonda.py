@@ -60,9 +60,13 @@ def anotar(log, registro):
         f.write(json.dumps(registro, ensure_ascii=False) + "\n")
     return n + 1
 
+def _no_json(constante):
+    raise ValueError(constante)
+
 def como_json(texto):
+    """el cuerpo como json estricto; si no lo es (incluidos NaN e Infinity), el texto tal cual."""
     try:
-        return json.loads(texto)
+        return json.loads(texto, parse_constant=_no_json)
     except (ValueError, TypeError):
         return texto
 
