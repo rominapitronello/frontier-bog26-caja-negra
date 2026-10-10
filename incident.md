@@ -2,7 +2,7 @@
 
 > criterio que alimenta: **respuesta al incidente** (ejecución). un 4: detectan el cambio, se adaptan y lo explican. lo que dice «null» se llena cuando ocurra; el protocolo de abajo se escribió **antes** del cambio (10 oct 11:3x bog), para que se vea qué teníamos preparado y qué improvisamos.
 
-**hora del cambio (según el juez):** null · **cómo se anunció:** null
+**hora del cambio (según el juez):** 15:30 bog (ticket #FR-0153, «el proveedor desplegó la versión 2 del servicio sin avisar»: **3 comportamientos** cambiaron, el resto igual; los tests del set corren contra v2) · **cómo se anunció:** el ticket en el portal (`frontier.lab10.ai/evento/reto/incidente`), recibido por romina a las 15:30
 
 ## cómo lo vamos a detectar (preparado antes)
 - **el centinela** (`herramientas/centinela.py`) repite una secuencia canónica de 58 pedidos (eran 34 a las 11:3x; crecieron antes del incidente con el bloqueo E510, `NOTAS`, las cuatro piezas del preregistro y los cinco cambios de sol-06: los comandos de la mañana, cada familia de error, el límite, el bloqueo y `HALT`) cada 15 minutos todo el día, y **cada 5 minutos entre las 14:50 y las 16:40 bog**. cada vuelta queda en `experimentos.jsonl` como `centinela-HHMM` (hora utc).
@@ -53,8 +53,8 @@ si el centinela muestra uno de estos cambios, adaptarse es **cambiar un dato** e
 lo que no está preparado y sería código: sesiones o créditos que vencen, confirmación en dos pasos, un comando nuevo con efecto propio, reglas que dependen del tiempo.
 
 ## detección
-- primera señal, con consulta y hora: null
-- qué la detectó: el sistema solo / una pluma / el juez: null
+- primera señal, con consulta y hora: el ticket (15:30), no el original. **hasta las 15:40 bog el original sigue respondiendo como v1** para nuestro token: el centinela de las 15:33 y las 15:38 sin cambios (3769–3826, 4156–4213) y dos tandas de **repetición exacta** de secuencias de la mañana (`evals/v2/tanda-1.jsonl` y `tanda-2.jsonl`, seq `v2-*`): 316 pedidos (3827–4155: los 20 ejemplos, control, entrada, comandos, sugerencias, orden de errores, bordes, titular, bloqueo, HALT) y 217 (4214–4447: sin token, búsquedas de entrada, comandos ocultos, `NOTAS`, huecos E503/E508/E509, E507, bloqueo largo, parser). **0 diferencias en 533 pedidos**; los headers del original tampoco cambian. lectura: v2 todavía no llegó a nuestro token, o sus tres cambios están en rincones que nada de lo grabado toca.
+- qué la detectó: el juez (el ticket). el sistema todavía no ve el cambio: null hasta que lo vea
 
 ## qué cambió (mecanismo, con evidencia)
 null
