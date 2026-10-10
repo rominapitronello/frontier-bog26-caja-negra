@@ -2,6 +2,13 @@
 # lado a lado: el mismo mensaje al original y al gemelo, para grabar el video.
 # pide los dos tokens sin mostrarlos en pantalla y no los guarda en ningún lado.
 #   bash video/lado_a_lado.sh
+# candado (claude, el que lidera): este script resetea el gemelo desplegado. después de las 19:50 bog no se corre,
+# porque el set final del jurado corre después de las 20:00 a una hora que no sabemos y un reset le rompería un test.
+# sus pedidos al original no quedan en experimentos.jsonl: si se graba, se anota en ESTADO.md cuántos fueron y a qué hora.
+hm=$(TZ=America/Bogota date +%H%M)
+if [ $((10#$hm)) -ge 1950 ] || [ $((10#$hm)) -lt 600 ]; then
+  echo "lado_a_lado: después de las 19:50 bog no se corre (resetea el gemelo desplegado y el set final puede estar corriendo)"; exit 1
+fi
 ORIG="https://caja-negra-production-c64f.up.railway.app"
 GEM="https://frontier-bog26-caja-negra-production.up.railway.app"
 read -rsp "token personal de la caja (el de MOSTRAR): " TO; echo
