@@ -12,6 +12,7 @@ import json, os, re, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
+VERSION = "v4"   # va en el header X-Gemelo-Version (los headers no se comparan): confirma qué versión está desplegada
 AQUI = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(AQUI, "modelo.json"), encoding="utf-8"))
 
@@ -183,6 +184,7 @@ class Manejador(BaseHTTPRequestHandler):
         self.send_response(r.status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(datos)))
+        self.send_header("X-Gemelo-Version", VERSION)
         if x_req is not None:
             self.send_header("X-Req", str(x_req))
         self.end_headers()
