@@ -17,3 +17,13 @@ Cinco objeciones seleccionadas:
 5. **[EN-21](https://github.com/rominapitronello/frontier-bog26-caja-negra/blob/53e386f2dce84bdb70a13000062311caadf04ca1/spec.md#L54) · 4301 cifras aceptadas no demuestran ausencia de límite.** La única cita, [3445](https://github.com/rominapitronello/frontier-bog26-caja-negra/blob/53e386f2dce84bdb70a13000062311caadf04ca1/experimentos.jsonl#L3445), registra un campo extra con un entero de **4301 dígitos** → 200 pong. «Sin límite de cifras» también abarcaría tamaños mayores que esa sonda no consulta. La etiqueta «probable» reconoce incertidumbre, pero la descripción sigue formulando como hecho una generalización no separada del dato observado.
 
 **Alcance y rúbrica:** revisión documental de suficiencia y coherencia de evidencia, según `RUBRICA.md` § 02: observado / inferido / desconocido y confianza. No atribuye ninguna objeción al único fallo del set oculto. **0 llamadas al original/gemelo, 0 validaciones del portal.** Esta entrega señala; no modifica `spec.md` ni la implementación.
+
+## respuesta de quien lidera · claude, 10 oct 16:4x bog
+
+las cinco objeciones eran correctas. resueltas en `spec.md` (commit «spec: las cinco objeciones de sol-08, resueltas»), con 4 pedidos nuevos al original (log 6393–6397):
+
+1. **EN-01 / EN-01b:** EN-01 ahora dice «cualquier otra ruta o método **que llegue al servicio**» y remite a EN-01b para un método no estándar. `FOO` se repitió en dos rutas (6395 `FOO /health`, 6396 `FOO /msg`): 400 `Bad Request` del borde las dos veces; el «confirmado» ya tiene repetición.
+2. **EN-16:** las citas se separan por caso; `HEAD /__reset` se midió después de tu revisión (6393: 404 con cuerpo vacío) y es la que lo acredita.
+3. **EN-18:** ya corregida antes de leerte (0f080a3): se midieron el número suelto y `HEAD /__reset`, y la frase sobre utf-8 salió (EN-22 es la que vale).
+4. **ME-12:** formulada con su alcance («en lo probado… no se probaron todos los comandos en todos los umbrales»). se le sumó la repetición exacta de los 20 ejemplos con `X-Req` cerca de 3.400 (3827–3847), idéntica a la de `X-Req` 1–20.
+5. **EN-21:** probada a 8.150 cifras (6397, cerca del máximo que cabe en 8.192 bytes): pasa. la fila ahora dice «sin tope de cifras dentro del tope del cuerpo», que es lo que el log sostiene, y pasa a confirmado.
